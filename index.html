@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ایڈمن پینل - مسائل ورلڈ</title>
+    <meta name="description" content="مسائل ورلڈ کے لیے ایڈمن پینل - فتاویٰ، مضامین، کتابیں، اور بہت کچھ کا نظم کریں۔">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Jameel+Noori+Nastaleeq&family=Lateef&family=Scheherazade+New&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+    <style>
+        @font-face {
+            font-family: 'NaatFont';
+            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'NaatFont', serif;
+            font-size: 80%;
+            overscroll-behavior: none;
+        }
+
+        .qalam-admin-page {
+            display: none;
+        }
+
+        .qalam-admin-page.qalam-active {
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #124559;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0b2935;
+        }
+
+        .qalam-sidebar-link.qalam-active {
+            background-color: #01161e;
+            border-right: 4px solid #eff6e0;
+        }
+
+        @media (max-width: 768px) {
+            .qalam-responsive-table thead {
+                display: none;
+            }
+
+            .qalam-responsive-table tr {
+                display: block;
+                margin-bottom: 1.5rem;
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .qalam-responsive-table td {
+                display: block;
+                text-align: left;
+                padding: 0.5rem 0;
+                border-bottom: 1px dashed #e5e7eb;
+            }
+
+            .qalam-responsive-table td:last-child {
+                border-bottom: none;
+            }
+
+            .qalam-responsive-table td::before {
+                content: attr(data-label);
+                float: right;
+                font-weight: bold;
+                margin-left: 1rem;
+            }
+        }
+
+        .qalam-dropdown-options {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .qalam-dropdown-option {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .qalam-dropdown-option:hover {
+            background-color: #f0f0f1;
+        }
+
+        .qalam-tag-pill {
+            background-color: #124559;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .qalam-tag-remove-btn {
+            margin-right: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .qalam-rich-text-editor {
+            background-color: white;
+            border-radius: 0.5rem;
+            border: 2px solid #aec3b0;
+        }
+
+        .ql-editor {
+            min-height: 250px;
+            font-family: 'Jameel Noori Nastaleeq', serif;
+            font-size: 18px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=jameel]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=jameel]::before {
+            content: 'نستعلیق';
+            font-family: 'Jameel Noori Nastaleeq', serif;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=lateef]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=lateef]::before {
+            content: 'لطیف';
+            font-family: 'Lateef', cursive;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=scheherazade]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=scheherazade]::before {
+            content: 'شہرزاد';
+            font-family: 'Scheherazade New', serif;
+        }
+
+        .ql-toolbar.ql-snow {
+            direction: ltr;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rich_black': { DEFAULT: '#01161e', 100: '#000406', 200: '#00090c', 300: '#010d12', 400: '#011118', 500: '#01161e', 600: '#04597b', 700: '#079cd8', 800: '#45c6f9', 900: '#a2e3fc' },
+                        'midnight_green': { DEFAULT: '#124559', 100: '#040e12', 200: '#071c24', 300: '#0b2935', 400: '#0f3747', 500: '#124559', 600: '#20799c', 700: '#36a9d6', 800: '#79c5e4', 900: '#bce2f1' },
+                        'air_force_blue': { DEFAULT: '#598392', 100: '#121a1d', 200: '#24343a', 300: '#354e57', 400: '#476874', 500: '#598392', 600: '#769dab', 700: '#99b6c0', 800: '#bbced5', 900: '#dde7ea' },
+                        'ash_gray': { DEFAULT: '#aec3b0', 100: '#1f2a20', 200: '#3e5441', 300: '#5e7f61', 400: '#83a386', 500: '#aec3b0', 600: '#bdcebf', 700: '#cedbcf', 800: '#dee7df', 900: '#eff3ef' },
+                        'beige': { DEFAULT: '#eff6e0', 100: '#384915', 200: '#71912a', 300: '#a4cc4e', 400: '#c9e197', 500: '#eff6e0', 600: '#f2f8e6', 700: '#f5f9ec', 800: '#f8fbf2', 900: '#fcfdf9' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="text-rich_black bg-gray-100">
+
+    <div class="flex h-screen">
+        <aside id="ms-sidebar"
+            class="w-64 bg-midnight_green text-beige flex-col shadow-2xl fixed top-0 right-0 h-full z-20 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 translate-x-full">
+            <div class="p-6 text-center border-b border-midnight_green-400">
+                <h1 class="text-3xl font-bold">مسائل ورلڈ</h1>
+                <p class="text-sm text-air_force_blue-700">ایڈمن پینل</p>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="#dashboard"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-speedometer2 ml-3 text-2xl"></i>
+                    <span>ڈیش بورڈ</span>
+                </a>
+                <a href="#manage-fatawa"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-journal-check ml-3 text-2xl"></i>
+                    <span>فتاویٰ</span>
+                </a>
+                <a href="#manage-articles"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-pencil-square ml-3 text-2xl"></i>
+                    <span>مضامین</span>
+                </a>
+                <a href="#manage-books"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-book-half ml-3 text-2xl"></i>
+                    <span>کتابیں</span>
+                </a>
+                <a href="#manage-ulema"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-people-fill ml-3 text-2xl"></i>
+                    <span>علمائے کرام</span>
+                </a>
+                <a href="#manage-categories"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-grid-fill ml-3 text-2xl"></i>
+                    <span>موضوعات</span>
+                </a>
+                <a href="#manage-questions"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-patch-question-fill ml-3 text-2xl"></i>
+                    <span>موصول سوالات</span>
+                </a>
+                <a href="#manage-submissions"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-send-check ml-3 text-2xl"></i>
+                    <span>مفتی کی گذارشات</span>
+                </a>
+                <a href="#manage-users"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-person-gear ml-3 text-2xl"></i>
+                    <span>صارفین کا انتظام</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-midnight_green-400">
+                <div class="flex items-center p-2 rounded-md hover:bg-rich_black transition">
+                    <img src="https://placehold.co/40x40/eff6e0/124559?text=A" class="w-10 h-10 rounded-full"
+                        onerror="this.onerror=null;this.src='https://placehold.co/40x40/eff6e0/124559?text=A';">
+                    <div class="mr-3">
+                        <p class="font-bold text-lg">ایڈمن</p>
+                        <a href="#" class="text-sm text-air_force_blue-700 hover:text-beige">لاگ آؤٹ</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div id="ms-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden"></div>
+
+        <div class="flex-1 flex flex-col">
+            <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex items-center">
+                    <button id="ms-sidebar-toggle" class="text-midnight_green text-2xl ml-4">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div id="ms-breadcrumb" class="hidden md:block text-sm"></div>
+                </div>
+                <h1 class="text-xl font-bold text-midnight_green md:hidden">ایڈمن پینل</h1>
+            </header>
+
+            <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+                <div id="ms-admin-main-content">
+                    <div id="ms-page-dashboard" class="as-admin-page qalam-admin-page as-active qalam-active">
+                        <div class="mb-8">
+                            <h2 class="text-2xl font-bold text-midnight_green mb-4">فوری رسائی</h2>
+                            <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+                                <button
+                                    class="as-add-new-btn bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group"
+                                    data-target="add-fatwa">
+                                    <i
+                                        class="bi bi-journal-plus text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">نیا فتویٰ</p>
+                                </button>
+                                <button
+                                    class="as-add-new-btn bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group"
+                                    data-target="add-article">
+                                    <i
+                                        class="bi bi-pencil-square text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">نیا مضمون</p>
+                                </button>
+                                <button
+                                    class="as-add-new-btn bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group"
+                                    data-target="add-book">
+                                    <i class="bi bi-book-half text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">نئی کتاب</p>
+                                </button>
+                                <button
+                                    class="as-add-new-btn bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group"
+                                    data-target="add-ulema">
+                                    <i
+                                        class="bi bi-person-plus-fill text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">نئے عالم</p>
+                                </button>
+                                <button
+                                    class="as-add-new-btn bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group"
+                                    data-target="add-category">
+                                    <i class="bi bi-grid text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">نیا موضوع</p>
+                                </button>
+                                <a href="#manage-questions"
+                                    class="as-admin-nav-link bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group">
+                                    <i
+                                        class="bi bi-patch-question-fill text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">سوالات</p>
+                                </a>
+                                <a href="#manage-users"
+                                    class="as-admin-nav-link bg-white p-3 rounded-xl shadow-lg text-center hover:bg-midnight_green hover:text-white transition-all duration-300 group">
+                                    <i
+                                        class="bi bi-person-gear text-3xl text-midnight_green group-hover:text-white"></i>
+                                    <p class="mt-1 text-base font-bold">صارفین</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-600">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل فتاویٰ</p>
+                                        <p id="ms-total-fatawa" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-journal-check text-3xl text-midnight_green"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-air_force_blue">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل مضامین</p>
+                                        <p id="ms-total-articles" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-pencil-square text-3xl text-air_force_blue"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-ash_gray">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل کتابیں</p>
+                                        <p id="ms-total-books" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-book-half text-3xl text-ash_gray-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-700">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل موضوعات</p>
+                                        <p id="ms-total-categories" class="text-4xl font-bold text-rich_black mt-2">0
+                                        </p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-grid-fill text-3xl text-midnight_green-700"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-rich_black-700">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">نئے سوالات</p>
+                                        <p id="ms-total-questions" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-patch-question-fill text-3xl text-rich_black-700"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-beige-300">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل صارفین</p>
+                                        <p id="ms-total-users" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-people text-3xl text-beige-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">التوا میں گذارشات</p>
+                                        <p id="ms-total-submissions" class="text-4xl font-bold text-rich_black mt-2">0
+                                        </p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-send-exclamation text-3xl text-yellow-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-lg mt-8">
+                            <h2 class="text-2xl font-bold text-midnight_green mb-4">حالیہ سرگرمیاں</h2>
+                            <div id="ms-recent-activities" class="space-y-2 text-lg"></div>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-fatawa" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">فتاویٰ کا انتظام</h1>
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-fatwa">نیا فتویٰ شامل کریں</button>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">نمبر</th>
+                                        <th class="py-3 px-4">عنوان</th>
+                                        <th class="py-3 px-4">مفتی صاحب</th>
+                                        <th class="py-3 px-4">تاریخ</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-fatawa-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-add-fatwa" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 id="ms-fatwa-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">نیا
+                                فتویٰ شامل کریں</h1>
+                            <a href="#manage-fatawa"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <form id="ms-fatwa-form" class="space-y-6">
+                                <input type="hidden" id="ms-fatwa-id">
+                                <div>
+                                    <label for="ms-fatwa-title"
+                                        class="block text-xl font-bold text-midnight_green mb-2">عنوان</label>
+                                    <input type="text" id="ms-fatwa-title"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="ms-fatwa-slug"
+                                            class="block text-xl font-bold text-midnight_green mb-2">URL سلگ</label>
+                                        <input type="text" id="ms-fatwa-slug"
+                                            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                                            style="direction: ltr;" placeholder="auto-generated-slug">
+                                    </div>
+                                    <div>
+                                        <label for="ms-fatwa-keywords-input"
+                                            class="block text-xl font-bold text-midnight_green mb-2">کلیدی الفاظ
+                                            (Tags)</label>
+                                        <div class="relative">
+                                            <div id="ms-fatwa-keywords-container"
+                                                class="as-tag-input-container w-full border-2 border-ash_gray rounded-lg focus-within:ring-2 focus-within:ring-midnight_green p-2 flex flex-wrap gap-2 items-center">
+                                                <input type="text" id="ms-fatwa-keywords-input"
+                                                    class="as-tag-input-field flex-grow focus:outline-none bg-transparent text-rich_black text-lg"
+                                                    placeholder="ٹیگ شامل کریں...">
+                                            </div>
+                                            <input type="hidden" id="ms-fatwa-keywords">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="ms-fatwa-meta-description"
+                                        class="block text-xl font-bold text-midnight_green mb-2">SEO تفصیل</label>
+                                    <textarea id="ms-fatwa-meta-description" rows="3"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        placeholder="فتویٰ کے بارے میں 150-160 حروف کی مختصر تفصیل"></textarea>
+                                </div>
+                                <div>
+                                    <label for="ms-fatwa-question"
+                                        class="block text-xl font-bold text-midnight_green mb-2">سوال</label>
+                                    <div id="ms-fatwa-question" class="qalam-rich-text-editor"></div>
+                                </div>
+                                <div>
+                                    <label for="ms-fatwa-answer"
+                                        class="block text-xl font-bold text-midnight_green mb-2">الجواب</label>
+                                    <div id="ms-fatwa-answer" class="qalam-rich-text-editor"></div>
+                                </div>
+                                <div>
+                                    <label for="ms-fatwa-mufti"
+                                        class="block text-xl font-bold text-midnight_green mb-2">مفتی صاحب</label>
+                                    <div class="relative as-searchable-dropdown">
+                                        <input type="text" id="ms-fatwa-mufti"
+                                            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                            required autocomplete="off">
+                                        <div
+                                            class="as-dropdown-options qalam-dropdown-options absolute z-10 w-full bg-white border rounded-md mt-1 hidden shadow-lg">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-fatawa">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-articles" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">مضامین کا انتظام</h1>
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-article">نیا مضمون شامل کریں</button>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">عنوان</th>
+                                        <th class="py-3 px-4">مصنف</th>
+                                        <th class="py-3 px-4">تاریخ</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-articles-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-add-article" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 id="ms-article-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">
+                                نیا مضمون شامل کریں</h1>
+                            <a href="#manage-articles"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <form id="ms-article-form" class="space-y-6">
+                                <input type="hidden" id="ms-article-id">
+
+                                <div>
+                                    <label for="ms-article-title"
+                                        class="block text-xl font-bold text-midnight_green mb-2">عنوان</label>
+                                    <input type="text" id="ms-article-title"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="ms-article-slug"
+                                            class="block text-xl font-bold text-midnight_green mb-2">URL سلگ</label>
+                                        <input type="text" id="ms-article-slug"
+                                            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                                            style="direction: ltr;" placeholder="auto-generated-slug">
+                                    </div>
+
+                                    <div>
+                                        <label for="ms-article-keywords-input"
+                                            class="block text-xl font-bold text-midnight_green mb-2">کلیدی الفاظ
+                                            (Tags)</label>
+                                        <div class="relative">
+                                            <!-- tag container: pills inserted before the input -->
+                                            <div id="ms-article-keywords-container"
+                                                class="as-tag-input-container w-full border-2 border-ash_gray rounded-lg focus-within:ring-2 focus-within:ring-midnight_green p-2 flex flex-wrap gap-2 items-center">
+                                                <input type="text" id="ms-article-keywords-input"
+                                                    class="as-tag-input-field flex-grow focus:outline-none bg-transparent text-rich_black text-lg"
+                                                    placeholder="ٹیگ شامل کریں...">
+                                            </div>
+                                            <!-- hidden input that actually gets submitted as 'tags' -->
+                                            <input type="hidden" id="ms-article-keywords" name="tags" value="">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="ms-article-meta-description"
+                                        class="block text-xl font-bold text-midnight_green mb-2">SEO تفصیل</label>
+                                    <textarea id="ms-article-meta-description" rows="3"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        placeholder="مضمون کے بارے میں 150-160 حروف کی مختصر تفصیل"></textarea>
+                                </div>
+
+                                <div>
+                                    <label for="ms-article-author"
+                                        class="block text-xl font-bold text-midnight_green mb-2">مصنف</label>
+                                    <div class="relative as-searchable-dropdown">
+                                        <input type="text" id="ms-article-author"
+                                            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                            required autocomplete="off">
+                                        <div
+                                            class="as-dropdown-options qalam-dropdown-options absolute z-10 w-full bg-white border rounded-md mt-1 hidden shadow-lg">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="ms-article-image"
+                                        class="block text-xl font-bold text-midnight_green mb-2">نمایاں تصویر</label>
+                                    <input type="file" id="ms-article-image" accept="image/*"
+                                        class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                                    <!-- preview -->
+                                    <img id="ms-article-image-preview" class="mt-2 max-h-40 rounded-md hidden"
+                                        alt="Cover preview">
+                                </div>
+
+                                <div>
+                                    <label for="ms-article-content"
+                                        class="block text-xl font-bold text-midnight_green mb-2">مضمون کا متن</label>
+                                    <!-- This container will host Quill if available, otherwise acts as editable container -->
+                                    <div id="ms-article-content" class="qalam-rich-text-editor"
+                                        style="min-height: 200px; border: 1px solid #e5e7eb; border-radius: .5rem; padding: 12px;">
+                                    </div>
+                                </div>
+
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit" id="ms-article-submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-articles">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+
+                    <div id="ms-page-manage-books" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">کتابوں کا انتظام</h1>
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-book">نئی کتاب شامل کریں</button>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">کتاب کا نام</th>
+                                        <th class="py-3 px-4">مصنف</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-books-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-add-book" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 id="ms-book-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">نئی
+                                کتاب شامل کریں</h1>
+                            <a href="#manage-books"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <form id="ms-book-form" class="space-y-6">
+                                <input type="hidden" id="ms-book-id">
+                                <div>
+                                    <label for="ms-book-name"
+                                        class="block text-xl font-bold text-midnight_green mb-2">کتاب کا نام</label>
+                                    <input type="text" id="ms-book-name"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="ms-book-author"
+                                        class="block text-xl font-bold text-midnight_green mb-2">مصنف</label>
+                                    <div class="relative as-searchable-dropdown">
+                                        <input type="text" id="ms-book-author"
+                                            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                            required autocomplete="off">
+                                        <div
+                                            class="as-dropdown-options qalam-dropdown-options absolute z-10 w-full bg-white border rounded-md mt-1 hidden shadow-lg">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="ms-book-description"
+                                        class="block text-xl font-bold text-midnight_green mb-2">کتاب کا تعارف</label>
+                                    <div id="ms-book-description" class="qalam-rich-text-editor"></div>
+                                </div>
+                                <div>
+                                    <label for="ms-book-cover"
+                                        class="block text-xl font-bold text-midnight_green mb-2">کتاب کا کور</label>
+                                    <input type="file" id="ms-book-cover"
+                                        class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                                </div>
+                                <div>
+                                    <label for="ms-book-file"
+                                        class="block text-xl font-bold text-midnight_green mb-2">PDF فائل</label>
+                                    <input type="file" id="ms-book-file"
+                                        class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-books">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-ulema" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">علمائے کرام کا انتظام</h1>
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-ulema">نئے عالم شامل کریں</button>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">نام</th>
+                                        <th class="py-3 px-4">عہدہ</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-ulema-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-add-ulema" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 id="ms-ulema-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">نئے
+                                عالم شامل کریں</h1>
+                            <a href="#manage-ulema"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <form id="ms-ulema-form" class="space-y-6">
+                                <input type="hidden" id="ms-ulema-id">
+                                <div>
+                                    <label for="ms-ulema-name"
+                                        class="block text-xl font-bold text-midnight_green mb-2">نام</label>
+                                    <input type="text" id="ms-ulema-name"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="ms-ulema-designation"
+                                        class="block text-xl font-bold text-midnight_green mb-2">عہدہ</label>
+                                    <input type="text" id="ms-ulema-designation"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="ms-ulema-photo"
+                                        class="block text-xl font-bold text-midnight_green mb-2">تصویر</label>
+                                    <input type="file" id="ms-ulema-photo"
+                                        class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                                </div>
+                                <div>
+                                    <label for="ms-ulema-bio"
+                                        class="block text-xl font-bold text-midnight_green mb-2">مختصر تعارف</label>
+                                    <div id="ms-ulema-bio" class="qalam-rich-text-editor"></div>
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-ulema">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-categories" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موضوعات کا انتظام</h1>
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-category">نیا موضوع شامل کریں</button>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">تھمبنیل</th>
+                                        <th class="py-3 px-4">موضوع کا نام</th>
+                                        <th class="py-3 px-4">آئیکن</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-categories-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-add-category" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 id="ms-category-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">
+                                نیا موضوع شامل کریں</h1>
+                            <a href="#manage-categories"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <form id="ms-category-form" class="space-y-6">
+                                <input type="hidden" id="ms-category-id">
+                                <div>
+                                    <label for="ms-category-name"
+                                        class="block text-xl font-bold text-midnight_green mb-2">موضوع کا نام</label>
+                                    <input type="text" id="ms-category-name"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="ms-category-slug"
+                                        class="block text-xl font-bold text-midnight_green mb-2">URL سلگ</label>
+                                    <input type="text" id="ms-category-slug"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                                        style="direction: ltr;" placeholder="auto-generated-slug">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="ms-category-icon"
+                                            class="block text-xl font-bold text-midnight_green mb-2">آئیکن کلاس</label>
+                                        <input type="text" id="ms-category-icon" placeholder="مثال: bi bi-gem"
+                                            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                            required>
+                                        <p class="text-sm text-air_force_blue mt-1">بوٹسٹریپ آئیکنز کی کلاس کا نام درج
+                                            کریں۔</p>
+                                    </div>
+                                    <div>
+                                        <label for="ms-category-thumbnail"
+                                            class="block text-xl font-bold text-midnight_green mb-2">موضوع کا
+                                            تھمبنیل</label>
+                                        <input type="file" id="ms-category-thumbnail"
+                                            class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="ms-category-description"
+                                        class="block text-xl font-bold text-midnight_green mb-2">موضوع کا تعارف</label>
+                                    <div id="ms-category-description" class="qalam-rich-text-editor"></div>
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-categories">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-questions" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موصول سوالات</h1>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">صارف</th>
+                                        <th class="py-3 px-4">سوال کا خلاصہ</th>
+                                        <th class="py-3 px-4">کیفیت</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-questions-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-answer-question" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">سوال کا جواب دیں</h1>
+                            <a href="#manage-questions"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <div class="mb-6 pb-6 border-b border-ash_gray">
+                                <h2 class="text-xl font-bold text-midnight_green">صارف کا سوال:</h2>
+                                <p id="ms-question-to-answer-text" class="text-2xl font-semibold my-2 text-rich_black">
+                                </p>
+                                <p id="ms-question-to-answer-user" class="text-air_force_blue"></p>
+                            </div>
+                            <form id="ms-answer-form" class="space-y-6">
+                                <input type="hidden" id="ms-question-id">
+                                <div>
+                                    <label for="ms-question-answer"
+                                        class="block text-xl font-bold text-midnight_green mb-2">الجواب</label>
+                                    <div id="ms-question-answer" class="qalam-rich-text-editor"></div>
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">جواب
+                                        بھیجیں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-questions">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-users" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">صارفین کا انتظام</h1>
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-user">نیا صارف شامل کریں</button>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">نام</th>
+                                        <th class="py-3 px-4">ای میل</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-users-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-add-user" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 id="ms-user-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">نیا
+                                صارف شامل کریں</h1>
+                            <a href="#manage-users"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <form id="ms-user-form" class="space-y-6">
+                                <input type="hidden" id="ms-user-id">
+                                <div>
+                                    <label for="ms-user-name"
+                                        class="block text-xl font-bold text-midnight_green mb-2">نام</label>
+                                    <input type="text" id="ms-user-name"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                                        required>
+                                </div>
+                                <div>
+                                    <label for="ms-user-email"
+                                        class="block text-xl font-bold text-midnight_green mb-2">ای میل</label>
+                                    <input type="email" id="ms-user-email"
+                                        class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                                        style="direction: ltr;" required>
+                                </div>
+                                <div id="ms-password-section">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="ms-user-password"
+                                                class="block text-xl font-bold text-midnight_green mb-2">پاس ورڈ</label>
+                                            <input type="password" id="ms-user-password"
+                                                class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                                                style="direction: ltr;">
+                                        </div>
+                                        <div>
+                                            <label for="ms-user-confirm-password"
+                                                class="block text-xl font-bold text-midnight_green mb-2">پاس ورڈ کی
+                                                تصدیق</label>
+                                            <input type="password" id="ms-user-confirm-password"
+                                                class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                                                style="direction: ltr;">
+                                        </div>
+                                    </div>
+                                    <p id="ms-password-help-text" class="text-sm text-air_force_blue mt-1">نیا صارف
+                                        بناتے وقت پاس ورڈ درکار ہے۔ ترمیم کرتے وقت، پاس ورڈ کو تبدیل کرنے کے لیے اسے
+                                        خالی چھوڑ دیں۔</p>
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button type="submit"
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-users">منسوخ کریں</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-manage-submissions" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">مفتی کی گذارشات</h1>
+                        </div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">عنوان</th>
+                                        <th class="py-3 px-4">مفتی صاحب</th>
+                                        <th class="py-3 px-4">تاریخ</th>
+                                        <th class="py-3 px-4">کیفیت</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-submissions-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="ms-page-review-submission" class="as-admin-page qalam-admin-page">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">گذارش کا جائزہ</h1>
+                            <a href="#manage-submissions"
+                                class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                                <i class="bi bi-arrow-right ml-2"></i>
+                                فہرست پر واپس جائیں
+                            </a>
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+                            <div class="space-y-6">
+                                <input type="hidden" id="ms-review-submission-id">
+                                <div>
+                                    <h2 class="block text-xl font-bold text-midnight_green mb-2">عنوان</h2>
+                                    <p id="ms-review-submission-title"
+                                        class="w-full py-3 px-4 bg-gray-100 rounded-lg text-rich_black text-lg"></p>
+                                </div>
+                                <div>
+                                    <h2 class="block text-xl font-bold text-midnight_green mb-2">مفتی صاحب</h2>
+                                    <p id="ms-review-submission-mufti"
+                                        class="w-full py-3 px-4 bg-gray-100 rounded-lg text-rich_black text-lg"></p>
+                                </div>
+                                <div>
+                                    <h2 class="block text-xl font-bold text-midnight_green mb-2">سوال</h2>
+                                    <div id="ms-review-submission-question"
+                                        class="w-full p-4 bg-gray-100 rounded-lg text-rich_black text-lg prose max-w-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 class="block text-xl font-bold text-midnight_green mb-2">الجواب</h2>
+                                    <div id="ms-review-submission-answer"
+                                        class="w-full p-4 bg-gray-100 rounded-lg text-rich_black text-lg prose max-w-none">
+                                    </div>
+                                </div>
+                                <div
+                                    class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                                    <button id="ms-approve-submission-btn"
+                                        class="w-full md:w-auto bg-green-600 text-white py-3 px-8 rounded-lg text-lg hover:bg-green-700 transition">پبلش
+                                        کریں</button>
+                                    <button id="ms-reject-submission-btn"
+                                        class="w-full md:w-auto bg-red-600 text-white py-3 px-8 rounded-lg text-lg hover:bg-red-700 transition">مسترد
+                                        کریں</button>
+                                    <button type="button"
+                                        class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
+                                        data-target="manage-submissions">منسوخ کریں</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <footer class="text-center py-4 mt-8 text-xs text-gray-400 font-sans">
+                    Powered By www.AlQalamArts.com
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let fatawa = [{ id: 1, title: 'کیا نبی کریم ﷺ اپنی قبر انور میں حیات ہیں؟', slug: 'hayat-un-nabi-sallallahu-alaihi-wasallam', keywords: 'حیات النبی, عقیدہ, اہلسنت', metaDescription: 'اہلسنت والجماعت کا یہ متفقہ عقیدہ ہے کہ انبیاء کرام علیہم السلام اپنی قبروں میں اسی طرح حیات ہیں جیسے دنیا میں تھے۔ اس فتوی میں تفصیلی دلائل موجود ہیں۔', question: 'کیا نبی کریم ﷺ اپنی قبر انور میں حیات ہیں اور سلام سنتے ہیں؟', answer: '<p>اہلسنت والجماعت کا یہ متفقہ عقیدہ ہے کہ انبیاء کرام علیہم السلام اپنی قبروں میں اسی طرح حیات ہیں جیسے دنیا میں تھے۔..</p>', mufti: 'دارالافتاء', date: '2025-07-26', views: 150 }];
+            let articles = [{ id: 1, title: 'عقیدہ ختمِ نبوت اور ہماری ذمہ داریاں', slug: 'aqeeda-khatm-e-nabuwat', keywords: 'ختم نبوت, قادیانیت', metaDescription: 'عقیدہ ختم نبوت اسلام کا بنیادی عقیدہ ہے۔ اس مضمون میں اس کی اہمیت اور ہماری ذمہ داریوں پر روشنی ڈالی گئی ہے۔', author: 'علامہ ارشد القادری', content: '<p>ختمِ نبوت کا عقیدہ دینِ اسلام کی اساس ہے۔..</p>', date: '2025-06-15', views: 250 }];
+            let books = [{ id: 1, name: 'فتاویٰ رضویہ', author: 'امام احمد رضا خان', description: '<p>امام احمد رضا خان رحمۃ اللہ علیہ کے شہرہ آفاق فتاویٰ کا مجموعہ۔</p>', views: 500 }];
+            let ulema = [{ id: 1, name: 'تاج الشریعہ مفتی اختر رضا خان', designation: 'قاضی القضاۃ فی الہند', bio: 'آپ امام احمد رضا خان کے پڑپوتے اور جانشین تھے۔' }, { id: 2, name: 'علامہ ارشد القادری', designation: 'مصنف و مفکر', bio: '' }, { id: 3, name: 'امام احمد رضا خان', designation: 'مجدد اعظم', bio: '' }, { id: 4, name: 'دارالافتاء', designation: 'ادارہ', bio: '' }];
+            let categories = [{ id: 1, name: 'عقائد', icon: 'bi bi-gem', slug: 'aqaid', thumbnail: 'https://placehold.co/100x100/aec3b0/124559?text=عقائد', description: '<p>اسلام کے بنیادی عقائد سے متعلق موضوعات</p>' }];
+            let questions = [{ id: 1, user: 'احمد رضا', question: 'روزے کی حالت میں انجیکشن لگوانے سے کیا روزہ ٹوٹ جاتا ہے؟', status: 'pending', answer: '', views: 12 }];
+            let users = [{ id: 1, name: 'ایڈمن', email: 'admin@example.com', password: 'password123' }];
+            let submissions = [{ id: 101, title: 'قربانی کے جانور کی عمر', mufti: 'مفتی قاسم عطاری', question: '<p>قربانی کے بکرے کی کم سے کم عمر کیا ہونی چاہئے؟</p>', answer: '<p>قربانی کے بکرے کی عمر کم از کم ایک سال ہونا ضروری ہے۔</p>', date: '2025-07-28', status: 'pending' }];
+            let activities = [];
+            let quillInstances = {};
+
+            const mainContent = document.getElementById('ms-admin-main-content');
+            const recentActivitiesContainer = document.getElementById('ms-recent-activities');
+            const sidebar = document.getElementById('ms-sidebar');
+            const sidebarToggle = document.getElementById('ms-sidebar-toggle');
+            const sidebarOverlay = document.getElementById('ms-sidebar-overlay');
+            const breadcrumbContainer = document.getElementById('ms-breadcrumb');
+
+            const BREADCRUMB_MAP = {
+                'dashboard': [{ name: 'ڈیش بورڈ' }],
+                'manage-fatawa': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'فتاویٰ کا انتظام' }],
+                'add-fatwa': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'فتاویٰ کا انتظام', link: '#manage-fatawa' }, { name: 'نیا/ترمیم فتویٰ' }],
+                'manage-articles': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مضامین کا انتظام' }],
+                'add-article': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مضامین کا انتظام', link: '#manage-articles' }, { name: 'نیا/ترمیم مضمون' }],
+                'manage-books': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'کتابوں کا انتظام' }],
+                'add-book': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'کتابوں کا انتظام', link: '#manage-books' }, { name: 'نئی/ترمیم کتاب' }],
+                'manage-ulema': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'علمائے کرام کا انتظام' }],
+                'add-ulema': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'علمائے کرام کا انتظام', link: '#manage-ulema' }, { name: 'نئے/ترمیم عالم' }],
+                'manage-categories': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'موضوعات کا انتظام' }],
+                'add-category': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'موضوعات کا انتظام', link: '#manage-categories' }, { name: 'نیا/ترمیم موضوع' }],
+                'manage-questions': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'موصول سوالات' }],
+                'answer-question': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'موصول سوالات', link: '#manage-questions' }, { name: 'سوال کا جواب' }],
+                'manage-users': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'صارفین کا انتظام' }],
+                'add-user': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'صارفین کا انتظام', link: '#manage-users' }, { name: 'نیا/ترمیم صارف' }],
+                'manage-submissions': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مفتی کی گذارشات' }],
+                'review-submission': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مفتی کی گذارشات', link: '#manage-submissions' }, { name: 'گذارش کا جائزہ' }],
+            };
+
+            const getPageIdFromHash = () => {
+                const hash = window.location.hash.substring(1);
+                return hash.split('?')[0] || 'dashboard';
+            }
+            const createSlug = (text) => text.toString().toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^\u0600-\u06FF\w\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '');
+
+            function addActivity(icon, text, type, id) {
+                const timestamp = new Date();
+                activities.unshift({ icon, text, type, id, timestamp });
+                if (activities.length > 6) activities.pop();
+                renderActivities();
+            }
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            }
+
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            function updateBreadcrumbs(pageId) {
+                const pageKey = pageId.includes('add-') ? pageId.replace('edit-', 'add-') : pageId;
+                const path = BREADCRUMB_MAP[pageKey] || [{ name: 'ڈیش بورڈ' }];
+
+                breadcrumbContainer.innerHTML = path.map((p, index) => {
+                    if (index === path.length - 1) {
+                        return `<span class="text-rich_black font-bold">${p.name}</span>`;
+                    } else {
+                        return `<a href="${p.link}" class="as-admin-nav-link text-midnight_green hover:underline">${p.name}</a><span class="mx-2 text-gray-400">/</span>`;
+                    }
+                }).join('');
+            }
+
+            function renderDashboardStats() {
+                document.getElementById('ms-total-fatawa').textContent = fatawa.length;
+                document.getElementById('ms-total-articles').textContent = articles.length;
+                document.getElementById('ms-total-books').textContent = books.length;
+                document.getElementById('ms-total-categories').textContent = categories.length;
+                document.getElementById('ms-total-questions').textContent = questions.filter(q => q.status === 'pending').length;
+                document.getElementById('ms-total-users').textContent = users.length;
+                document.getElementById('ms-total-submissions').textContent = submissions.filter(s => s.status === 'pending').length;
+            }
+
+            function renderActivities() {
+                if (!window.moment) return;
+                recentActivitiesContainer.innerHTML = activities.map(act => {
+                    let href = '#';
+                    if (act.type) {
+                        switch (act.type) {
+                            case 'fatwa': href = `#add-fatwa?edit=${act.id}&type=fatwa`; break;
+                            case 'article': href = `#add-article?edit=${act.id}&type=article`; break;
+                            case 'book': href = `#add-book?edit=${act.id}&type=book`; break;
+                            case 'ulema': href = `#add-ulema?edit=${act.id}&type=ulema`; break;
+                            case 'category': href = `#add-category?edit=${act.id}&type=category`; break;
+                            case 'question': href = `#answer-question?edit=${act.id}&type=question`; break;
+                            case 'user': href = `#add-user?edit=${act.id}&type=user`; break;
+                            default: href = `#manage-${act.type}s`;
+                        }
+                    }
+
+                    const timeAgo = moment(act.timestamp).locale('ur').fromNow();
+                    const postDate = new Date(act.timestamp).toLocaleDateString('ur-PK', { day: 'numeric', month: 'short' });
+
+                    return `
+                    <a href="${href}" class="as-activity-link as-admin-nav-link block p-2 rounded-md hover:bg-gray-100 transition" data-id="${act.id}" data-type="${act.type}">
+                        <div class="flex items-center">
+                            <div class="p-2 ${act.icon.bgColor} rounded-full ml-4"><i class="${act.icon.class} ${act.icon.textColor}"></i></div>
+                            <div class="flex-grow">
+                                <span>${act.text}</span>
+                                <div class="text-air_force_blue text-sm font-sans">${postDate} - ${timeAgo}</div>
+                            </div>
+                        </div>
+                    </a>`;
+                }).join('');
+            }
+
+            // function renderFatawa() {
+            //     const tbody = document.getElementById('ms-fatawa-table-body');
+            //     tbody.innerHTML = fatawa.map((item, index) => `
+            //         <tr class="border-b border-ash_gray hover:bg-beige-700">
+            //             <td data-label="نمبر" class="py-3 px-4">${index + 1}</td>
+            //             <td data-label="عنوان" class="py-3 px-4">${item.title}</td>
+            //             <td data-label="مفتی صاحب" class="py-3 px-4">${item.mufti}</td>
+            //             <td data-label="تاریخ" class="py-3 px-4 font-sans">${item.date}</td>
+            //             <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+            //                 <button class="as-edit-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" data-type="fatwa"><i class="bi bi-pencil-fill"></i></button>
+            //                 <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="fatwa"><i class="bi bi-trash-fill"></i></button>
+            //             </td>
+            //         </tr>
+            //     `).join('');
+            // }
+
+            // function renderArticles() {
+            //     const tbody = document.getElementById('ms-articles-table-body');
+            //     tbody.innerHTML = articles.map(item => `
+            //         <tr class="border-b border-ash_gray hover:bg-beige-700">
+            //             <td data-label="عنوان" class="py-3 px-4">${item.title}</td>
+            //             <td data-label="مصنف" class="py-3 px-4">${item.author}</td>
+            //             <td data-label="تاریخ" class="py-3 px-4 font-sans">${item.date}</td>
+            //             <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+            //                 <button class="as-edit-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" data-type="article"><i class="bi bi-pencil-fill"></i></button>
+            //                 <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="article"><i class="bi bi-trash-fill"></i></button>
+            //             </td>
+            //         </tr>
+            //     `).join('');
+            // }
+
+            function renderBooks() {
+                const tbody = document.getElementById('ms-books-table-body');
+                tbody.innerHTML = books.map(item => `
+                    <tr class="border-b border-ash_gray hover:bg-beige-700">
+                        <td data-label="کتاب کا نام" class="py-3 px-4">${item.name}</td>
+                        <td data-label="مصنف" class="py-3 px-4">${item.author}</td>
+                        <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+                            <button class="as-edit-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" data-type="book"><i class="bi bi-pencil-fill"></i></button>
+                            <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="book"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderUlema() {
+                const tbody = document.getElementById('ms-ulema-table-body');
+                tbody.innerHTML = ulema.map(item => `
+                    <tr class="border-b border-ash_gray hover:bg-beige-700">
+                        <td data-label="نام" class="py-3 px-4">${item.name}</td>
+                        <td data-label="عہدہ" class="py-3 px-4">${item.designation}</td>
+                        <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+                            <button class="as-edit-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" data-type="ulema"><i class="bi bi-pencil-fill"></i></button>
+                            <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="ulema"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderCategories() {
+                const tbody = document.getElementById('ms-categories-table-body');
+                tbody.innerHTML = categories.map(item => `
+                    <tr class="border-b border-ash_gray hover:bg-beige-700">
+                        <td data-label="تھمبنیل" class="py-3 px-4">
+                            <img src="${item.thumbnail || 'https://placehold.co/50x50/eff6e0/124559?text=N/A'}" alt="${item.name}" class="w-12 h-12 rounded-md object-cover">
+                        </td>
+                        <td data-label="موضوع کا نام" class="py-3 px-4">${item.name}</td>
+                        <td data-label="آئیکن" class="py-3 px-4"><i class="${item.icon} text-2xl"></i></td>
+                        <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+                            <button class="as-edit-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" data-type="category"><i class="bi bi-pencil-fill"></i></button>
+                            <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="category"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderQuestions() {
+                const tbody = document.getElementById('ms-questions-table-body');
+                tbody.innerHTML = questions.map(item => `
+                    <tr class="border-b border-ash_gray hover:bg-beige-700">
+                        <td data-label="صارف" class="py-3 px-4">${item.user}</td>
+                        <td data-label="سوال کا خلاصہ" class="py-3 px-4">${item.question.substring(0, 30)}...</td>
+                        <td data-label="کیفیت" class="py-3 px-4"><span class="${item.status === 'pending' ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'} py-1 px-3 rounded-full text-sm">${item.status === 'pending' ? 'زیرِ غور' : 'جواب دیا گیا'}</span></td>
+                        <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+                            ${item.status === 'pending' ? `<button class="as-answer-btn text-green-600 hover:text-green-800" data-id="${item.id}" data-type="question">جواب دیں</button>` : ''}
+                            <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="question"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderUsers() {
+                const tbody = document.getElementById('ms-users-table-body');
+                tbody.innerHTML = users.map(item => `
+                    <tr class="border-b border-ash_gray hover:bg-beige-700">
+                        <td data-label="نام" class="py-3 px-4">${item.name}</td>
+                        <td data-label="ای میل" class="py-3 px-4 font-sans" style="direction: ltr; text-align: right;">${item.email}</td>
+                        <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+                            <button class="as-edit-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" data-type="user"><i class="bi bi-pencil-fill"></i></button>
+                            <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="user"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function renderSubmissions() {
+                const tbody = document.getElementById('ms-submissions-table-body');
+                if (!tbody) return;
+                tbody.innerHTML = submissions.map(item => {
+                    let statusClass, statusText;
+                    switch (item.status) {
+                        case 'pending':
+                            statusClass = 'bg-yellow-200 text-yellow-800';
+                            statusText = 'زیرِ غور';
+                            break;
+                        case 'approved':
+                            statusClass = 'bg-green-200 text-green-800';
+                            statusText = 'منظور شدہ';
+                            break;
+                        case 'rejected':
+                            statusClass = 'bg-red-200 text-red-800';
+                            statusText = 'مسترد';
+                            break;
+                    }
+
+                    return `
+                    <tr class="border-b border-ash_gray hover:bg-beige-700">
+                        <td data-label="عنوان" class="py-3 px-4">${item.title}</td>
+                        <td data-label="مفتی صاحب" class="py-3 px-4">${item.mufti}</td>
+                        <td data-label="تاریخ" class="py-3 px-4 font-sans">${item.date}</td>
+                        <td data-label="کیفیت" class="py-3 px-4"><span class="${statusClass} py-1 px-3 rounded-full text-sm">${statusText}</span></td>
+                        <td data-label="اعمال" class="py-3 px-4 space-x-2 space-x-reverse">
+                            <button class="as-review-btn text-blue-600 hover:text-blue-800" data-id="${item.id}">نظرثانی</button>
+                            <button class="as-delete-btn text-red-600 hover:text-red-800" data-id="${item.id}" data-type="submission"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+            }
+
+            function updateTags(type, keywords) {
+                const container = document.getElementById(`ms-${type}-keywords-container`);
+                const inputField = document.getElementById(`ms-${type}-keywords-input`);
+                const hiddenInput = document.getElementById(`ms-${type}-keywords`);
+
+                container.querySelectorAll('.qalam-tag-pill').forEach(pill => pill.remove());
+
+                function addTag(text) {
+                    const tagText = text.trim();
+                    if (tagText.length < 1) return;
+
+                    const pill = document.createElement('div');
+                    pill.className = 'qalam-tag-pill';
+                    pill.innerHTML = `
+                        <span>${tagText}</span>
+                        <span class="qalam-tag-remove-btn" data-value="${tagText}">&times;</span>
+                    `;
+                    container.insertBefore(pill, inputField);
+                }
+
+                if (keywords) {
+                    keywords.split(',').forEach(k => addTag(k));
+                }
+
+                const tags = Array.from(container.querySelectorAll('.qalam-tag-pill span:first-child')).map(span => span.textContent);
+                hiddenInput.value = tags.join(',');
+            }
+
+            function setupTagInput(type) {
+                const container = document.getElementById(`ms-${type}-keywords-container`);
+                const inputField = document.getElementById(`ms-${type}-keywords-input`);
+                const hiddenInput = document.getElementById(`ms-${type}-keywords`);
+
+                function addTagFromInput() {
+                    const tagText = inputField.value.trim();
+                    if (tagText.length < 1) return;
+
+                    const pill = document.createElement('div');
+                    pill.className = 'qalam-tag-pill';
+                    pill.innerHTML = `
+                        <span>${tagText}</span>
+                        <span class="qalam-tag-remove-btn" data-value="${tagText}">&times;</span>
+                    `;
+                    container.insertBefore(pill, inputField);
+                    inputField.value = '';
+                    updateHiddenInputValue();
+                }
+
+                function updateHiddenInputValue() {
+                    const tags = Array.from(container.querySelectorAll('.qalam-tag-pill span:first-child')).map(span => span.textContent);
+                    hiddenInput.value = tags.join(',');
+                }
+
+                inputField.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        addTagFromInput();
+                    } else if (e.key === 'Backspace' && inputField.value === '') {
+                        const lastTag = container.querySelector('.qalam-tag-pill:last-of-type');
+                        if (lastTag) {
+                            lastTag.remove();
+                            updateHiddenInputValue();
+                        }
+                    }
+                });
+
+                container.addEventListener('click', e => {
+                    if (e.target.classList.contains('qalam-tag-remove-btn')) {
+                        e.target.parentElement.remove();
+                        updateHiddenInputValue();
+                    } else if (e.target === container) {
+                        inputField.focus();
+                    }
+                });
+            }
+
+            function setupSearchableDropdown(inputId, sourceArray, property) {
+                const input = document.getElementById(inputId);
+                const dropdown = input.nextElementSibling;
+                if (!input || !dropdown) return;
+
+                input.addEventListener('input', () => {
+                    const filter = input.value.toLowerCase();
+                    const filteredItems = sourceArray.filter(item => item[property].toLowerCase().includes(filter));
+
+                    dropdown.innerHTML = '';
+                    if (filteredItems.length > 0) {
+                        filteredItems.forEach(item => {
+                            const option = document.createElement('div');
+                            option.className = 'qalam-dropdown-option';
+                            option.textContent = item[property];
+                            option.addEventListener('click', () => {
+                                input.value = item[property];
+                                dropdown.classList.add('hidden');
+                            });
+                            dropdown.appendChild(option);
+                        });
+                        dropdown.classList.remove('hidden');
+                    } else {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!input.parentElement.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+
+            function showPage(pageId) {
+                document.querySelectorAll('.as-admin-page').forEach(page => page.classList.remove('as-active', 'qalam-active'));
+                const targetPage = document.getElementById('ms-page-' + pageId);
+                if (targetPage) {
+                    targetPage.classList.add('as-active', 'qalam-active');
+                    targetPage.querySelectorAll('.qalam-rich-text-editor').forEach(editorDiv => {
+                        initializeQuillEditor(editorDiv.id);
+                    });
+                } else {
+                    document.getElementById('ms-page-dashboard').classList.add('as-active', 'qalam-active');
+                }
+                window.scrollTo(0, 0);
+                if (window.innerWidth < 768 && !sidebar.classList.contains('translate-x-full')) {
+                    toggleSidebar();
+                }
+            }
+
+            function populateFormForEdit(type, id) {
+                setTimeout(() => {
+                    switch (type) {
+                        case 'fatwa': {
+                            const item = fatawa.find(f => f.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-fatwa-form-title').innerText = 'فتویٰ میں ترمیم کریں';
+                            document.getElementById('ms-fatwa-id').value = item.id;
+                            document.getElementById('ms-fatwa-title').value = item.title;
+                            document.getElementById('ms-fatwa-slug').value = item.slug || '';
+                            document.getElementById('ms-fatwa-meta-description').value = item.metaDescription || '';
+                            document.getElementById('ms-fatwa-mufti').value = item.mufti;
+                            if (quillInstances['ms-fatwa-question']) quillInstances['ms-fatwa-question'].root.innerHTML = item.question || '<p><br></p>';
+                            if (quillInstances['ms-fatwa-answer']) quillInstances['ms-fatwa-answer'].root.innerHTML = item.answer || '<p><br></p>';
+                            updateTags('fatwa', item.keywords || '');
+                            break;
+                        }
+                        case 'article': {
+                            const item = articles.find(a => a.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-article-form-title').innerText = 'مضمون میں ترمیم کریں';
+                            document.getElementById('ms-article-id').value = item.id;
+                            document.getElementById('ms-article-title').value = item.title;
+                            document.getElementById('ms-article-slug').value = item.slug || '';
+                            document.getElementById('ms-article-meta-description').value = item.metaDescription || '';
+                            document.getElementById('ms-article-author').value = item.author;
+                            if (quillInstances['ms-article-content']) quillInstances['ms-article-content'].root.innerHTML = item.content || '<p><br></p>';
+                            updateTags('article', item.keywords || '');
+                            break;
+                        }
+                        case 'book': {
+                            const item = books.find(b => b.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-book-form-title').innerText = 'کتاب میں ترمیم کریں';
+                            document.getElementById('ms-book-id').value = item.id;
+                            document.getElementById('ms-book-name').value = item.name;
+                            document.getElementById('ms-book-author').value = item.author;
+                            if (quillInstances['ms-book-description']) quillInstances['ms-book-description'].root.innerHTML = item.description || '<p><br></p>';
+                            break;
+                        }
+                        case 'ulema': {
+                            const item = ulema.find(u => u.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-ulema-form-title').innerText = 'عالم کی پروفائل میں ترمیم کریں';
+                            document.getElementById('ms-ulema-id').value = item.id;
+                            document.getElementById('ms-ulema-name').value = item.name;
+                            document.getElementById('ms-ulema-designation').value = item.designation;
+                            if (quillInstances['ms-ulema-bio']) quillInstances['ms-ulema-bio'].root.innerHTML = item.bio || '<p><br></p>';
+                            break;
+                        }
+                        case 'category': {
+                            const item = categories.find(c => c.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-category-form-title').innerText = 'موضوع میں ترمیم کریں';
+                            document.getElementById('ms-category-id').value = item.id;
+                            document.getElementById('ms-category-name').value = item.name;
+                            document.getElementById('ms-category-slug').value = item.slug || '';
+                            document.getElementById('ms-category-icon').value = item.icon;
+                            if (quillInstances['ms-category-description']) quillInstances['ms-category-description'].root.innerHTML = item.description || '<p><br></p>';
+                            break;
+                        }
+                        case 'question': {
+                            const item = questions.find(q => q.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-question-id').value = item.id;
+                            document.getElementById('ms-question-to-answer-text').innerText = item.question;
+                            document.getElementById('ms-question-to-answer-user').innerText = `صارف: ${item.user}`;
+                            break;
+                        }
+                        case 'user': {
+                            const item = users.find(u => u.id == id);
+                            if (!item) return;
+                            document.getElementById('ms-user-form-title').innerText = 'صارف میں ترمیم کریں';
+                            document.getElementById('ms-user-id').value = item.id;
+                            document.getElementById('ms-user-name').value = item.name;
+                            document.getElementById('ms-user-email').value = item.email;
+                            document.getElementById('ms-user-password').required = false;
+                            document.getElementById('ms-user-confirm-password').required = false;
+                            break;
+                        }
+                    }
+                }, 100);
+            }
+
+            function handleHashChange() {
+                const hash = window.location.hash.substring(1);
+                const [pageId, paramsString] = hash.split('?');
+                const params = new URLSearchParams(paramsString);
+                const editId = params.get('edit');
+                const editType = params.get('type');
+
+                showPage(pageId || 'dashboard');
+
+                if (editId && editType) {
+                    populateFormForEdit(editType, editId);
+                }
+
+                updateBreadcrumbs(pageId || 'dashboard');
+                document.querySelectorAll('.as-admin-nav-link').forEach(link => {
+                    link.classList.toggle('qalam-active', link.getAttribute('href').substring(1).startsWith((pageId || 'dashboard').split('-')[0]));
+                });
+            }
+
+            function resetAndGoTo(pageId) {
+                document.querySelectorAll('form').forEach(form => form.reset());
+                document.querySelectorAll('input[type="hidden"]').forEach(input => input.value = '');
+                document.querySelectorAll('.as-tag-input-container').forEach(container => {
+                    container.querySelectorAll('.qalam-tag-pill').forEach(pill => pill.remove());
+                });
+                Object.values(quillInstances).forEach(quill => {
+                    if (quill) {
+                        quill.setText('');
+                    }
+                });
+                window.location.hash = pageId;
+            }
+
+            function handleFormSubmit(e) {
+                e.preventDefault();
+                const form = e.target;
+                const pageId = getPageIdFromHash();
+                const getContentFromEditor = (id) => quillInstances[id] ? quillInstances[id].root.innerHTML : '';
+
+
+                switch (pageId) {
+                    case 'add-fatwa': {
+                        const fatwaId = document.getElementById('ms-fatwa-id').value;
+                        const fatwaData = {
+                            title: document.getElementById('ms-fatwa-title').value,
+                            slug: document.getElementById('ms-fatwa-slug').value || createSlug(document.getElementById('ms-fatwa-title').value),
+                            keywords: document.getElementById('ms-fatwa-keywords').value,
+                            metaDescription: document.getElementById('ms-fatwa-meta-description').value,
+                            question: getContentFromEditor('ms-fatwa-question'),
+                            answer: getContentFromEditor('ms-fatwa-answer'),
+                            mufti: document.getElementById('ms-fatwa-mufti').value,
+                            date: new Date().toISOString().slice(0, 10)
+                        };
+
+                        if (fatwaId) {
+                            const index = fatawa.findIndex(f => f.id == fatwaId);
+                            fatawa[index] = { ...fatawa[index], ...fatwaData };
+                            addActivity({ class: 'bi bi-pencil', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `فتویٰ "${fatwaData.title}" کو اپ ڈیٹ کیا گیا۔`, 'fatwa', fatwaId);
+                        } else {
+                            fatwaData.id = Date.now();
+                            fatawa.push(fatwaData);
+                            addActivity({ class: 'bi bi-journal-plus', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `ایک نیا فتویٰ "${fatwaData.title}" شامل کیا گیا۔`, 'fatwa', fatwaData.id);
+                        }
+                        renderFatawa();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-fatawa');
+                        break;
+                    }
+                    case 'add-article': {
+                        const articleId = document.getElementById('ms-article-id').value;
+                        const articleData = {
+                            title: document.getElementById('ms-article-title').value,
+                            slug: document.getElementById('ms-article-slug').value || createSlug(document.getElementById('ms-article-title').value),
+                            keywords: document.getElementById('ms-article-keywords').value,
+                            metaDescription: document.getElementById('ms-article-meta-description').value,
+                            author: document.getElementById('ms-article-author').value,
+                            content: getContentFromEditor('ms-article-content'),
+                            date: new Date().toISOString().slice(0, 10)
+                        };
+
+                        if (articleId) {
+                            const index = articles.findIndex(a => a.id == articleId);
+                            articles[index] = { ...articles[index], ...articleData };
+                            addActivity({ class: 'bi bi-pencil', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `مضمون "${articleData.title}" کو اپ ڈیٹ کیا گیا۔`, 'article', articleId);
+                        } else {
+                            articleData.id = Date.now();
+                            articles.push(articleData);
+                            addActivity({ class: 'bi bi-pencil-square', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نیا مضمون "${articleData.title}" شامل کیا گیا۔`, 'article', articleData.id);
+                        }
+                        renderArticles();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-articles');
+                        break;
+                    }
+                    case 'add-book': {
+                        const bookId = document.getElementById('ms-book-id').value;
+                        const bookData = {
+                            name: document.getElementById('ms-book-name').value,
+                            author: document.getElementById('ms-book-author').value,
+                            description: getContentFromEditor('ms-book-description'),
+                        };
+
+                        if (bookId) {
+                            const index = books.findIndex(b => b.id == bookId);
+                            books[index] = { ...books[index], ...bookData };
+                            addActivity({ class: 'bi bi-pencil', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `کتاب "${bookData.name}" کو اپ ڈیٹ کیا گیا۔`, 'book', bookId);
+                        } else {
+                            bookData.id = Date.now();
+                            books.push(bookData);
+                            addActivity({ class: 'bi bi-book', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نئی کتاب "${bookData.name}" شامل کی گئی۔`, 'book', bookData.id);
+                        }
+                        renderBooks();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-books');
+                        break;
+                    }
+                    case 'add-ulema': {
+                        const ulemaId = document.getElementById('ms-ulema-id').value;
+                        const ulemaData = {
+                            name: document.getElementById('ms-ulema-name').value,
+                            designation: document.getElementById('ms-ulema-designation').value,
+                            bio: getContentFromEditor('ms-ulema-bio'),
+                        };
+
+                        if (ulemaId) {
+                            const index = ulema.findIndex(u => u.id == ulemaId);
+                            ulema[index] = { ...ulema[index], ...ulemaData };
+                            addActivity({ class: 'bi bi-pencil', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `عالم "${ulemaData.name}" کی پروفائل اپ ڈیٹ کی گئی۔`, 'ulema', ulemaId);
+                        } else {
+                            ulemaData.id = Date.now();
+                            ulema.push(ulemaData);
+                            addActivity({ class: 'bi bi-person-plus-fill', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نئے عالم "${ulemaData.name}" کو شامل کیا گیا۔`, 'ulema', ulemaData.id);
+                        }
+                        renderUlema();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-ulema');
+                        break;
+                    }
+                    case 'add-category': {
+                        const categoryId = document.getElementById('ms-category-id').value;
+                        const name = document.getElementById('ms-category-name').value;
+                        const categoryData = {
+                            name: name,
+                            slug: document.getElementById('ms-category-slug').value || createSlug(name),
+                            icon: document.getElementById('ms-category-icon').value,
+                            description: getContentFromEditor('ms-category-description'),
+                            thumbnail: 'https://placehold.co/100x100/aec3b0/124559?text=' + name.substring(0, 2)
+                        };
+
+                        if (categoryId) {
+                            const index = categories.findIndex(c => c.id == categoryId);
+                            categories[index] = { ...categories[index], ...categoryData };
+                            addActivity({ class: 'bi bi-pencil', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `موضوع "${categoryData.name}" کو اپ ڈیٹ کیا گیا۔`, 'category', categoryId);
+                        } else {
+                            categoryData.id = Date.now();
+                            categories.push(categoryData);
+                            addActivity({ class: 'bi bi-grid', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نیا موضوع "${categoryData.name}" شامل کیا گیا۔`, 'category', categoryData.id);
+                        }
+                        renderCategories();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-categories');
+                        break;
+                    }
+                    case 'answer-question': {
+                        const questionId = document.getElementById('ms-question-id').value;
+                        const answer = getContentFromEditor('ms-question-answer');
+                        const questionIndex = questions.findIndex(q => q.id == questionId);
+                        if (questionIndex !== -1) {
+                            questions[questionIndex].answer = answer;
+                            questions[questionIndex].status = 'answered';
+                            addActivity({ class: 'bi bi-check-circle-fill', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `صارف "${questions[questionIndex].user}" کے سوال کا جواب دیا گیا۔`, 'question', questionId);
+                        }
+                        renderQuestions();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-questions');
+                        break;
+                    }
+                    case 'add-user': {
+                        const userId = document.getElementById('ms-user-id').value;
+                        const name = document.getElementById('ms-user-name').value;
+                        const email = document.getElementById('ms-user-email').value;
+                        const password = document.getElementById('ms-user-password').value;
+                        const confirmPassword = document.getElementById('ms-user-confirm-password').value;
+
+                        if (userId) {
+                            const index = users.findIndex(u => u.id == userId);
+                            users[index].name = name;
+                            users[index].email = email;
+                            if (password) {
+                                if (password !== confirmPassword) {
+                                    alert('پاس ورڈ مماثل نہیں ہیں۔');
+                                    return;
+                                }
+                                users[index].password = password;
+                            }
+                            addActivity({ class: 'bi bi-person-check-fill', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `صارف "${name}" کو اپ ڈیٹ کیا گیا۔`, 'user', userId);
+                        } else {
+                            if (password !== confirmPassword) {
+                                alert('پاس ورڈ مماثل نہیں ہیں۔');
+                                return;
+                            }
+                            const newId = Date.now();
+                            users.push({ id: newId, name, email, password });
+                            addActivity({ class: 'bi bi-person-plus-fill', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نیا صارف "${name}" شامل کیا گیا۔`, 'user', newId);
+                        }
+                        renderUsers();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-users');
+                        break;
+                    }
+                }
+            }
+
+            mainContent.addEventListener('click', function (e) {
+                const target = e.target.closest('button, a');
+                if (!target) return;
+
+                if (target.matches('.as-edit-btn')) {
+                    window.location.hash = `#add-${target.dataset.type}?edit=${target.dataset.id}&type=${target.dataset.type}`;
+                }
+
+                if (target.matches('.as-delete-btn')) {
+                    if (confirm('کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟')) {
+                        const id = target.dataset.id;
+                        const type = target.dataset.type;
+                        switch (type) {
+                            case 'fatwa': fatawa = fatawa.filter(f => f.id != id); renderFatawa(); break;
+                            case 'article': articles = articles.filter(a => a.id != id); renderArticles(); break;
+                            case 'book': books = books.filter(b => b.id != id); renderBooks(); break;
+                            case 'ulema': ulema = ulema.filter(u => u.id != id); renderUlema(); break;
+                            case 'category': categories = categories.filter(c => c.id != id); renderCategories(); break;
+                            case 'question': questions = questions.filter(q => q.id != id); renderQuestions(); break;
+                            case 'user': users = users.filter(u => u.id != id); renderUsers(); break;
+                            case 'submission': submissions = submissions.filter(s => s.id != id); renderSubmissions(); break;
+                        }
+                        renderDashboardStats();
+                        addActivity({ class: 'bi bi-trash-fill', textColor: 'text-red-600', bgColor: 'bg-red-100' }, `ایک آئٹم حذف کر دیا گیا۔`, null, null);
+                    }
+                }
+
+                if (target.matches('.as-answer-btn')) {
+                    window.location.hash = `#answer-question?edit=${target.dataset.id}&type=question`;
+                }
+
+                if (target.matches('.as-review-btn')) {
+                    const submissionId = target.dataset.id;
+                    const submission = submissions.find(s => s.id == submissionId);
+                    if (submission) {
+                        document.getElementById('ms-review-submission-id').value = submission.id;
+                        document.getElementById('ms-review-submission-title').textContent = submission.title;
+                        document.getElementById('ms-review-submission-mufti').textContent = submission.mufti;
+                        document.getElementById('ms-review-submission-question').innerHTML = submission.question;
+                        document.getElementById('ms-review-submission-answer').innerHTML = submission.answer;
+                        window.location.hash = 'review-submission';
+                    }
+                }
+
+                if (target.id === 'ms-approve-submission-btn') {
+                    const submissionId = document.getElementById('ms-review-submission-id').value;
+                    const index = submissions.findIndex(s => s.id == submissionId);
+                    if (index > -1) {
+                        const submission = submissions[index];
+                        const newFatwa = {
+                            id: Date.now(),
+                            title: submission.title,
+                            question: submission.question,
+                            answer: submission.answer,
+                            mufti: submission.mufti,
+                            date: new Date().toISOString().slice(0, 10),
+                            views: 0
+                        };
+                        fatawa.push(newFatwa);
+                        submissions[index].status = 'approved';
+                        addActivity({ class: 'bi bi-check-circle-fill', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `گذارش "${submission.title}" کو منظور کیا گیا۔`, 'fatwa', newFatwa.id);
+                        renderFatawa();
+                        renderSubmissions();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-submissions');
+                    }
+                }
+
+                if (target.id === 'ms-reject-submission-btn') {
+                    const submissionId = document.getElementById('ms-review-submission-id').value;
+                    const index = submissions.findIndex(s => s.id == submissionId);
+                    if (index > -1) {
+                        submissions[index].status = 'rejected';
+                        addActivity({ class: 'bi bi-x-circle-fill', textColor: 'text-red-600', bgColor: 'bg-red-100' }, `گذارش "${submissions[index].title}" کو مسترد کیا گیا۔`, 'submission', submissionId);
+                        renderSubmissions();
+                        renderDashboardStats();
+                        resetAndGoTo('manage-submissions');
+                    }
+                }
+
+                if (target.matches('.as-add-new-btn')) {
+                    const btnTarget = target.dataset.target;
+                    if (btnTarget === 'add-fatwa') document.getElementById('ms-fatwa-form-title').innerText = 'نیا فتویٰ شامل کریں';
+                    if (btnTarget === 'add-article') document.getElementById('ms-article-form-title').innerText = 'نیا مضمون شامل کریں';
+                    if (btnTarget === 'add-book') document.getElementById('ms-book-form-title').innerText = 'نئی کتاب شامل کریں';
+                    if (btnTarget === 'add-ulema') document.getElementById('ms-ulema-form-title').innerText = 'نئے عالم شامل کریں';
+                    if (btnTarget === 'add-category') document.getElementById('ms-category-form-title').innerText = 'نیا موضوع شامل کریں';
+                    if (btnTarget === 'add-user') {
+                        document.getElementById('ms-user-form-title').innerText = 'نیا صارف شامل کریں';
+                        document.getElementById('ms-user-password').required = true;
+                        document.getElementById('ms-user-confirm-password').required = true;
+                    }
+                    resetAndGoTo(btnTarget);
+                }
+
+                if (target.matches('.as-cancel-btn')) {
+                    resetAndGoTo(target.dataset.target);
+                }
+            });
+
+            mainContent.addEventListener('input', e => {
+                const targetId = e.target.id;
+                if (targetId === 'ms-fatwa-title' || targetId === 'ms-article-title' || targetId === 'ms-category-name') {
+                    const slugInputId = targetId.replace('title', 'slug').replace('name', 'slug');
+                    document.getElementById(slugInputId).value = createSlug(e.target.value);
+                }
+            });
+
+            mainContent.addEventListener('submit', handleFormSubmit);
+
+            function initializeQuillEditor(editorId) {
+                if (quillInstances[editorId] || !document.getElementById(editorId)) {
+                    return;
+                }
+                const Font = Quill.import('formats/font');
+                Font.whitelist = ['jameel', 'lateef', 'scheherazade', 'serif', 'sans-serif'];
+                Quill.register(Font, true);
+
+                const quill = new Quill(`#${editorId}`, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'font': Font.whitelist }],
+                            [{ 'header': [1, 2, 3, false] }],
+                            ['bold', 'italic', 'underline'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            [{ 'align': [] }],
+                            ['link', 'image'],
+                            [{ 'direction': 'rtl' }],
+                            ['clean']
+                        ]
+                    }
+                });
+                quillInstances[editorId] = quill;
+
+                quill.on('text-change', () => {
+                    const plainText = quill.getText();
+                    if (editorId === 'ms-fatwa-answer') {
+                        document.getElementById('ms-fatwa-meta-description').value = plainText.substring(0, 160).replace(/\n/g, ' ');
+                    } else if (editorId === 'ms-article-content') {
+                        document.getElementById('ms-article-meta-description').value = plainText.substring(0, 160).replace(/\n/g, ' ');
+                    }
+                });
+            }
+
+            function initApp() {
+                moment.locale('ur');
+
+                addActivity({ class: 'bi bi-person-plus-fill', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نئے عالم "تاج الشریعہ مفتی اختر رضا خان" کو شامل کیا گیا۔`, 'ulema', 1);
+                addActivity({ class: 'bi bi-grid', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نیا موضوع "عقائد" شامل کیا گیا۔`, 'category', 1);
+                addActivity({ class: 'bi bi-book', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `نئی کتاب "فتاویٰ رضویہ" شامل کی گئی۔`, 'book', 1);
+                addActivity({ class: 'bi bi-pencil', textColor: 'text-yellow-600', bgColor: 'bg-yellow-100' }, `مضمون "عقیدہ ختمِ نبوت اور ہماری ذمہ داریاں" کو اپ ڈیٹ کیا گیا۔`, 'article', 1);
+                addActivity({ class: 'bi bi-patch-question-fill', textColor: 'text-blue-600', bgColor: 'bg-blue-100' }, 'صارف "احمد رضا" کی جانب سے ایک سوال موصول ہوا۔', 'question', 1);
+                addActivity({ class: 'bi bi-journal-plus', textColor: 'text-green-600', bgColor: 'bg-green-100' }, `ایک نیا فتویٰ "حیات النبی ﷺ" شامل کیا گیا۔`, 'fatwa', 1);
+
+                window.addEventListener('hashchange', handleHashChange);
+                handleHashChange();
+
+                setupTagInput('fatwa');
+                setupTagInput('article');
+                setupSearchableDropdown('ms-fatwa-mufti', ulema, 'name');
+                setupSearchableDropdown('ms-article-author', ulema, 'name');
+                setupSearchableDropdown('ms-book-author', ulema, 'name');
+
+                renderDashboardStats();
+                renderFatawa();
+                renderArticles();
+                renderBooks();
+                renderUlema();
+                renderCategories();
+                renderQuestions();
+                renderUsers();
+                renderSubmissions();
+            }
+
+            function loadScriptsAndInit() {
+                const momentScript = document.createElement('script');
+                momentScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js';
+                momentScript.onload = () => {
+                    const momentUrdu = document.createElement('script');
+                    momentUrdu.src = 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/locale/ur.min.js';
+                    momentUrdu.onload = initApp;
+                    document.head.appendChild(momentUrdu);
+                };
+                momentScript.onerror = () => {
+                    console.error("Failed to load moment.js. Some features might not work.");
+                    initApp();
+                };
+                document.head.appendChild(momentScript);
+            }
+
+            loadScriptsAndInit();
+        });
+    </script>
+
+</body>
+
+</html>
