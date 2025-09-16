@@ -1100,6 +1100,326 @@ function escapeHtml(str) {
 
 
 
+// -----------------------------------------Users
+
+// API base URL
+
+const USER_API = "http://localhost:5000/api/users"; 
+
+// Show loader
+function showLoader() {
+  let loader = document.getElementById("loader");
+  if (!loader) {
+    loader = document.createElement("div");
+    loader.id = "loader";
+    loader.className = "fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50";
+    loader.innerHTML = `
+      <div class="w-16 h-16 border-4 border-white border-t-midnight_green rounded-full animate-spin"></div>
+    `;
+    document.body.appendChild(loader);
+  }
+  loader.style.display = "flex";
+}
+
+// Hide loader
+function hideLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "none";
+}
+
+// Delete user by ID
+async function deleteUser(id) {
+  if (!confirm("❓ کیا آپ واقعی اس صارف کو حذف کرنا چاہتے ہیں؟")) {
+    return;
+  }
+
+  showLoader();
+  try {
+    const res = await fetch(`${USER_API}/${id}`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "❌ صارف حذف کرنے میں مسئلہ آیا");
+      return;
+    }
+
+    alert("🗑️ صارف کامیابی سے حذف ہوگیا!");
+    loadUsers(); // refresh table
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    alert("❌ کوئی مسئلہ پیش آگیا۔");
+  } finally {
+    hideLoader();
+  }
+}
+
+// Load all users into the table
+async function loadUsers() {
+  showLoader();
+  try {
+    const res = await fetch(USER_API);
+    const users = await res.json();
+
+    const tbody = document.getElementById("ms-users-table-body");
+    tbody.innerHTML = "";
+
+    users.forEach(user => {
+      const tr = document.createElement("tr");
+      tr.className = "border-b border-gray-200 hover:bg-gray-50";
+
+      tr.innerHTML = `
+        <td class="py-3 px-4">${user.Name}</td>
+        <td class="py-3 px-4">${user.Email || "-"}</td>
+        <td class="py-3 px-4">
+          <button class="text-blue-600 hover:underline">ترمیم</button>
+          <button class="delete-btn text-red-600 hover:underline ml-2" data-id="${user.id}">حذف کریں</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Attach delete event to buttons
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const userId = btn.getAttribute("data-id");
+        deleteUser(userId);
+      });
+    });
+
+  } catch (error) {
+    console.error("Failed to load users:", error);
+    alert("❌ صارفین کو لوڈ کرنے میں مسئلہ آیا");
+  } finally {
+    hideLoader();
+  }
+}
+
+// Handle form submit (add new user)
+document.getElementById("ms-user-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const Name = document.getElementById("ms-user-name").value.trim();
+  const Email = document.getElementById("ms-user-email").value.trim();
+  const Password = document.getElementById("ms-user-password").value.trim();
+  const ConfirmPassword = document.getElementById("ms-user-confirm-password").value.trim();
+
+  if (!Name || !Email || !Password || !ConfirmPassword) {
+    alert("❌ براہ کرم تمام فیلڈز بھریں");
+    return;
+  }
+
+  showLoader();
+  try {
+    const res = await fetch(USER_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ Name, Email, Password, ConfirmPassword })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "❌ صارف شامل کرنے میں مسئلہ پیش آیا");
+      return;
+    }
+
+    alert("✅ صارف کامیابی سے شامل ہوگیا!");
+    e.target.reset(); // clear form
+    loadUsers(); // refresh table
+
+    // Go back to manage-users section (if tabs/SPA)
+    const backBtn = document.querySelector('[data-target="manage-users"]');
+    if (backBtn) backBtn.click();
+
+  } catch (error) {
+    console.error("Error creating user:", error);
+    alert("❌ کوئی مسئلہ پیش آگیا۔");
+  } finally {
+    hideLoader();
+  }
+});
+
+// Load users when page opens
+document.addEventListener("DOMContentLoaded", loadUsers);
+
+
+
+
+// -------------------------------------------------------- Categories
+
+const TAGS_API = "http://localhost:5000/api/tags";
+
+// Show loader
+function showLoader() {
+  let loader = document.getElementById("loader");
+  if (!loader) {
+    loader = document.createElement("div");
+    loader.id = "loader";
+    loader.className =
+      "fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50";
+    loader.innerHTML = `
+      <div class="w-16 h-16 border-4 border-white border-t-midnight_green rounded-full animate-spin"></div>
+    `;
+    document.body.appendChild(loader);
+  }
+  loader.style.display = "flex";
+}
+
+// Hide loader
+function hideLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "none";
+}
+
+// Load all tags into the table
+async function loadTags() {
+  showLoader();
+  try {
+    const res = await fetch(TAGS_API);
+    const tags = await res.json();
+
+    const tbody = document.getElementById("ms-categories-table-body");
+    tbody.innerHTML = "";
+
+    tags.forEach((tag) => {
+      const tr = document.createElement("tr");
+      tr.className = "border-b border-gray-200 hover:bg-gray-50";
+
+      tr.innerHTML = `
+        <td class="py-3 px-4">
+          <img src="${TAGS_API}/${tag.id}/cover" alt="thumbnail" class="w-12 h-12 rounded object-cover"/>
+        </td>
+        <td class="py-3 px-4">${tag.Name}</td>
+        <td class="py-3 px-4"><i class="${tag.iconClass}"></i></td>
+        <td class="py-3 px-4">
+          <button class="text-blue-600 hover:underline" onclick="editTag(${tag.id})">ترمیم</button>
+          <button class="text-red-600 hover:underline ml-2" onclick="deleteTag(${tag.id})">حذف کریں</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (error) {
+    console.error("Failed to load tags:", error);
+    alert("❌ موضوعات کو لوڈ کرنے میں مسئلہ آیا");
+  } finally {
+    hideLoader();
+  }
+}
+
+// Handle form submit (create/update tag)
+document
+  .getElementById("ms-category-form")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("ms-category-id").value;
+    const Name = document.getElementById("ms-category-name").value.trim();
+    const slug = document.getElementById("ms-category-slug").value.trim();
+    const iconClass = document.getElementById("ms-category-icon").value.trim();
+    const AboutTags = document.getElementById("ms-category-description").innerHTML;
+    const thumbnail = document.getElementById("ms-category-thumbnail").files[0];
+
+    if (!Name || !iconClass) {
+      alert("❌ براہ کرم موضوع کا نام اور آئیکن درج کریں");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("Name", Name);
+    formData.append("slug", slug || Name.toLowerCase().replace(/\s+/g, "-"));
+    formData.append("iconClass", iconClass);
+    formData.append("AboutTags", AboutTags);
+    if (thumbnail) formData.append("tagsCover", thumbnail);
+
+    showLoader();
+    try {
+      const res = await fetch(id ? `${TAGS_API}/${id}` : TAGS_API, {
+        method: id ? "PUT" : "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "❌ موضوع محفوظ کرنے میں مسئلہ پیش آیا");
+        return;
+      }
+
+      alert(id ? "✅ موضوع اپ ڈیٹ ہوگیا!" : "✅ موضوع کامیابی سے شامل ہوگیا!");
+      e.target.reset();
+      document.getElementById("ms-category-id").value = ""; // clear hidden id
+      loadTags();
+
+      // Go back to manage-categories section (if tabs/SPA)
+      const backBtn = document.querySelector('[data-target="manage-categories"]');
+      if (backBtn) backBtn.click();
+    } catch (error) {
+      console.error("Error saving tag:", error);
+      alert("❌ کوئی مسئلہ پیش آگیا۔");
+    } finally {
+      hideLoader();
+    }
+  });
+
+// Delete tag
+async function deleteTag(id) {
+  if (!confirm("کیا آپ واقعی اس موضوع کو حذف کرنا چاہتے ہیں؟")) return;
+
+  showLoader();
+  try {
+    const res = await fetch(`${TAGS_API}/${id}`, { method: "DELETE" });
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "❌ موضوع حذف کرنے میں مسئلہ پیش آیا");
+      return;
+    }
+
+    alert("✅ موضوع کامیابی سے حذف ہوگیا!");
+    loadTags();
+  } catch (error) {
+    console.error("Error deleting tag:", error);
+    alert("❌ کوئی مسئلہ پیش آگیا۔");
+  } finally {
+    hideLoader();
+  }
+}
+
+// (Optional) Edit handler to load existing tag into form
+async function editTag(id) {
+  showLoader();
+  try {
+    const res = await fetch(`${TAGS_API}/${id}`);
+    const tag = await res.json();
+
+    if (!res.ok) {
+      alert(tag.error || "❌ موضوع لوڈ کرنے میں مسئلہ پیش آیا");
+      return;
+    }
+
+    document.getElementById("ms-category-id").value = tag.id;
+    document.getElementById("ms-category-name").value = tag.Name;
+    document.getElementById("ms-category-slug").value = tag.slug;
+    document.getElementById("ms-category-icon").value = tag.iconClass;
+    document.getElementById("ms-category-description").innerHTML =
+      tag.AboutTags || "";
+
+    // Switch to form tab
+    const addBtn = document.querySelector('[data-target="add-category"]');
+    if (addBtn) addBtn.click();
+  } catch (error) {
+    console.error("Error loading tag:", error);
+    alert("❌ کوئی مسئلہ پیش آگیا۔");
+  } finally {
+    hideLoader();
+  }
+}
+
+// Load tags when page opens
+document.addEventListener("DOMContentLoaded", loadTags);
 
 
 
