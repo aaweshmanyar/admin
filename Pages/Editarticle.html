@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ایڈمن پینل - مسائل ورلڈ</title>
+  <meta name="description" content="مسائل ورلڈ کے لیے ایڈمن پینل - فتاویٰ، مضامین، کتابیں، اور بہت کچھ کا نظم کریں۔">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jameel+Noori+Nastaleeq&family=Lateef&family=Scheherazade+New&display=swap" rel="stylesheet">
+
+  <!-- Quill CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+  <style>
+    @font-face {
+      font-family: 'NaatFont';
+      src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body { font-family: 'NaatFont', serif; font-size: 80%; overscroll-behavior: none; background:#f3f4f6; padding:18px; }
+    .card{ margin: 20px auto; max-width: 1100px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .qalam-tag-pill{ background-color:#124559;color:white;padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;margin:4px 6px;gap:8px; font-size:14px; }
+    .qalam-tag-remove-btn{ cursor:pointer; font-weight:bold; border:0; background:transparent; color:#ffd9d9; padding:0 4px; }
+    .ql-editor{ min-height:250px; font-family:'Jameel Noori+Nastaleeq',serif; font-size:18px; direction:rtl; text-align:right }
+    .hidden{ display:none !important }
+    /* ensure container keeps input at end and wraps pills */
+    .as-tag-input-container{ min-height:48px; display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px; }
+    .as-tag-input-field{ min-width:120px; border:0; outline:0; padding:8px 4px; background:transparent; font-size:16px; color:#0f172a }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <!-- <h1 class="text-3xl font-bold" style="margin-bottom:18px">مضمون ترمیم کریں</h1> -->
+
+    <div id="ms-page-add-article" class="as-admin-page qalam-admin-page qalam-active">
+      <div class="flex justify-between items-center mb-8">
+        <h1 id="ms-article-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">نیا مضمون شامل کریں</h1>
+        <a href="#manage-articles" class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+          <i class="bi bi-arrow-right ml-2"></i>فہرست پر واپس جائیں
+        </a>
+      </div>
+
+      <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+        <form id="ms-article-form" class="space-y-6" enctype="multipart/form-data">
+          <input type="hidden" id="ms-article-id">
+
+          <div>
+            <label for="ms-article-title" class="block text-xl font-bold text-midnight_green mb-2">عنوان</label>
+            <input type="text" id="ms-article-title" class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg text-rich_black text-lg" required>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="ms-article-slug" class="block text-xl font-bold text-midnight_green mb-2">URL سلگ</label>
+              <input type="text" id="ms-article-slug" class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg text-rich_black text-lg font-sans" style="direction:ltr" placeholder="auto-generated-slug">
+            </div>
+
+            <div>
+              <label for="ms-article-keywords-input" class="block text-xl font-bold text-midnight_green mb-2">کلیدی الفاظ (Tags)</label>
+              <div class="relative">
+                <div id="ms-article-keywords-container" class="as-tag-input-container w-full border-2 border-ash_gray rounded-lg">
+                  <input type="text" id="ms-article-keywords-input" class="as-tag-input-field" placeholder="ٹیگ شامل کریں... (Enter یا , دبائیں)">
+                </div>
+                <input type="hidden" id="ms-article-keywords" name="tags" value="">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="ms-article-meta-description" class="block text-xl font-bold text-midnight_green mb-2">SEO تفصیل</label>
+            <textarea id="ms-article-meta-description" rows="3" class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg text-rich_black text-lg" placeholder="مضمون کے بارے میں 150-160 حروف کی مختصر تفصیل"></textarea>
+          </div>
+
+          <div>
+            <label for="ms-article-author" class="block text-xl font-bold text-midnight_green mb-2">مصنف</label>
+            <input type="text" id="ms-article-author" class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg text-rich_black text-lg" required autocomplete="off">
+          </div>
+
+          <div>
+            <label for="ms-article-image" class="block text-xl font-bold text-midnight_green mb-2">نمایاں تصویر</label>
+            <input type="file" id="ms-article-image" accept="image/*" class="w-full text-lg">
+            <!-- preview -->
+            <img id="ms-article-image-preview" class="mt-2 max-h-40 rounded-md hidden" alt="Cover preview">
+            <input type="hidden" id="ms-article-existing-image" value="">
+          </div>
+
+          <div>
+            <label for="ms-article-content" class="block text-xl font-bold text-midnight_green mb-2">مضمون کا متن</label>
+            <div id="ms-article-content" class="qalam-rich-text-editor" style="min-height:200px;border:1px solid #e5e7eb;border-radius:.5rem;padding:12px;"></div>
+          </div>
+
+          <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+            <button type="submit" id="ms-article-submit" class="w-full md:w-auto bg-gray-300  text-black py-3 px-8 rounded-lg text-lg">اپڈیٹ کریں</button>
+            <button type="button" id="cancel-btn-outer" class="as-cancel-btn w-full md:w-auto bg-gray-300l text-rich_black py-3 px-8 rounded-lg text-lg">منسوخ کریں</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quill JS -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+  <script>
+    // ----- Basic globals and DOM refs -----
+    let quill = null;
+    let useQuill = false;
+    const editorContainer = document.getElementById('ms-article-content');
+
+    const tagsContainer = document.getElementById('ms-article-keywords-container');
+    const tagsInput = document.getElementById('ms-article-keywords-input');
+    const hiddenTags = document.getElementById('ms-article-keywords');
+
+    const imageInput = document.getElementById('ms-article-image');
+    const imagePreview = document.getElementById('ms-article-image-preview');
+    const existingImageInput = document.getElementById('ms-article-existing-image');
+
+    let currentTags = []; // canonical representation (array of strings)
+
+    // ----- Utilities -----
+    function isBlank(v){ return v === null || v === undefined || (typeof v === 'string' && v.trim() === ''); }
+
+    function normalizeTag(t){
+      if (t === null || t === undefined) return '';
+      return String(t).trim();
+    }
+
+    // Parse tags from API response - supports many shapes:
+    // - array of strings
+    // - JSON string '["a","b"]'
+    // - comma separated "a,b"
+    // - object (values used)
+    // - string "null" or null -> empty
+    function parseTagsFromApi(data){
+      if (!data || typeof data !== 'object') return [];
+
+      const candidateKeys = ['tags','Tags','keywords','Keywords','tag','tag_list','metaKeywords','seo_tags','tags_json','TagsArray','tagArray'];
+      for (const key of candidateKeys){
+        if (!(key in data)) continue;
+        const raw = data[key];
+        if (raw === null || raw === undefined) continue;
+
+        // array
+        if (Array.isArray(raw)){
+          return raw.map(normalizeTag).filter(Boolean);
+        }
+
+        // object (map), use values
+        if (typeof raw === 'object'){
+          try {
+            return Object.values(raw).map(normalizeTag).filter(Boolean);
+          } catch(e){}
+        }
+
+        // string cases
+        if (typeof raw === 'string'){
+          const s = raw.trim();
+          if (!s) continue;
+          if (s.toLowerCase() === 'null') continue;
+
+          // JSON encoded like '["a","b"]' or '{"0":"a","1":"b"}'
+          if ((s.startsWith('[') && s.endsWith(']')) || (s.startsWith('{') && s.endsWith('}'))){
+            try {
+              const parsed = JSON.parse(s);
+              if (Array.isArray(parsed)) return parsed.map(normalizeTag).filter(Boolean);
+              if (typeof parsed === 'object') return Object.values(parsed).map(normalizeTag).filter(Boolean);
+            } catch(e){
+              // fall through to comma-split
+            }
+          }
+
+          // comma-separated
+          return s.split(',').map(normalizeTag).filter(Boolean);
+        }
+      }
+
+      // fallback: maybe server used 'ArticleTags' or similar
+      if ('ArticleTags' in data && Array.isArray(data.ArticleTags)) return data.ArticleTags.map(normalizeTag).filter(Boolean);
+
+      // nothing found
+      return [];
+    }
+
+    // ----- Tag UI (render + add + remove) -----
+    function renderTags(arr){
+      if (!tagsContainer) return;
+      // remove existing tag pills
+      [...tagsContainer.querySelectorAll('.qalam-tag-pill')].forEach(n => n.remove());
+
+      // ensure tagsInput exists and will be last visible item
+      const inputElement = tagsInput;
+      arr.forEach(tag => {
+        const pill = document.createElement('span');
+        pill.className = 'qalam-tag-pill';
+        pill.setAttribute('role','listitem');
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'qalam-tag-remove-btn';
+        removeBtn.setAttribute('aria-label','ہٹائیں');
+        removeBtn.textContent = '✕';
+        removeBtn.addEventListener('click', () => {
+          currentTags = currentTags.filter(t => t !== tag);
+          renderTags(currentTags);
+          // keep focus for quick entry
+          if (inputElement) inputElement.focus();
+        });
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = tag;
+
+        // For RTL: remove button left of text looks nicer; DOM order removeBtn then textSpan
+        pill.appendChild(removeBtn);
+        pill.appendChild(textSpan);
+
+        // insert before input
+        tagsContainer.insertBefore(pill, inputElement);
+      });
+
+      // set hidden value as JSON so backend can parse easily
+      if (hiddenTags) hiddenTags.value = JSON.stringify(arr);
+
+      // small accessibility/data attribute
+      tagsContainer.setAttribute('data-tags-count', String(arr.length || 0));
+    }
+
+    function addTag(tag){
+      if (!tag) return;
+      const t = normalizeTag(tag);
+      if (!t) return;
+      if (!currentTags.includes(t)){
+        currentTags.push(t);
+        renderTags(currentTags);
+      }
+    }
+
+    // ----- Event wiring for tag input -----
+    if (tagsInput && tagsContainer){
+      tagsInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ','){
+          e.preventDefault();
+          const val = tagsInput.value;
+          if (val && val.trim()) addTag(val);
+          tagsInput.value = '';
+        } else if (e.key === 'Backspace' && tagsInput.value === ''){
+          // remove last
+          currentTags.pop();
+          renderTags(currentTags);
+        }
+      });
+
+      // clicking on container focuses input
+      tagsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('qalam-tag-remove-btn')) return; // handled above
+        tagsInput.focus();
+      });
+    }
+
+    // ----- Image preview -----
+    if (imageInput && imagePreview){
+      imageInput.addEventListener('change', () => {
+        const file = imageInput.files && imageInput.files[0];
+        if (!file){
+          imagePreview.classList.add('hidden');
+          imagePreview.src = '';
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        imagePreview.src = url;
+        imagePreview.classList.remove('hidden');
+      });
+    }
+
+    // ----- Quill init with safe fallback -----
+    document.addEventListener('DOMContentLoaded', () => {
+      try{
+        if (!window.Quill) throw new Error('Quill not loaded');
+        quill = new Quill('#ms-article-content', {
+          theme: 'snow',
+          modules: {
+            toolbar: [
+              [{ 'font': [] }, { 'size': [] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ 'color': [] }, { 'background': [] }],
+              [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block'],
+              [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+              [{ 'direction': 'rtl' }, { 'align': [] }],
+              ['link', 'image', 'video'], ['clean']
+            ]
+          }
+        });
+        useQuill = true;
+      } catch(err){
+        console.warn('Quill init failed, falling back to contentEditable:', err);
+        if (editorContainer) {
+          editorContainer.setAttribute('contenteditable', 'true');
+          editorContainer.classList.add('ql-editor');
+        }
+        useQuill = false;
+      }
+
+      // After editor ready, load article
+      loadArticle();
+    });
+
+    // ----- Helper to extract ql-editor inner HTML (if API returned full quill wrapper) -----
+    function extractEditorInner(htmlString){
+      if (!htmlString || typeof htmlString !== 'string') return '';
+      try {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = htmlString;
+        const ql = tmp.querySelector('.ql-editor');
+        if (ql) return ql.innerHTML;
+        return htmlString;
+      } catch (e){
+        return htmlString;
+      }
+    }
+
+    // ----- Load article prefill ----- 
+    async function getQueryParam(name){
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    async function loadArticle(){
+      const id = await getQueryParam('id');
+      if (!id){
+        console.warn('No id in URL; edit page expects ?id=ID');
+        return;
+      }
+      document.getElementById('ms-article-id').value = id;
+
+      try{
+        const res = await fetch(`http://localhost:5000/api/article/${id}`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+
+        // Map fields robustly (support different key casing)
+        document.getElementById('ms-article-title').value = data.Title || data.title || '';
+        document.getElementById('ms-article-slug').value = data.slug || data.Slug || '';
+        document.getElementById('ms-article-meta-description').value = data.seo || data.metaDescription || data.seoDescription || '';
+        document.getElementById('ms-article-author').value = data.writer || data.author || '';
+
+        // Tags: parse via utility above
+        currentTags = parseTagsFromApi(data) || [];
+        renderTags(currentTags);
+
+        // Image: prefer explicit cover image property names
+        const coverCandidates = ['coverImage','cover_image','image','image_url','imageUrl','cover'];
+        let setImage = '';
+        for (const k of coverCandidates){
+          if (k in data && typeof data[k] === 'string' && data[k].trim()){
+            setImage = data[k].trim();
+            break;
+          }
+        }
+        if (setImage){
+          existingImageInput.value = setImage;
+          if (imagePreview){
+            imagePreview.src = setImage;
+            imagePreview.classList.remove('hidden');
+          }
+        } else {
+          // optional: attempt HEAD check if your API supports /:id/image
+          const tryImageUrl = `http://localhost:5000/api/article/${id}/image`;
+          try {
+            const chk = await fetch(tryImageUrl, { method: 'HEAD' });
+            if (chk.ok && imagePreview){
+              existingImageInput.value = tryImageUrl;
+              imagePreview.src = tryImageUrl;
+              imagePreview.classList.remove('hidden');
+            } else {
+              // no image
+            }
+          } catch(e){
+            // ignore
+          }
+        }
+
+        // Content
+        const rawContent = data.ArticleText || data.content || data.body || '';
+        const html = extractEditorInner(rawContent);
+        if (useQuill && quill) {
+          quill.root.innerHTML = html || '';
+        } else if (editorContainer) {
+          editorContainer.innerHTML = html || '';
+        }
+
+        // Set form title to edit mode
+        const formTitle = document.getElementById('ms-article-form-title');
+        if (formTitle) formTitle.textContent = 'مضمون اپڈیٹ کریں';
+      } catch (err) {
+        console.error('loadArticle error:', err);
+        alert('مضمون لوڈ کرنے میں مسئلہ ہوا: ' + (err.message || 'Unknown'));
+      }
+    }
+
+    // ----- Submit handler (update) -----
+    document.getElementById('ms-article-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('ms-article-id').value;
+      if (!id) { alert('Article id missing'); return; }
+
+      const title = document.getElementById('ms-article-title').value.trim();
+      const slug = document.getElementById('ms-article-slug').value.trim();
+      const seo = document.getElementById('ms-article-meta-description').value.trim();
+      const writer = document.getElementById('ms-article-author').value.trim();
+
+      let contentHtml = '';
+      if (useQuill && quill) contentHtml = quill.root.innerHTML;
+      else contentHtml = editorContainer.innerHTML;
+
+      // Ensure tags are the canonical array
+      // hiddenTags contains JSON string; but use currentTags (already canonical)
+      const tagsToSend = currentTags.slice();
+
+      const fd = new FormData();
+      fd.append('Title', title);
+      fd.append('slug', slug);
+      fd.append('seo', seo);
+      fd.append('writer', writer);
+      fd.append('tags', JSON.stringify(tagsToSend)); // backend should JSON.parse
+      fd.append('ArticleText', contentHtml);
+
+      // image
+      if (imageInput.files && imageInput.files[0]) {
+        fd.append('coverImage', imageInput.files[0]); // match your multer naming
+      } else if (existingImageInput.value) {
+        fd.append('existingCoverImage', existingImageInput.value);
+      }
+
+      try{
+        const resp = await fetch(`http://localhost:5000/api/article/${id}`, {
+          method: 'PUT',
+          body: fd
+        });
+        if (!resp.ok) {
+          const body = await resp.text().catch(()=>null);
+          throw new Error(body || `HTTP ${resp.status}`);
+        }
+        alert('مضمون کامیابی سے اپ ڈیٹ ہو گیا');
+        // redirect back to list
+        window.location.href = '../index.html#manage-articles';
+      } catch (err) {
+        console.error('update error:', err);
+        alert('اپ ڈیٹ میں خرابی: ' + (err.message || 'Unknown'));
+      }
+    });
+
+    // Cancel/back
+    document.getElementById('cancel-btn-outer').addEventListener('click', () => {
+      window.location.href = '../index.html#manage-articles';
+    });
+  </script>
+</body>
+
+</html>

@@ -226,8 +226,380 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+// document.addEventListener("DOMContentLoaded", () => {
+//   const apiBase = "http://localhost:5000/api/article"; // ensure server uses this route
+
+//   // DOM references
+//   const tableBody = document.getElementById("ms-articles-table-body");
+//   const articleForm = document.getElementById("ms-article-form");
+//   const articleIdInput = document.getElementById("ms-article-id");
+//   const titleInput = document.getElementById("ms-article-title");
+//   const slugInput = document.getElementById("ms-article-slug");
+//   const tagsContainer = document.getElementById("ms-article-keywords-container");
+//   const tagsVisibleInput = document.getElementById("ms-article-keywords-input");
+//   const tagsHiddenInput = document.getElementById("ms-article-keywords"); // name="tags"
+//   const seoInput = document.getElementById("ms-article-meta-description");
+//   const authorInput = document.getElementById("ms-article-author");
+//   const imageInput = document.getElementById("ms-article-image");
+//   const imagePreview = document.getElementById("ms-article-image-preview");
+//   const contentContainer = document.getElementById("ms-article-content");
+//   const formTitle = document.getElementById("ms-article-form-title");
+//   const submitButton = document.getElementById("ms-article-submit");
+
+//   // Loader helpers
+//   function showLoader(btn) {
+//     if (!btn) return;
+//     btn.dataset.oldText = btn.innerHTML;
+//     btn.disabled = true;
+//     btn.innerHTML = `<span class="animate-spin mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 inline-block"></span> Processing...`;
+//   }
+//   function hideLoader(btn) {
+//     if (!btn) return;
+//     btn.disabled = false;
+//     btn.innerHTML = btn.dataset.oldText || "Submit";
+//   }
+
+//   // Initialize Quill if available, otherwise make container editable
+//   let quillInstance = null;
+//   if (window.Quill) {
+//     try {
+//       quillInstance = new Quill("#ms-article-content", {
+//         theme: "snow",
+//         modules: {
+//           toolbar: [
+//             [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+//             ['bold', 'italic', 'underline', 'strike'],
+//             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+//             [{ 'script': 'sub'}, { 'script': 'super' }],
+//             [{ 'indent': '-1'}, { 'indent': '+1' }],
+//             [{ 'direction': 'rtl' }],
+//             [{ 'color': [] }, { 'background': [] }],
+//             [{ 'font': [] }],
+//             [{ 'align': [] }],
+//             ['link', 'image', 'video'],
+//             ['clean']
+//           ]
+//         }
+//       });
+//       // store in a global map to be accessible elsewhere if needed
+//       window.quillInstances = window.quillInstances || {};
+//       window.quillInstances["ms-article-content"] = quillInstance;
+//     } catch (e) {
+//       console.warn("Quill init failed, falling back to contentEditable:", e);
+//       if (contentContainer) contentContainer.contentEditable = true;
+//     }
+//   } else {
+//     // no Quill loaded — make content area editable
+//     if (contentContainer) contentContainer.contentEditable = true;
+//   }
+
+//   // Image preview handler
+//   if (imageInput && imagePreview) {
+//     imageInput.addEventListener("change", function() {
+//       const file = this.files[0];
+//       if (file) {
+//         const reader = new FileReader();
+//         reader.onload = function(e) {
+//           imagePreview.src = e.target.result;
+//           imagePreview.classList.remove("hidden");
+//         };
+//         reader.readAsDataURL(file);
+//       } else {
+//         imagePreview.src = "";
+//         imagePreview.classList.add("hidden");
+//       }
+//     });
+//   }
+
+//   // Tag UI functions (pills)
+//   function addTagPill(text) {
+//     if (!tagsContainer || !text) return;
+//     const pill = document.createElement("div");
+//     pill.className = "qalam-tag-pill inline-flex items-center gap-2 px-2 py-1 rounded bg-gray-100";
+//     pill.innerHTML = `<span class="tag-text">${escapeHtml(text)}</span><button type="button" class="qalam-tag-remove-btn ml-2 text-red-500" title="Remove tag">&times;</button>`;
+//     tagsContainer.insertBefore(pill, tagsVisibleInput);
+//     updateTagsHidden();
+//   }
+
+//   function updateTagsHidden() {
+//     if (!tagsContainer || !tagsHiddenInput) return;
+//     const tags = Array.from(tagsContainer.querySelectorAll(".qalam-tag-pill .tag-text")).map(el => el.textContent.trim()).filter(Boolean);
+//     tagsHiddenInput.value = tags.join(",");
+//   }
+
+//   // wire tag input behavior
+//   if (tagsVisibleInput && tagsContainer) {
+//     tagsVisibleInput.addEventListener("keydown", (e) => {
+//       if (e.key === "Enter" || e.key === ",") {
+//         e.preventDefault();
+//         const text = tagsVisibleInput.value.trim();
+//         if (text) addTagPill(text);
+//         tagsVisibleInput.value = "";
+//       } else if (e.key === "Backspace" && tagsVisibleInput.value === "") {
+//         const last = tagsContainer.querySelector(".qalam-tag-pill:last-of-type");
+//         if (last) { last.remove(); updateTagsHidden(); }
+//       }
+//     });
+
+//     tagsContainer.addEventListener("click", (e) => {
+//       if (e.target.classList.contains("qalam-tag-remove-btn")) {
+//         e.target.closest(".qalam-tag-pill").remove();
+//         updateTagsHidden();
+//       } else {
+//         tagsVisibleInput.focus();
+//       }
+//     });
+//   }
+
+//   // helper to escape
+//   function escapeHtml(s) {
+//     if (!s) return "";
+//     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+//   }
+
+//   // --- Load articles list into table ---
+ 
+
+//   // Helper to extract .ql-editor innerHTML from server value (your server returns full wrapper)
+//   function extractEditorInner(htmlString) {
+//     if (!htmlString) return "";
+//     const tmp = document.createElement("div");
+//     tmp.innerHTML = htmlString;
+//     const ql = tmp.querySelector(".ql-editor");
+//     if (ql) return ql.innerHTML;
+//     return tmp.innerHTML;
+//   }
+
+//   // Reset form for new article
+//   function resetForm() {
+//     if (articleForm) articleForm.reset();
+//     if (articleIdInput) articleIdInput.value = "";
+//     if (tagsContainer) {
+//       tagsContainer.querySelectorAll(".qalam-tag-pill").forEach(p => p.remove());
+//     }
+//     if (tagsVisibleInput) tagsVisibleInput.value = "";
+//     updateTagsHidden();
+    
+//     if (quillInstance) {
+//       quillInstance.root.innerHTML = "";
+//     } else if (contentContainer) {
+//       contentContainer.innerHTML = "";
+//     }
+    
+//     if (imagePreview) {
+//       imagePreview.src = "";
+//       imagePreview.classList.add("hidden");
+//     }
+    
+//     if (formTitle) formTitle.textContent = "نیا مضمون شامل کریں";
+//   }
+
+//   // --- Prefill form for edit ---
+//   async function handleEditArticle(id) {
+//     if (!id) return alert("Invalid article id");
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/article/${id}`);
+//       if (!res.ok) throw new Error(`Server returned ${res.status}`);
+//       const article = await res.json();
+//       console.log("Article for edit:", article);
+//       console.log("Testing it",  article.slug)
+
+//       // set scalars
+//       if (articleIdInput) articleIdInput.value = article.id ?? article.ID ?? article.Id ?? "";
+//       if (titleInput) titleInput.value = article.Title;
+//       if (slugInput) slugInput.value = article.slug;
+//       if (seoInput) seoInput.value = article.seo ?? article.SEO ?? article.meta_description ?? "";
+//       if (authorInput) authorInput.value = article.writer ?? article.author ?? article.Writer ?? "";
+
+//       // tags (may be null)
+//       const tagsCsv = article.tags ?? article.Tags ?? article.keywords ?? "";
+//       // clear existing pills
+//       if (tagsContainer) {
+//         tagsContainer.querySelectorAll(".qalam-tag-pill").forEach(p => p.remove());
+//         if (tagsCsv) {
+//           tagsCsv.split(",").map(s => s.trim()).filter(Boolean).forEach(t => addTagPill(t));
+//         }
+//         // ensure hidden field updated
+//         updateTagsHidden();
+//       }
+//       if (tagsVisibleInput) tagsVisibleInput.value = "";
+
+//       // ArticleText: server returns Quill wrapper — extract inner
+//       const raw = article.ArticleText ?? article.articleText ?? article.content ?? "";
+//       const html = extractEditorInner(raw);
+//       if (quillInstance && typeof quillInstance.clipboard?.dangerouslyPasteHTML === "function") {
+//         // paste into quill
+//         quillInstance.clipboard.dangerouslyPasteHTML(html || "");
+//       } else if (contentContainer) {
+//         contentContainer.innerHTML = html || "";
+//       }
+
+//       // image preview
+//       if (imagePreview) {
+//         imagePreview.classList.remove("hidden");
+//         imagePreview.src = "";
+//         try {
+//           const imgRes = await fetch(`${apiBase}/${id}/image`);
+//           if (imgRes.ok) {
+//             const blob = await imgRes.blob();
+//             imagePreview.src = URL.createObjectURL(blob);
+//             imagePreview.classList.remove("hidden");
+//           } else if (article.image_url) {
+//             // اگر API میں image_url موجود ہے تو اسے استعمال کریں
+//             imagePreview.src = article.image_url;
+//             imagePreview.classList.remove("hidden");
+//           } else {
+//             imagePreview.src = "";
+//             imagePreview.classList.add("hidden");
+//           }
+//         } catch (e) {
+//           console.warn("image preview failed", e);
+//           if (article.image_url) {
+//             imagePreview.src = article.image_url;
+//             imagePreview.classList.remove("hidden");
+//           } else {
+//             imagePreview.src = "";
+//             imagePreview.classList.add("hidden");
+//           }
+//         }
+//       }
+
+//       // UI: change title and open add panel if you have a toggle
+//       if (formTitle) formTitle.textContent = "مضمون اپڈیٹ کریں";
+//       const openBtn = document.querySelector('[data-target="add-article"]');
+//       if (openBtn) openBtn.click();
+//       if (titleInput) titleInput.focus();
+//     } catch (err) {
+//       console.error("handleEditArticle error:", err);
+//       alert("Failed to load article for edit. Check console.");
+//     }
+//   }
+
+//   // --- Submit (create or update) ---
+//   if (articleForm) {
+//     articleForm.addEventListener("submit", async (e) => {
+//       e.preventDefault();
+//       showLoader(submitButton);
+
+//       try {
+//         const fd = new FormData();
+//         const titleVal = titleInput ? titleInput.value.trim() : "";
+//         const slugVal = slugInput ? slugInput.value.trim() : (titleVal.toLowerCase().replace(/\s+/g,"-"));
+//         const tagsVal = tagsHiddenInput ? tagsHiddenInput.value : "";
+//         const seoVal = seoInput ? seoInput.value : "";
+//         const writerVal = authorInput ? authorInput.value : "";
+        
+//         let articleHtml = "";
+//         if (quillInstance && quillInstance.root) {
+//           articleHtml = quillInstance.root.innerHTML;
+//         } else if (contentContainer) {
+//           articleHtml = contentContainer.innerHTML;
+//         }
+
+//         fd.append("Title", titleVal);
+//         fd.append("slug", slugVal);
+//         fd.append("tags", tagsVal);
+//         fd.append("seo", seoVal);
+//         fd.append("writer", writerVal);
+//         fd.append("ArticleText", articleHtml);
+
+//         if (imageInput && imageInput.files && imageInput.files[0]) {
+//           fd.append("coverImage", imageInput.files[0]);
+//         }
+
+//         const id = articleIdInput ? articleIdInput.value : "";
+//         const method = id ? "PUT" : "POST";
+//         const url = id ? `${apiBase}/${id}` : apiBase;
+
+//         const res = await fetch(url, { method, body: fd });
+//         if (!res.ok) {
+//           const errBody = await res.json().catch(()=>({}));
+//           throw new Error(errBody.error || `HTTP ${res.status}`);
+//         }
+//         const result = await res.json();
+//         alert(id ? "✅ Article updated!" : "✅ Article created!");
+        
+//         // reset form
+//         resetForm();
+        
+//         // reload table
+//         loadArticles();
+        
+//         // return to list view if you have a control
+//         const backBtn = document.querySelector('[data-target="manage-articles"]');
+//         if (backBtn) backBtn.click();
+//       } catch (err) {
+//         console.error("submit error:", err);
+//         alert("❌ Error saving article. See console.");
+//       } finally {
+//         hideLoader(submitButton);
+//       }
+//     });
+//   }
+
+  // --- Table click for edit / delete ---
+//   if (tableBody) {
+//     tableBody.addEventListener("click", async (ev) => {
+//       const btn = ev.target.closest("button");
+//       if (!btn) return;
+//       const id = btn.dataset.id;
+//       const action = btn.dataset.action;
+//       if (action === "edit") {
+//         window.location.href = `/Pages/Editcategory.html?id=${id}`;
+//       } else if (action === "delete") {
+//         if (!confirm("کیا آپ واقعی اس مضمون کو حذف کرنا چاہتے ہیں؟")) return;
+//         showLoader(btn);
+//         try {
+//           const res = await fetch(`${apiBase}/${id}`, { method: "DELETE" });
+//           if (!res.ok) {
+//             const err = await res.json().catch(()=>({}));
+//             throw new Error(err.error || `HTTP ${res.status}`);
+//           }
+//           alert("🗑️ Article deleted");
+//           loadArticles();
+//         } catch (err) {
+//           console.error("delete error:", err);
+//           alert("❌ Error deleting article");
+//         } finally {
+//           hideLoader(btn);
+//         }
+//       }
+//     });
+//   }
+
+//   // Cancel button handler
+//   const cancelButton = document.querySelector('.as-cancel-btn');
+//   if (cancelButton) {
+//     cancelButton.addEventListener('click', () => {
+//       resetForm();
+//     });
+//   }
+
+//   // Auto-generate slug from title
+//   if (titleInput && slugInput) {
+//     titleInput.addEventListener('blur', () => {
+//       if (!slugInput.value) {
+//         const title = titleInput.value;
+//         const generatedSlug = title.toLowerCase()
+//           .replace(/\s+/g, '-')
+//           .replace(/[^\w\-]+/g, '')
+//           .replace(/\-\-+/g, '-')
+//           .replace(/^-+/, '')
+//           .replace(/-+$/, '');
+//         slugInput.value = generatedSlug;
+//       }
+//     });
+//   }
+
+//   // initial
+//   loadArticles();
+// });
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
-  const apiBase = "http://localhost:5000/api/article"; // ensure server uses this route
+  const apiBase = "http://localhost:5000/api/article"; // API endpoint
 
   // DOM references
   const tableBody = document.getElementById("ms-articles-table-body");
@@ -235,9 +607,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const articleIdInput = document.getElementById("ms-article-id");
   const titleInput = document.getElementById("ms-article-title");
   const slugInput = document.getElementById("ms-article-slug");
-  const tagsContainer = document.getElementById("ms-article-keywords-container");
-  const tagsVisibleInput = document.getElementById("ms-article-keywords-input");
-  const tagsHiddenInput = document.getElementById("ms-article-keywords"); // name="tags"
+  const tagsInput = document.getElementById("ms-article-keywords"); // ✅ single field for tags
   const seoInput = document.getElementById("ms-article-meta-description");
   const authorInput = document.getElementById("ms-article-author");
   const imageInput = document.getElementById("ms-article-image");
@@ -259,7 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.innerHTML = btn.dataset.oldText || "Submit";
   }
 
-  // Initialize Quill if available, otherwise make container editable
+  // Quill
   let quillInstance = null;
   if (window.Quill) {
     try {
@@ -281,19 +651,17 @@ document.addEventListener("DOMContentLoaded", () => {
           ]
         }
       });
-      // store in a global map to be accessible elsewhere if needed
       window.quillInstances = window.quillInstances || {};
       window.quillInstances["ms-article-content"] = quillInstance;
     } catch (e) {
-      console.warn("Quill init failed, falling back to contentEditable:", e);
+      console.warn("Quill init failed:", e);
       if (contentContainer) contentContainer.contentEditable = true;
     }
   } else {
-    // no Quill loaded — make content area editable
     if (contentContainer) contentContainer.contentEditable = true;
   }
 
-  // Image preview handler
+  // Image preview
   if (imageInput && imagePreview) {
     imageInput.addEventListener("change", function() {
       const file = this.files[0];
@@ -311,53 +679,52 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Tag UI functions (pills)
+  // Tag UI (use same input for pills + storage)
   function addTagPill(text) {
-    if (!tagsContainer || !text) return;
+    if (!tagsInput || !text) return;
     const pill = document.createElement("div");
     pill.className = "qalam-tag-pill inline-flex items-center gap-2 px-2 py-1 rounded bg-gray-100";
-    pill.innerHTML = `<span class="tag-text">${escapeHtml(text)}</span><button type="button" class="qalam-tag-remove-btn ml-2 text-red-500" title="Remove tag">&times;</button>`;
-    tagsContainer.insertBefore(pill, tagsVisibleInput);
-    updateTagsHidden();
+    pill.innerHTML = `<span class="tag-text">${escapeHtml(text)}</span><button type="button" class="qalam-tag-remove-btn ml-2 text-red-500">&times;</button>`;
+    tagsInput.parentNode.insertBefore(pill, tagsInput);
+    updateTagsField();
   }
 
-  function updateTagsHidden() {
-    if (!tagsContainer || !tagsHiddenInput) return;
-    const tags = Array.from(tagsContainer.querySelectorAll(".qalam-tag-pill .tag-text")).map(el => el.textContent.trim()).filter(Boolean);
-    tagsHiddenInput.value = tags.join(",");
+  function updateTagsField() {
+    if (!tagsInput) return;
+    const tags = Array.from(document.querySelectorAll(".qalam-tag-pill .tag-text"))
+      .map(el => el.textContent.trim())
+      .filter(Boolean);
+    tagsInput.value = tags.join(",");
   }
 
-  // wire tag input behavior
-  if (tagsVisibleInput && tagsContainer) {
-    tagsVisibleInput.addEventListener("keydown", (e) => {
+  if (tagsInput) {
+    tagsInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === ",") {
         e.preventDefault();
-        const text = tagsVisibleInput.value.trim();
+        const text = tagsInput.value.trim();
         if (text) addTagPill(text);
-        tagsVisibleInput.value = "";
-      } else if (e.key === "Backspace" && tagsVisibleInput.value === "") {
-        const last = tagsContainer.querySelector(".qalam-tag-pill:last-of-type");
-        if (last) { last.remove(); updateTagsHidden(); }
+        tagsInput.value = "";
+      } else if (e.key === "Backspace" && tagsInput.value === "") {
+        const last = document.querySelector(".qalam-tag-pill:last-of-type");
+        if (last) { last.remove(); updateTagsField(); }
       }
     });
 
-    tagsContainer.addEventListener("click", (e) => {
+    tagsInput.parentNode.addEventListener("click", (e) => {
       if (e.target.classList.contains("qalam-tag-remove-btn")) {
         e.target.closest(".qalam-tag-pill").remove();
-        updateTagsHidden();
+        updateTagsField();
       } else {
-        tagsVisibleInput.focus();
+        tagsInput.focus();
       }
     });
   }
 
-  // helper to escape
   function escapeHtml(s) {
-    if (!s) return "";
-    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 
-  // --- Load articles list into table ---
+  // Load articles
   async function loadArticles() {
     if (!tableBody) return;
     tableBody.innerHTML = `<tr><td colspan="4" class="text-center">Loading...</td></tr>`;
@@ -399,139 +766,102 @@ document.addEventListener("DOMContentLoaded", () => {
       tableBody.innerHTML = `<tr><td colspan="4" class="text-center text-red-600">Failed to load</td></tr>`;
     }
   }
-
-  // expose alias for older callers
   window.renderArticles = loadArticles;
 
-  // Helper to extract .ql-editor innerHTML from server value (your server returns full wrapper)
-  function extractEditorInner(htmlString) {
-    if (!htmlString) return "";
-    const tmp = document.createElement("div");
-    tmp.innerHTML = htmlString;
-    const ql = tmp.querySelector(".ql-editor");
-    if (ql) return ql.innerHTML;
-    return tmp.innerHTML;
-  }
-
-  // Reset form for new article
+  // Reset form
   function resetForm() {
     if (articleForm) articleForm.reset();
     if (articleIdInput) articleIdInput.value = "";
-    if (tagsContainer) {
-      tagsContainer.querySelectorAll(".qalam-tag-pill").forEach(p => p.remove());
-    }
-    if (tagsVisibleInput) tagsVisibleInput.value = "";
-    updateTagsHidden();
-    
-    if (quillInstance) {
-      quillInstance.root.innerHTML = "";
-    } else if (contentContainer) {
-      contentContainer.innerHTML = "";
-    }
-    
-    if (imagePreview) {
-      imagePreview.src = "";
-      imagePreview.classList.add("hidden");
-    }
-    
+    document.querySelectorAll(".qalam-tag-pill").forEach(p => p.remove());
+    updateTagsField();
+    if (quillInstance) quillInstance.root.innerHTML = "";
+    if (imagePreview) { imagePreview.src = ""; imagePreview.classList.add("hidden"); }
     if (formTitle) formTitle.textContent = "نیا مضمون شامل کریں";
   }
 
-  // --- Prefill form for edit ---
-  async function handleEditArticle(id) {
-    if (!id) return alert("Invalid article id");
+  // Populate form for editing
+  async function populateForm(id) {
     try {
-      const res = await fetch(`http://localhost:5000/api/article/${id}`);
+      const res = await fetch(`${apiBase}/${id}`);
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
       const article = await res.json();
-      console.log("Article for edit:", article);
-      console.log("Testing it",  article.slug)
 
-      // set scalars
-      if (articleIdInput) articleIdInput.value = article.id ?? article.ID ?? article.Id ?? "";
-      if (titleInput) titleInput.value = article.Title;
-      if (slugInput) slugInput.value = article.slug;
-      if (seoInput) seoInput.value = article.seo ?? article.SEO ?? article.meta_description ?? "";
-      if (authorInput) authorInput.value = article.writer ?? article.author ?? article.Writer ?? "";
+      resetForm();
 
-      // tags (may be null)
-      const tagsCsv = article.tags ?? article.Tags ?? article.keywords ?? "";
-      // clear existing pills
-      if (tagsContainer) {
-        tagsContainer.querySelectorAll(".qalam-tag-pill").forEach(p => p.remove());
-        if (tagsCsv) {
-          tagsCsv.split(",").map(s => s.trim()).filter(Boolean).forEach(t => addTagPill(t));
-        }
-        // ensure hidden field updated
-        updateTagsHidden();
-      }
-      if (tagsVisibleInput) tagsVisibleInput.value = "";
+      articleIdInput.value = article.id || article.ID || article.Id || "";
+      titleInput.value = article.Title || "";
+      slugInput.value = article.slug || "";
+      seoInput.value = article.seo || "";
+      authorInput.value = article.writer || article.author || "";
 
-      // ArticleText: server returns Quill wrapper — extract inner
-      const raw = article.ArticleText ?? article.articleText ?? article.content ?? "";
-      const html = extractEditorInner(raw);
-      if (quillInstance && typeof quillInstance.clipboard?.dangerouslyPasteHTML === "function") {
-        // paste into quill
-        quillInstance.clipboard.dangerouslyPasteHTML(html || "");
-      } else if (contentContainer) {
-        contentContainer.innerHTML = html || "";
+      // Tags
+      if (article.tags) {
+        article.tags.split(",").forEach(tag => addTagPill(tag.trim()));
       }
 
-      // image preview
-      if (imagePreview) {
+      // Content
+      if (quillInstance) {
+        quillInstance.root.innerHTML = article.ArticleText || "";
+      } else {
+        contentContainer.innerHTML = article.ArticleText || "";
+      }
+
+      // Image
+      if (article.coverImageUrl) {
+        imagePreview.src = article.coverImageUrl;
         imagePreview.classList.remove("hidden");
-        imagePreview.src = "";
-        try {
-          const imgRes = await fetch(`${apiBase}/${id}/image`);
-          if (imgRes.ok) {
-            const blob = await imgRes.blob();
-            imagePreview.src = URL.createObjectURL(blob);
-            imagePreview.classList.remove("hidden");
-          } else if (article.image_url) {
-            // اگر API میں image_url موجود ہے تو اسے استعمال کریں
-            imagePreview.src = article.image_url;
-            imagePreview.classList.remove("hidden");
-          } else {
-            imagePreview.src = "";
-            imagePreview.classList.add("hidden");
-          }
-        } catch (e) {
-          console.warn("image preview failed", e);
-          if (article.image_url) {
-            imagePreview.src = article.image_url;
-            imagePreview.classList.remove("hidden");
-          } else {
-            imagePreview.src = "";
-            imagePreview.classList.add("hidden");
-          }
-        }
       }
 
-      // UI: change title and open add panel if you have a toggle
-      if (formTitle) formTitle.textContent = "مضمون اپڈیٹ کریں";
-      const openBtn = document.querySelector('[data-target="add-article"]');
-      if (openBtn) openBtn.click();
-      if (titleInput) titleInput.focus();
+      if (formTitle) formTitle.textContent = "مضمون میں ترمیم کریں";
+      document.querySelector('[data-target="add-article"]').click();
     } catch (err) {
-      console.error("handleEditArticle error:", err);
-      alert("Failed to load article for edit. Check console.");
+      console.error("populateForm error:", err);
+      alert("❌ Failed to load article for editing.");
     }
   }
 
-  // --- Submit (create or update) ---
+  // Handle table actions
+  if (tableBody) {
+    tableBody.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+
+      if (action === "edit") {
+        window.location.href = `/Pages/Editarticle.html?id=${id}`; 
+      } else if (action === "delete") {
+        if (confirm("⚠️ Are you sure you want to delete this article?")) {
+          try {
+            const res = await fetch(`${apiBase}/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            alert("🗑️ Article deleted!");
+            loadArticles();
+          } catch (err) {
+            console.error("delete error:", err);
+            alert("❌ Failed to delete article.");
+          }
+        }
+      }
+    });
+  }
+
+  // Submit
   if (articleForm) {
     articleForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       showLoader(submitButton);
 
       try {
+        updateTagsField();
+
         const fd = new FormData();
-        const titleVal = titleInput ? titleInput.value.trim() : "";
-        const slugVal = slugInput ? slugInput.value.trim() : (titleVal.toLowerCase().replace(/\s+/g,"-"));
-        const tagsVal = tagsHiddenInput ? tagsHiddenInput.value : "";
-        const seoVal = seoInput ? seoInput.value : "";
-        const writerVal = authorInput ? authorInput.value : "";
-        
+        const titleVal = titleInput?.value.trim() || "";
+        const slugVal = slugInput?.value.trim() || titleVal.toLowerCase().replace(/\s+/g,"-");
+        const tagsVal = tagsInput?.value || "";
+        const seoVal = seoInput?.value || "";
+        const writerVal = authorInput?.value || "";
+
         let articleHtml = "";
         if (quillInstance && quillInstance.root) {
           articleHtml = quillInstance.root.innerHTML;
@@ -546,11 +876,11 @@ document.addEventListener("DOMContentLoaded", () => {
         fd.append("writer", writerVal);
         fd.append("ArticleText", articleHtml);
 
-        if (imageInput && imageInput.files && imageInput.files[0]) {
+        if (imageInput?.files[0]) {
           fd.append("coverImage", imageInput.files[0]);
         }
 
-        const id = articleIdInput ? articleIdInput.value : "";
+        const id = articleIdInput?.value || "";
         const method = id ? "PUT" : "POST";
         const url = id ? `${apiBase}/${id}` : apiBase;
 
@@ -559,16 +889,12 @@ document.addEventListener("DOMContentLoaded", () => {
           const errBody = await res.json().catch(()=>({}));
           throw new Error(errBody.error || `HTTP ${res.status}`);
         }
-        const result = await res.json();
+        await res.json();
         alert(id ? "✅ Article updated!" : "✅ Article created!");
-        
-        // reset form
+
         resetForm();
-        
-        // reload table
-        loadArticles();
-        
-        // return to list view if you have a control
+        if (typeof loadArticles === "function") loadArticles();
+
         const backBtn = document.querySelector('[data-target="manage-articles"]');
         if (backBtn) backBtn.click();
       } catch (err) {
@@ -580,45 +906,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Table click for edit / delete ---
-  if (tableBody) {
-    tableBody.addEventListener("click", async (ev) => {
-      const btn = ev.target.closest("button");
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const action = btn.dataset.action;
-      if (action === "edit") {
-        handleEditArticle(id);
-      } else if (action === "delete") {
-        if (!confirm("کیا آپ واقعی اس مضمون کو حذف کرنا چاہتے ہیں؟")) return;
-        showLoader(btn);
-        try {
-          const res = await fetch(`${apiBase}/${id}`, { method: "DELETE" });
-          if (!res.ok) {
-            const err = await res.json().catch(()=>({}));
-            throw new Error(err.error || `HTTP ${res.status}`);
-          }
-          alert("🗑️ Article deleted");
-          loadArticles();
-        } catch (err) {
-          console.error("delete error:", err);
-          alert("❌ Error deleting article");
-        } finally {
-          hideLoader(btn);
-        }
-      }
-    });
-  }
-
-  // Cancel button handler
-  const cancelButton = document.querySelector('.as-cancel-btn');
-  if (cancelButton) {
-    cancelButton.addEventListener('click', () => {
-      resetForm();
-    });
-  }
-
-  // Auto-generate slug from title
+  // Slug auto-generate
   if (titleInput && slugInput) {
     titleInput.addEventListener('blur', () => {
       if (!slugInput.value) {
@@ -634,9 +922,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // initial
+  // Initial load
   loadArticles();
+
 });
+
+
+
+
 
 
 
@@ -647,7 +940,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
   const bookForm = document.getElementById("ms-book-form");
   const booksTableBody = document.getElementById("ms-books-table-body");
-  const bookIdField = document.getElementById("ms-book-id"); // hidden input
+  const bookIdField = document.getElementById("ms-book-id"); 
   const formTitle = document.getElementById("ms-book-form-title");
 
   // 🔄 Loader element
@@ -669,7 +962,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let offset = 0;
-  const limit = 2;
+  const limit = 5; // show more by default
   let isEditing = false;
 
   // ✅ Load books
@@ -682,6 +975,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res.ok) throw new Error("Failed to fetch books");
 
       const books = await res.json();
+
+      if (offset === 0) {
+        booksTableBody.innerHTML = ""; // reset only on first load
+      }
 
       if (books.length === 0) {
         document.getElementById("load-more-books")?.remove();
@@ -696,12 +993,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <td class="py-3 px-4">${book.BookName}</td>
           <td class="py-3 px-4">${book.BookWriter || "-"}</td>
           <td class="py-3 px-4 flex gap-3">
-            <button onclick="editBook(${book.id})" title="Edit" class="text-blue-600 hover:text-blue-800">
-              ✏️
-            </button>
-            <button onclick="deleteBook(${book.id}, this)" title="Delete" class="text-red-600 hover:text-red-800">
-              🗑️
-            </button>
+            <button onclick="editBook(${book.id})" title="Edit" class="text-blue-600 hover:text-blue-800">✏️</button>
+            <button onclick="deleteBook(${book.id}, this)" title="Delete" class="text-red-600 hover:text-red-800">🗑️</button>
           </td>
         `;
 
@@ -733,27 +1026,27 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     showLoader();
 
-    const formData = new FormData();
-    formData.append(
-      "BookName",
-      document.getElementById("ms-book-name").value.trim()
-    );
-    formData.append(
-      "BookWriter",
-      document.getElementById("ms-book-author").value.trim()
-    );
-    formData.append(
-      "BookDescription",
-      document.getElementById("ms-book-description").innerHTML.trim()
-    );
-
-    const coverFile = document.getElementById("ms-book-cover").files[0];
-    if (coverFile) formData.append("BookCoverImg", coverFile);
-
-    const pdfFile = document.getElementById("ms-book-file").files[0];
-    if (pdfFile) formData.append("BookPDF", pdfFile);
-
     try {
+      const formData = new FormData();
+      formData.append(
+        "BookName",
+        document.getElementById("ms-book-name").value.trim()
+      );
+      formData.append(
+        "BookWriter",
+        document.getElementById("ms-book-author").value.trim()
+      );
+      formData.append(
+        "BookDescription",
+        document.getElementById("ms-book-description").innerHTML.trim()
+      );
+
+      const coverFile = document.getElementById("ms-book-cover").files[0];
+      if (coverFile) formData.append("BookCoverImg", coverFile);
+
+      const pdfFile = document.getElementById("ms-book-file").files[0];
+      if (pdfFile) formData.append("BookPDF", pdfFile);
+
       let url = "http://localhost:5000/api/book";
       let method = "POST";
 
@@ -776,15 +1069,20 @@ document.addEventListener("DOMContentLoaded", () => {
             ? "✅ کتاب کامیابی سے اپڈیٹ ہو گئی!"
             : "✅ کتاب کامیابی سے شامل کر دی گئی!"
         );
+
+        // Reset form
         bookForm.reset();
         document.getElementById("ms-book-description").innerHTML = "";
-        booksTableBody.innerHTML = "";
-        offset = 0;
-        loadBooks();
-        window.location.hash = "manage-books";
+        bookIdField.value = "";
         formTitle.textContent = "نئی کتاب شامل کریں";
         isEditing = false;
-        bookIdField.value = "";
+
+        // Reload books
+        offset = 0;
+        await loadBooks();
+
+        // Redirect back
+        window.location.hash = "manage-books";
       } else {
         alert("❌ Error: " + (data.error || "کتاب محفوظ کرنے میں مسئلہ ہے"));
       }
@@ -848,9 +1146,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // Load on start
+  // 🚀 Initial load
   loadBooks();
 });
+
 
 
 
@@ -951,12 +1250,16 @@ async function fetchUlema() {
     });
 
     // attach event listeners to newly created buttons
-    document.querySelectorAll(".ms-edit-btn").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const id = e.currentTarget.getAttribute("data-id");
-        if (id) editUlema(id);
-      });
-    });
+   document.querySelectorAll(".ms-edit-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const id = e.currentTarget.getAttribute("data-id");
+    if (id) {
+      // redirect to Edit page with ID in querystring
+      window.location.href = `/Pages/EditUlema.html?id=${id}`;
+    }
+  });
+});
+
     document.querySelectorAll(".ms-delete-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const id = e.currentTarget.getAttribute("data-id");
@@ -986,17 +1289,13 @@ function setupForm() {
     const photoInput = document.getElementById("ms-ulema-photo");
 
     const formData = new FormData();
-    // include both casings to be tolerant of backend expectations
     formData.append("Name", nameVal);
-    formData.append("name", nameVal);
     formData.append("Position", positionVal);
-    formData.append("position", positionVal);
     formData.append("About", aboutHtml);
-    formData.append("about", aboutHtml);
 
     if (photoInput && photoInput.files && photoInput.files[0]) {
+      // ✅ send only "ProfileImg", because backend expects this
       formData.append("ProfileImg", photoInput.files[0]);
-      formData.append("profileImg", photoInput.files[0]);
     }
 
     try {
@@ -1005,12 +1304,10 @@ function setupForm() {
 
       const res = await fetch(url, {
         method,
-        body: formData
-        // NOTE: do not set Content-Type header; browser will set multipart/form-data automatically
+        body: formData,
       });
 
       if (!res.ok) {
-        // try to extract error message if any (optional)
         let message = `Failed to ${isEdit ? "update" : "create"} entry (status ${res.status})`;
         try {
           const errJson = await res.json();
@@ -1028,6 +1325,7 @@ function setupForm() {
     }
   });
 }
+
 
 /* Pre-fill form for editing */
 async function editUlema(id) {
@@ -1390,31 +1688,8 @@ async function deleteTag(id) {
 
 // (Optional) Edit handler to load existing tag into form
 async function editTag(id) {
-  showLoader();
-  try {
-    const res = await fetch(`${TAGS_API}/${id}`);
-    const tag = await res.json();
-
-    if (!res.ok) {
-      alert(tag.error || "❌ موضوع لوڈ کرنے میں مسئلہ پیش آیا");
-      return;
-    }
-
-    document.getElementById("ms-category-id").value = tag.id;
-    document.getElementById("ms-category-name").value = tag.Name;
-    document.getElementById("ms-category-slug").value = tag.slug;
-    document.getElementById("ms-category-icon").value = tag.iconClass;
-    document.getElementById("ms-category-description").innerHTML =
-      tag.AboutTags || "";
-
-    // Switch to form tab
-    const addBtn = document.querySelector('[data-target="add-category"]');
-    if (addBtn) addBtn.click();
-  } catch (error) {
-    console.error("Error loading tag:", error);
-    alert("❌ کوئی مسئلہ پیش آگیا۔");
-  } finally {
-    hideLoader();
+  if(id){
+    window.location.href=`./Pages/Editcategory.html?id=${id}`;
   }
 }
 
