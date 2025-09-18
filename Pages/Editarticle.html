@@ -340,7 +340,7 @@
       document.getElementById('ms-article-id').value = id;
 
       try{
-        const res = await fetch(`http://localhost:5000/api/article/${id}`);
+        const res = await fetch(`https://masailworld.onrender.com/api/article/${id}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
 
@@ -371,7 +371,7 @@
           }
         } else {
           // optional: attempt HEAD check if your API supports /:id/image
-          const tryImageUrl = `http://localhost:5000/api/article/${id}/image`;
+          const tryImageUrl = `https://masailworld.onrender.com/api/article/${id}/image`;
           try {
             const chk = await fetch(tryImageUrl, { method: 'HEAD' });
             if (chk.ok && imagePreview){
@@ -439,7 +439,7 @@
       }
 
       try{
-        const resp = await fetch(`http://localhost:5000/api/article/${id}`, {
+        const resp = await fetch(`https://masailworld.onrender.com/api/article/${id}`, {
           method: 'PUT',
           body: fd
         });
@@ -449,7 +449,7 @@
         }
         alert('مضمون کامیابی سے اپ ڈیٹ ہو گیا');
         // redirect back to list
-        window.location.href = '../index.html#manage-articles';
+        window.location.href = './index.html#manage-articles';
       } catch (err) {
         console.error('update error:', err);
         alert('اپ ڈیٹ میں خرابی: ' + (err.message || 'Unknown'));
@@ -458,7 +458,7 @@
 
     // Cancel/back
     document.getElementById('cancel-btn-outer').addEventListener('click', () => {
-      window.location.href = '../index.html#manage-articles';
+      window.location.href = './index.html#manage-articles';
     });
   </script>
 </body>

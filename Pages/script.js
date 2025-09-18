@@ -1,3 +1,23 @@
+ const params = new URLSearchParams(window.location.search);
+  const userParam = params.get("user");
+
+  if (userParam) {
+    // Replace "-" back to spaces
+    const userName = userParam.replace(/-/g, " ");
+
+    // Set name in DOM
+    document.getElementById("user-name").textContent = userName;
+
+    // Update avatar with first letter
+    const firstLetter = userName.charAt(0).toUpperCase();
+    document.getElementById("user-avatar").src =
+      `https://placehold.co/40x40/eff6e0/124559?text=${firstLetter}`;
+  }
+
+
+
+
+
 
 // View , Add and Edit , delete fatawa start here 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadFatawa() {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/fatwa?limit=${limit}&offset=${offset}`
+        `https://masailworld.onrender.com/api/fatwa?limit=${limit}&offset=${offset}`
       );
       const fatawa = await res.json();
 
@@ -96,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = target.dataset.id;
       if (confirm("کیا آپ واقعی اس فتویٰ کو حذف کرنا چاہتے ہیں؟")) {
         try {
-          const res = await fetch(`http://localhost:5000/api/fatwa/${id}`, {
+          const res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`, {
             method: "DELETE",
           });
           const data = await res.json();
@@ -118,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (target.classList.contains("edit-btn")) {
       const id = target.dataset.id;
       try {
-        const res = await fetch(`http://localhost:5000/api/fatwa/${id}`);
+        const res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`);
         const fatwa = await res.json();
 
         if (res.ok) {
@@ -175,14 +195,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (id) {
         // Update existing fatwa
-        res = await fetch(`http://localhost:5000/api/fatwa/${id}`, {
+        res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(fatwaData),
         });
       } else {
         // Create new fatwa
-        res = await fetch("http://localhost:5000/api/fatwa/dashboard", {
+        res = await fetch("https://masailworld.onrender.com/api/fatwa/dashboard", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(fatwaData),
@@ -599,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-  const apiBase = "http://localhost:5000/api/article"; // API endpoint
+  const apiBase = "https://masailworld.onrender.com/api/article"; // API endpoint
 
   // DOM references
   const tableBody = document.getElementById("ms-articles-table-body");
@@ -829,7 +849,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const action = btn.dataset.action;
 
       if (action === "edit") {
-        window.location.href = `/Pages/Editarticle.html?id=${id}`; 
+        window.location.href = `./Editarticle.html?id=${id}`; 
       } else if (action === "delete") {
         if (confirm("⚠️ Are you sure you want to delete this article?")) {
           try {
@@ -970,7 +990,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoader();
     try {
       const res = await fetch(
-        `http://localhost:5000/api/book?limit=${limit}&offset=${offset}`
+        `https://masailworld.onrender.com/api/book?limit=${limit}&offset=${offset}`
       );
       if (!res.ok) throw new Error("Failed to fetch books");
 
@@ -1047,12 +1067,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const pdfFile = document.getElementById("ms-book-file").files[0];
       if (pdfFile) formData.append("BookPDF", pdfFile);
 
-      let url = "http://localhost:5000/api/book";
+      let url = "https://masailworld.onrender.com/api/book";
       let method = "POST";
 
       if (isEditing) {
         const id = bookIdField.value;
-        url = `http://localhost:5000/api/book/${id}`;
+        url = `https://masailworld.onrender.com/api/book/${id}`;
         method = "PUT";
       }
 
@@ -1100,7 +1120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showLoader();
 
     try {
-      const res = await fetch(`http://localhost:5000/api/book/${id}`, {
+      const res = await fetch(`https://masailworld.onrender.com/api/book/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -1123,7 +1143,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.editBook = async (id) => {
     showLoader();
     try {
-      const res = await fetch(`http://localhost:5000/api/book/${id}`);
+      const res = await fetch(`https://masailworld.onrender.com/api/book/${id}`);
       if (!res.ok) throw new Error("Failed to fetch book");
 
       const book = await res.json();
@@ -1160,7 +1180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // API base URL (adjust if needed)
-const API_URL = "http://localhost:5000/api/aleem";
+const API_URL = "https://masailworld.onrender.com/api/aleem";
 
 document.addEventListener("DOMContentLoaded", () => {
   initUIControls();
@@ -1255,7 +1275,7 @@ async function fetchUlema() {
     const id = e.currentTarget.getAttribute("data-id");
     if (id) {
       // redirect to Edit page with ID in querystring
-      window.location.href = `/Pages/EditUlema.html?id=${id}`;
+      window.location.href = `./EditUlema.html?id=${id}`;
     }
   });
 });
@@ -1402,7 +1422,7 @@ function escapeHtml(str) {
 
 // API base URL
 
-const USER_API = "http://localhost:5000/api/user"; 
+const USER_API = "https://masailworld.onrender.com/api/user"; 
 
 // Show loader
 function showLoader() {
@@ -1484,7 +1504,7 @@ async function loadUsers() {
       btn.addEventListener("click", () => {
         const userId = btn.getAttribute("data-id");
         // ✅ Redirect to edit page with ID
-        window.location.href = `/Pages/EditUser.html?id=${userId}`;
+        window.location.href = `./EditUser.html?id=${userId}`;
       });
     });
 
@@ -1587,7 +1607,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // -------------------------------------------------------- Categories
 
-const TAGS_API = "http://localhost:5000/api/tags";
+const TAGS_API = "https://masailworld.onrender.com/api/tags";
 
 // Show loader
 function showLoader() {
@@ -1728,7 +1748,7 @@ async function deleteTag(id) {
 // (Optional) Edit handler to load existing tag into form
 async function editTag(id) {
   if(id){
-    window.location.href=`./Pages/Editcategory.html?id=${id}`;
+    window.location.href=`./Editcategory.html?id=${id}`;
   }
 }
 
@@ -1743,7 +1763,7 @@ document.addEventListener("DOMContentLoaded", loadTags);
 
 // ----------status --------------------
 
-const STATS_API = "http://localhost:5000/api/stats/totals";
+const STATS_API = "https://masailworld.onrender.com/api/stats/totals";
 
 // Load stats and update dashboard
 async function loadStats() {

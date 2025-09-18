@@ -241,8 +241,9 @@
                     <img src="https://placehold.co/40x40/eff6e0/124559?text=A" class="w-10 h-10 rounded-full"
                         onerror="this.onerror=null;this.src='https://placehold.co/40x40/eff6e0/124559?text=A';">
                     <div class="mr-3">
-                        <p class="font-bold text-lg">ایڈمن</p>
-                        <a href="#" class="text-sm text-air_force_blue-700 hover:text-beige">لاگ آؤٹ</a>
+                        <p id="user-name" class="font-bold text-lg">ایڈمن</p>
+                        <a href="../Login.html" class="text-sm text-air_force_blue-700 hover:text-beige">لاگ
+                            آؤٹ</a>
                     </div>
                 </div>
             </div>
@@ -1092,7 +1093,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let fatawa = [{ id: 1, title: 'کیا نبی کریم ﷺ اپنی قبر انور میں حیات ہیں؟', slug: 'hayat-un-nabi-sallallahu-alaihi-wasallam', keywords: 'حیات النبی, عقیدہ, اہلسنت', metaDescription: 'اہلسنت والجماعت کا یہ متفقہ عقیدہ ہے کہ انبیاء کرام علیہم السلام اپنی قبروں میں اسی طرح حیات ہیں جیسے دنیا میں تھے۔ اس فتوی میں تفصیلی دلائل موجود ہیں۔', question: 'کیا نبی کریم ﷺ اپنی قبر انور میں حیات ہیں اور سلام سنتے ہیں؟', answer: '<p>اہلسنت والجماعت کا یہ متفقہ عقیدہ ہے کہ انبیاء کرام علیہم السلام اپنی قبروں میں اسی طرح حیات ہیں جیسے دنیا میں تھے۔..</p>', mufti: 'دارالافتاء', date: '2025-07-26', views: 150 }];
@@ -1972,7 +1973,12 @@
             }
 
             loadScriptsAndInit();
+
+            window.addEventListener('hashchange', handleHashChange);
+            handleHashChange();
         });
+
+
     </script>
 
 </body>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ایڈمن پینل - مسائل ورلڈ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="./style/style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            rich_black: {
+              DEFAULT: "#01161e",
+              100: "#000406",
+              200: "#00090c",
+              300: "#010d12",
+              400: "#011118",
+              500: "#01161e",
+              600: "#04597b",
+              700: "#079cd8",
+              800: "#45c6f9",
+              900: "#a2e3fc",
+            },
+            midnight_green: {
+              DEFAULT: "#124559",
+              100: "#040e12",
+              200: "#071c24",
+              300: "#0b2935",
+              400: "#0f3747",
+              500: "#124559",
+              600: "#20799c",
+              700: "#36a9d6",
+              800: "#79c5e4",
+              900: "#bce2f1",
+            },
+            air_force_blue: {
+              DEFAULT: "#598392",
+              100: "#121a1d",
+              200: "#24343a",
+              300: "#354e57",
+              400: "#476874",
+              500: "#598392",
+              600: "#769dab",
+              700: "#99b6c0",
+              800: "#bbced5",
+              900: "#dde7ea",
+            },
+            ash_gray: {
+              DEFAULT: "#aec3b0",
+              100: "#1f2a20",
+              200: "#3e5441",
+              300: "#5e7f61",
+              400: "#83a386",
+              500: "#aec3b0",
+              600: "#bdcebf",
+              700: "#cedbcf",
+              800: "#dee7df",
+              900: "#eff3ef",
+            },
+            beige: {
+              DEFAULT: "#eff6e0",
+              100: "#384915",
+              200: "#71912a",
+              300: "#a4cc4e",
+              400: "#c9e197",
+              500: "#eff6e0",
+              600: "#f2f8e6",
+              700: "#f5f9ec",
+              800: "#f8fbf2",
+              900: "#fcfdf9",
+            },
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body>
+  <div id="login-screen"
+    class="flex flex-col items-center justify-center h-full bg-white p-10 rounded-xl shadow-lg max-w-md mx-auto">
+    <h2 class="text-3xl font-bold mb-6 text-midnight_green">ایڈمن لاگ ان</h2>
+    <form id="login-form" class="w-full space-y-6">
+      <div>
+        <label for="login-username" class="block text-lg font-semibold text-midnight_green mb-1">صارف نام</label>
+        <input type="text" id="login-username"
+          class="w-full border-2 border-ash_gray rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+          required />
+      </div>
+      <div>
+        <label for="login-password" class="block text-lg font-semibold text-midnight_green mb-1">پاس ورڈ</label>
+        <input type="password" id="login-password"
+          class="w-full border-2 border-ash_gray rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+          required />
+      </div>
+      <button type="submit"
+        class="w-full bg-midnight_green text-white py-3 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+        لاگ ان کریں
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // 🚫 Prevent back/forward navigation
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+      history.pushState(null, null, location.href);
+    };
+
+    // Handle login
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const identifier = document.getElementById("login-username").value;
+      const Password = document.getElementById("login-password").value;
+
+      try {
+        const res = await fetch("https://masailworld.onrender.com/api/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ identifier, Password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("✅ Logged in successfully!");
+          console.log("User:", data.user);
+
+          // Format name for querystring (replace spaces with "-")
+          const userName = data.user.Name.replace(/\s+/g, "-");
+
+          // Redirect with querystring
+          window.location.href = `./Pages/index.html`;
+        } else {
+          alert("❌ " + data.error);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Something went wrong!");
+      }
+    });
+  </script>
+</body>
+
+</html>
