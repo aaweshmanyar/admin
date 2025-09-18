@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ایڈمن پینل - مسائل ورلڈ</title>
+  <meta name="description" content="مسائل ورلڈ کے لیے ایڈمن پینل - فتاویٰ، مضامین، کتابیں، اور بہت کچھ کا نظم کریں۔">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Jameel+Noori+Nastaleeq&family=Lateef&family=Scheherazade+New&display=swap"
+    rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+  <style>
+    @font-face {
+      font-family: 'NaatFont';
+      src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      font-family: 'NaatFont', serif;
+      font-size: 80%;
+      overscroll-behavior: none;
+    }
+
+    .qalam-rich-text-editor {
+      background-color: white;
+      border-radius: 0.5rem;
+      border: 2px solid #aec3b0;
+    }
+
+    .ql-editor {
+      min-height: 250px;
+      font-family: 'Jameel Noori Nastaleeq', serif;
+      font-size: 18px;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .ql-toolbar.ql-snow {
+      direction: ltr;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-8">
+      <h1 id="ms-user-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">
+        صارف میں ترمیم کریں
+      </h1>
+      <a href="/Pages/Users.html"
+        class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+        <i class="bi bi-arrow-right ml-2"></i>
+        فہرست پر واپس جائیں
+      </a>
+    </div>
+
+    <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+      <form id="ms-user-form" class="space-y-6">
+        <input type="hidden" id="ms-user-id">
+
+        <div>
+          <label for="ms-user-name" class="block text-xl font-bold text-midnight_green mb-2">نام</label>
+          <input type="text" id="ms-user-name"
+            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+            required>
+        </div>
+
+        <div>
+          <label for="ms-user-email" class="block text-xl font-bold text-midnight_green mb-2">ای میل</label>
+          <input type="email" id="ms-user-email"
+            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+            style="direction: ltr;" required>
+        </div>
+
+        <div id="ms-password-section">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="ms-user-password" class="block text-xl font-bold text-midnight_green mb-2">نیا پاس ورڈ</label>
+              <input type="password" id="ms-user-password"
+                class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                style="direction: ltr;">
+            </div>
+            <div>
+              <label for="ms-user-confirm-password"
+                class="block text-xl font-bold text-midnight_green mb-2">پاس ورڈ کی تصدیق</label>
+              <input type="password" id="ms-user-confirm-password"
+                class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                style="direction: ltr;">
+            </div>
+          </div>
+          <p id="ms-password-help-text" class="text-sm text-air_force_blue mt-1">
+            اگر پاس ورڈ تبدیل کرنا ہو تو درج کریں، ورنہ خالی چھوڑ دیں۔
+          </p>
+        </div>
+
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+          <button type="submit"
+            class="w-full md:w-auto bg text-white  px-8 rounded-lg text-lg bg-gray-800 transition">
+            اپڈیٹ کریں
+          </button>
+          <a href="../index.html#manage-users"
+            class="as-cancel-btn w-full md:w-auto bg-gray-800  text-white py-3 px-8 rounded-lg text-lg  transition text-center">
+            منسوخ کریں
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api/user";
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get("id");
+
+    async function fetchUser(id) {
+      try {
+        const res = await fetch(`${API_URL}/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch user");
+        const data = await res.json();
+
+        document.getElementById("ms-user-id").value = data.id;
+        document.getElementById("ms-user-name").value = data.Name;
+        document.getElementById("ms-user-email").value = data.Email;
+      } catch (err) {
+        console.error("❌ Error fetching user:", err);
+        alert("صارف کی تفصیل حاصل نہیں ہو سکی");
+      }
+    }
+
+    document.getElementById("ms-user-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById("ms-user-id").value;
+      const payload = {
+        Name: document.getElementById("ms-user-name").value.trim(),
+        Email: document.getElementById("ms-user-email").value.trim(),
+        Password: document.getElementById("ms-user-password").value.trim(),
+        ConfirmPassword: document.getElementById("ms-user-confirm-password").value.trim()
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("Failed to update user");
+
+        alert("✅ صارف کامیابی سے اپڈیٹ ہوگیا!");
+        window.location.href = "../index.html#manage-users";
+      } catch (err) {
+        console.error("❌ Error updating user:", err);
+        alert("صارف اپڈیٹ نہیں ہوسکا");
+      }
+    });
+
+    if (userId) fetchUser(userId);
+  </script>
+</body>
+</html>

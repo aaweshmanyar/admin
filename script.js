@@ -1402,7 +1402,7 @@ function escapeHtml(str) {
 
 // API base URL
 
-const USER_API = "http://localhost:5000/api/users"; 
+const USER_API = "http://localhost:5000/api/user"; 
 
 // Show loader
 function showLoader() {
@@ -1472,11 +1472,20 @@ async function loadUsers() {
         <td class="py-3 px-4">${user.Name}</td>
         <td class="py-3 px-4">${user.Email || "-"}</td>
         <td class="py-3 px-4">
-          <button class="text-blue-600 hover:underline">ترمیم</button>
+          <button class="edit-btn text-blue-600 hover:underline" data-id="${user.id}">ترمیم</button>
           <button class="delete-btn text-red-600 hover:underline ml-2" data-id="${user.id}">حذف کریں</button>
         </td>
       `;
       tbody.appendChild(tr);
+    });
+
+    // Attach edit event to buttons
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const userId = btn.getAttribute("data-id");
+        // ✅ Redirect to edit page with ID
+        window.location.href = `/Pages/EditUser.html?id=${userId}`;
+      });
     });
 
     // Attach delete event to buttons
@@ -1495,24 +1504,28 @@ async function loadUsers() {
   }
 }
 
-// Handle form submit (add new user)
+// Handle form submit (add or update user)
 document.getElementById("ms-user-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const id = document.getElementById("ms-user-id").value.trim();
   const Name = document.getElementById("ms-user-name").value.trim();
   const Email = document.getElementById("ms-user-email").value.trim();
   const Password = document.getElementById("ms-user-password").value.trim();
   const ConfirmPassword = document.getElementById("ms-user-confirm-password").value.trim();
 
-  if (!Name || !Email || !Password || !ConfirmPassword) {
-    alert("❌ براہ کرم تمام فیلڈز بھریں");
+  if (!Name || !Email) {
+    alert("❌ براہ کرم نام اور ای میل بھریں");
     return;
   }
 
   showLoader();
   try {
-    const res = await fetch(USER_API, {
-      method: "POST",
+    const method = id ? "PUT" : "POST";
+    const url = id ? `${USER_API}/${id}` : USER_API;
+
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ Name, Email, Password, ConfirmPassword })
     });
@@ -1520,28 +1533,54 @@ document.getElementById("ms-user-form").addEventListener("submit", async (e) => 
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error || "❌ صارف شامل کرنے میں مسئلہ پیش آیا");
+      alert(data.error || "❌ مسئلہ پیش آیا");
       return;
     }
 
-    alert("✅ صارف کامیابی سے شامل ہوگیا!");
+    alert(id ? "✏️ صارف کامیابی سے اپڈیٹ ہوگیا!" : "✅ صارف کامیابی سے شامل ہوگیا!");
     e.target.reset(); // clear form
     loadUsers(); // refresh table
-
-    // Go back to manage-users section (if tabs/SPA)
-    const backBtn = document.querySelector('[data-target="manage-users"]');
-    if (backBtn) backBtn.click();
-
+    window.location.href = "../index.html#manage-users"; // back to list
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.error("Error saving user:", error);
     alert("❌ کوئی مسئلہ پیش آگیا۔");
   } finally {
     hideLoader();
   }
 });
 
-// Load users when page opens
-document.addEventListener("DOMContentLoaded", loadUsers);
+// Prefill form if editing
+document.addEventListener("DOMContentLoaded", async () => {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (id) {
+    showLoader();
+    try {
+      const res = await fetch(`${USER_API}/${id}`);
+      const user = await res.json();
+
+      if (res.ok) {
+        document.getElementById("ms-user-id").value = user.id;
+        document.getElementById("ms-user-name").value = user.Name;
+        document.getElementById("ms-user-email").value = user.Email || "";
+
+        document.getElementById("ms-user-form-title").innerText = "✏️ صارف میں ترمیم کریں";
+        document.getElementById("ms-password-help-text").innerText =
+          "پاس ورڈ تبدیل کرنے کے لیے نیا پاس ورڈ درج کریں، ورنہ خالی چھوڑ دیں۔";
+      } else {
+        alert("❌ صارف نہیں ملا");
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    } finally {
+      hideLoader();
+    }
+  } else {
+    loadUsers(); // normal load
+  }
+});
+
 
 
 
@@ -1701,4 +1740,38 @@ document.addEventListener("DOMContentLoaded", loadTags);
 
 
 
+
+// ----------status --------------------
+
+const STATS_API = "http://localhost:5000/api/stats/totals";
+
+// Load stats and update dashboard
+async function loadStats() {
+  try {
+    const res = await fetch(STATS_API);
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      console.error("❌ Failed to fetch stats:", data.error);
+      return;
+    }
+
+    const counts = data.counts;
+
+    // Map API keys to DOM IDs
+    document.getElementById("ms-total-fatawa").innerText = counts.fatawa || 0;
+    document.getElementById("ms-total-articles").innerText = counts.articles || 0;
+    document.getElementById("ms-total-books").innerText = counts.books || 0;
+    document.getElementById("ms-total-users").innerText = counts.users || 0;
+    document.getElementById("ms-total-categories").innerText = counts.tags || 0;
+    document.getElementById("ms-total-questions").innerText = counts.ulema || 0; 
+    document.getElementById("ms-total-submissions").innerText = counts.ulema || 0; // adjust if you have real table
+
+  } catch (error) {
+    console.error("❌ Error loading stats:", error);
+  }
+}
+
+// Run when page loads
+document.addEventListener("DOMContentLoaded", loadStats);
 
