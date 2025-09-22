@@ -80,9 +80,11 @@
   </script>
 </head>
 
-<body>
+<body class="bg-white min-h-screen flex items-center justify-center">
+
+  <!-- Login Screen -->
   <div id="login-screen"
-    class="flex flex-col items-center justify-center h-full bg-white p-10 rounded-xl shadow-lg max-w-md mx-auto">
+    class="flex flex-col items-center justify-center bg-white p-10 rounded-xl shadow-lg max-w-md w-full">
     <h2 class="text-3xl font-bold mb-6 text-midnight_green">ایڈمن لاگ ان</h2>
     <form id="login-form" class="w-full space-y-6">
       <div>
@@ -97,11 +99,17 @@
           class="w-full border-2 border-ash_gray rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
           required />
       </div>
-      <button type="submit"
-        class="w-full bg-midnight_green text-white py-3 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+      <button type="submit" id="login-btn"
+        class="w-full bg-midnight_green text-white py-3 rounded-lg text-lg hover:bg-midnight_green-400 transition flex items-center justify-center">
         لاگ ان کریں
       </button>
     </form>
+  </div>
+
+  <!-- Loader Overlay -->
+  <div id="loader"
+    class="fixed inset-0 bg-black bg-opacity-40 hidden flex items-center justify-center z-50">
+    <div class="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
   </div>
 
   <script>
@@ -111,12 +119,16 @@
       history.pushState(null, null, location.href);
     };
 
+    const loader = document.getElementById("loader");
+
     // Handle login
     document.getElementById("login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const identifier = document.getElementById("login-username").value;
       const Password = document.getElementById("login-password").value;
+
+      loader.classList.remove("hidden"); // Show loader
 
       try {
         const res = await fetch("https://masailworld.onrender.com/api/users/login", {
@@ -142,6 +154,8 @@
       } catch (err) {
         console.error(err);
         alert("Something went wrong!");
+      } finally {
+        loader.classList.add("hidden"); // Hide loader
       }
     });
   </script>

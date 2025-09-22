@@ -225,11 +225,11 @@
                     <i class="bi bi-patch-question-fill ml-3 text-2xl"></i>
                     <span>موصول سوالات</span>
                 </a>
-                <a href="#manage-submissions"
+                <!-- <a href="#manage-submissions"
                     class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
                     <i class="bi bi-send-check ml-3 text-2xl"></i>
                     <span>مفتی کی گذارشات</span>
-                </a>
+                </a> -->
                 <a href="#manage-users"
                     class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
                     <i class="bi bi-person-gear ml-3 text-2xl"></i>
@@ -315,7 +315,9 @@
                                 </a>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+
+                        <!-- Dashboard Status Redirection -->
+                        <!-- <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
                             <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-600">
                                 <div class="flex justify-between items-start">
                                     <div>
@@ -395,12 +397,113 @@
                                     </div>
                                 </div>
                             </div>
+                        </div> -->
+
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <!-- Total Fatawa -->
+                            <div onclick="window.location.href='index.html#manage-fatawa'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-600 hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل فتاویٰ</p>
+                                        <p id="ms-total-fatawa" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-journal-check text-3xl text-midnight_green"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Articles -->
+                            <div onclick="window.location.href='index.html#manage-articles'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-air_force_blue hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل مضامین</p>
+                                        <p id="ms-total-articles" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-pencil-square text-3xl text-air_force_blue"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Books -->
+                            <div onclick="window.location.href='index.html#manage-books'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-ash_gray hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل کتابیں</p>
+                                        <p id="ms-total-books" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-book-half text-3xl text-ash_gray-500"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Categories -->
+                            <div onclick="window.location.href='index.html#manage-categories'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-700 hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل موضوعات</p>
+                                        <p id="ms-total-categories" class="text-4xl font-bold text-rich_black mt-2">0
+                                        </p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-grid-fill text-3xl text-midnight_green-700"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- New Questions -->
+                            <div onclick="window.location.href='index.html#manage-questions'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-rich_black-700 hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">نئے سوالات</p>
+                                        <p id="ms-total-questions" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-patch-question-fill text-3xl text-rich_black-700"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Users -->
+                            <div onclick="window.location.href='index.html#manage-users'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-beige-300 hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">کل صارفین</p>
+                                        <p id="ms-total-users" class="text-4xl font-bold text-rich_black mt-2">0</p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-people text-3xl text-beige-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pending Submissions -->
+                            <div onclick="window.location.href='index.html#manage-submissions'"
+                                class="cursor-pointer bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500 hover:shadow-xl transition">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-xl text-air_force_blue">التوا میں گذارشات</p>
+                                        <p id="ms-total-submissions" class="text-4xl font-bold text-rich_black mt-2">0
+                                        </p>
+                                    </div>
+                                    <div class="p-3 bg-gray-100 rounded-full">
+                                        <i class="bi bi-send-exclamation text-3xl text-yellow-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <!-- <div class="bg-white p-6 rounded-xl shadow-lg mt-8">
-                            <h2 class="text-2xl font-bold text-midnight_green mb-4">حالیہ سرگرمیاں</h2>
-                            <div id="ms-recent-activities" class="space-y-2 text-lg"></div>
-                        </div> -->
+
                     </div>
 
                     <div id="ms-page-manage-fatawa" class="as-admin-page qalam-admin-page">
@@ -1130,8 +1233,8 @@
                 'answer-question': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'موصول سوالات', link: '#manage-questions' }, { name: 'سوال کا جواب' }],
                 'manage-users': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'صارفین کا انتظام' }],
                 'add-user': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'صارفین کا انتظام', link: '#manage-users' }, { name: 'نیا/ترمیم صارف' }],
-                'manage-submissions': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مفتی کی گذارشات' }],
-                'review-submission': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مفتی کی گذارشات', link: '#manage-submissions' }, { name: 'گذارش کا جائزہ' }],
+                // 'manage-submissions': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مفتی کی گذارشات' }],
+                // 'review-submission': [{ name: 'ڈیش بورڈ', link: '#dashboard' }, { name: 'مفتی کی گذارشات', link: '#manage-submissions' }, { name: 'گذارش کا جائزہ' }],
             };
 
             const getPageIdFromHash = () => {

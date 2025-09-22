@@ -1795,3 +1795,58 @@ async function loadStats() {
 // Run when page loads
 document.addEventListener("DOMContentLoaded", loadStats);
 
+
+
+
+// Pending Questions
+
+async function loadPendingFatwas() {
+  try {
+    // 
+    const res = await fetch("https://masailworld.onrender.com/api/fatwa/pending");
+    if (!res.ok) throw new Error("Failed to fetch fatawa");
+
+    const fatawas = await res.json();
+
+    const tbody = document.getElementById("ms-questions-table-body");
+    tbody.innerHTML = ""; // clear old
+
+    fatawas.forEach(f => {
+      const tr = document.createElement("tr");
+      tr.classList.add("border-b", "border-gray-100");
+
+      tr.innerHTML = `
+        <td class="py-3 px-4">${f.questionername || "نامعلوم"}</td>
+        <td class="py-3 px-4">${f.detailquestion.substring(0, 50)}...</td>
+        <td class="py-3 px-4">
+          <span class="text-yellow-600 font-bold">${f.status}</span>
+        </td>
+        <td class="py-3 px-4">
+          <a href="Answer.html?id=${f.id}" 
+             class="bg-midnight_green text-white px-4 py-2 rounded hover:bg-midnight_green-400 inline-block">
+            جواب دیں
+          </a>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("❌ Error loading fatawa:", err);
+  }
+}
+
+// Call this when page loads
+document.addEventListener("DOMContentLoaded", loadPendingFatwas);
+
+
+
+
+
+
+
+
+
+
+
+
