@@ -19,232 +19,14 @@
 
 
 
-// View , Add and Edit , delete fatawa start here 
-// document.addEventListener("DOMContentLoaded", () => {
-//   const form = document.getElementById("ms-fatwa-form");
-//   const tableBody = document.getElementById("ms-fatawa-table-body");
-//   const manageFatawaPage = document.getElementById("ms-page-manage-fatawa");
 
-//   // === Loader ===
-//   const loader = document.createElement("div");
-//   loader.id = "form-loader";
-//   loader.className =
-//     "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50";
-//   loader.innerHTML = `
-//     <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-3">
-//       <span class="loader border-4 border-midnight_green border-t-transparent rounded-full w-8 h-8 animate-spin"></span>
-//       <p class="text-lg font-bold text-midnight_green">براہ کرم انتظار کریں...</p>
-//     </div>
-//   `;
-//   document.body.appendChild(loader);
-
-//   const showLoader = () => loader.classList.remove("hidden");
-//   const hideLoader = () => loader.classList.add("hidden");
-
-//   // === Pagination setup ===
-//   const loadMoreBtn = document.createElement("button");
-//   loadMoreBtn.textContent = "آگے دیکھیں";
-//   loadMoreBtn.className =
-//     "mt-4 bg-midnight_green text-white py-2 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto";
-//   loadMoreBtn.style.display = "none";
-//   manageFatawaPage.appendChild(loadMoreBtn);
-
-//   let offset = 0;
-//   const limit = 2;
-//   let hasMore = true;
-
-//   // === Load fatawa into table ===
-//   async function loadFatawa() {
-//     try {
-//       const res = await fetch(
-//         `https://masailworld.onrender.com/api/fatwa?limit=${limit}&offset=${offset}`
-//       );
-//       const fatawa = await res.json();
-
-//       if (res.ok) {
-//         fatawa.forEach((fatwa) => {
-//           const row = document.createElement("tr");
-//           row.className = "border-b border-gray-200";
-
-//           row.innerHTML = `
-//             <td class="py-3 px-4">${fatwa.id}</td>
-//             <td class="py-3 px-4">${fatwa.Title}</td>
-//             <td class="py-3 px-4">${fatwa.muftisahab || "—"}</td>
-//             <td class="py-3 px-4">${new Date(
-//               fatwa.created_at
-//             ).toLocaleDateString("ur-PK")}</td>
-//             <td class="py-3 px-4 flex space-x-2 justify-end">
-//               <button class="edit-btn text-green-600 hover:underline" data-id="${
-//                 fatwa.id
-//               }">✏️</button>
-//               <button class="delete-btn text-red-600 hover:underline" data-id="${
-//                 fatwa.id
-//               }">🗑️</button>
-//             </td>
-//           `;
-//           tableBody.appendChild(row);
-//         });
-
-//         offset += fatawa.length;
-
-//         if (fatawa.length < limit) {
-//           hasMore = false;
-//           loadMoreBtn.style.display = "none";
-//         } else {
-//           loadMoreBtn.style.display = "block";
-//         }
-//       } else {
-//         console.error("❌ Error loading fatawa:", fatawa.error);
-//       }
-//     } catch (err) {
-//       console.error("❌ Network error:", err);
-//     }
-//   }
-
-//   loadFatawa();
-
-//   loadMoreBtn.addEventListener("click", () => {
-//     if (hasMore) loadFatawa();
-//   });
-
-//   // === Edit / Delete handlers ===
-//   tableBody.addEventListener("click", async (e) => {
-//     const target = e.target;
-
-//     // Delete
-//     if (target.classList.contains("delete-btn")) {
-//       const id = target.dataset.id;
-//       if (confirm("کیا آپ واقعی اس فتویٰ کو حذف کرنا چاہتے ہیں؟")) {
-//         try {
-//           const res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`, {
-//             method: "DELETE",
-//           });
-//           const data = await res.json();
-
-//           if (res.ok) {
-//             alert("✅ فتویٰ حذف کر دیا گیا!");
-//             target.closest("tr").remove();
-//           } else {
-//             alert("❌ Error: " + (data.error || "Failed to delete"));
-//           }
-//         } catch (err) {
-//           console.error(err);
-//           alert("❌ Network error. Please try again.");
-//         }
-//       }
-//     }
-
-//     // Edit
-//     if (target.classList.contains("edit-btn")) {
-//       const id = target.dataset.id;
-//       try {
-//         const res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`);
-//         const fatwa = await res.json();
-
-//         if (res.ok) {
-//           // Fill form
-//           document.getElementById("ms-fatwa-id").value = fatwa.id;
-//           document.getElementById("ms-fatwa-title").value = fatwa.Title;
-//           document.getElementById("ms-fatwa-slug").value = fatwa.slug || "";
-//           document.getElementById("ms-fatwa-keywords-input").value =
-//             fatwa.tags || "";
-//           document.getElementById("ms-fatwa-meta-description").value =
-//             fatwa.tafseel || "";
-//           document.getElementById("ms-fatwa-question").innerHTML =
-//             fatwa.detailquestion || "";
-//           document.getElementById("ms-fatwa-answer").innerHTML =
-//             fatwa.Answer || "";
-//           document.getElementById("ms-fatwa-mufti").value =
-//             fatwa.muftisahab || "";
-
-//           // Switch to form page
-//           window.location.hash = "add-fatwa";
-//         } else {
-//           alert("❌ Error fetching fatwa for edit");
-//         }
-//       } catch (err) {
-//         console.error(err);
-//         alert("❌ Network error while fetching fatwa.");
-//       }
-//     }
-//   });
-
-//   // === Form submission (create or update) ===
-//   form.addEventListener("submit", async (e) => {
-//     e.preventDefault();
-//     showLoader();
-
-//     const id = document.getElementById("ms-fatwa-id").value;
-
-//     const fatwaData = {
-//       Title: document.getElementById("ms-fatwa-title").value.trim(),
-//       slug: document.getElementById("ms-fatwa-slug").value.trim(),
-//       tags: document.getElementById("ms-fatwa-keywords-input").value.trim(),
-//       tafseel: document
-//         .getElementById("ms-fatwa-meta-description")
-//         .value.trim(),
-//       detailquestion: document
-//         .getElementById("ms-fatwa-question")
-//         .innerHTML.trim(),
-//       Answer: document.getElementById("ms-fatwa-answer").innerHTML.trim(),
-//       muftisahab: document.getElementById("ms-fatwa-mufti").value.trim(),
-//     };
-
-//     try {
-//       let res, data;
-
-//       if (id) {
-//         // Update existing fatwa
-//         res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`, {
-//           method: "PUT",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify(fatwaData),
-//         });
-//       } else {
-//         // Create new fatwa
-//         res = await fetch("https://masailworld.onrender.com/api/fatwa/dashboard", {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify(fatwaData),
-//         });
-//       }
-
-//       data = await res.json();
-//       hideLoader();
-
-//       if (res.ok) {
-//         alert(
-//           id
-//             ? "✅ فتویٰ کامیابی سے اپڈیٹ کر دیا گیا!"
-//             : "✅ فتویٰ کامیابی سے شامل کر دیا گیا!"
-//         );
-//         form.reset();
-//         document.getElementById("ms-fatwa-id").value = "";
-
-//         setTimeout(() => {
-//           window.location.hash = "manage-fatawa";
-//           tableBody.innerHTML = ""; // refresh table
-//           offset = 0;
-//           hasMore = true;
-//           loadFatawa();
-//         }, 1000);
-//       } else {
-//         alert("❌ Error: " + (data.error || "Failed to save fatwa"));
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       hideLoader();
-//       alert("❌ Network error. Please try again.");
-//     }
-//   });
-// });
-
-
+// View , Add and Edit , delete fatawa end here 
 document.addEventListener("DOMContentLoaded", async () => {
   // DOM elements
   const form = document.getElementById("ms-fatwa-form");
   const tableBody = document.getElementById("ms-fatawa-table-body");
   const manageFatawaPage = document.getElementById("ms-page-manage-fatawa");
+  const mozuwatSelect = document.getElementById("ms-fatwa-mozuwat");
 
   // === Loader ===
   const loader = document.createElement("div");
@@ -275,8 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // === Mozuwat dropdown loader ===
   const MOZUWAT_API = "https://masailworld.onrender.com/api/tags";
-  const mozuwatSelect = document.getElementById("ms-fatwa-mozuwat");
-
   async function loadMozuwatDropdown() {
     if (!mozuwatSelect) return;
     mozuwatSelect.innerHTML = `<option value="">لوڈ ہو رہا ہے...</option>`;
@@ -294,9 +74,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       data.forEach((tag) => {
         const opt = document.createElement("option");
-        // store tag.id. If you prefer slug, change to tag.slug
-        opt.value = tag.id ?? tag.slug ?? tag.Name;
-        opt.textContent = tag.Name ?? tag.slug ?? String(tag.id);
+        // store tag.id by default. Change to tag.slug if you prefer slug.
+        opt.value = String(tag.id ?? tag.slug ?? tag.Name ?? "");
+        opt.textContent = tag.Name ?? tag.slug ?? String(tag.id ?? "");
         mozuwatSelect.appendChild(opt);
       });
     } catch (err) {
@@ -305,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Call it now and wait so edit-prefill can set value afterwards
+  // load tags first — ensures edit-prefill can set the select value reliably
   await loadMozuwatDropdown();
 
   // === Load fatawa into table ===
@@ -321,7 +101,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      // If empty response array, handle that
       if (!Array.isArray(fatawa) || fatawa.length === 0) {
         hasMore = false;
         loadMoreBtn.style.display = "none";
@@ -347,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <button class="delete-btn text-red-600 hover:underline" data-id="${fatwa.id}">🗑️</button>
           </td>
         `;
-        tableBody.appendChild(row);
+        if (tableBody) tableBody.appendChild(row);
       });
 
       offset += fatawa.length;
@@ -363,7 +142,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Initial load
   if (tableBody) loadFatawa();
 
   loadMoreBtn.addEventListener("click", () => {
@@ -413,7 +191,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
           }
 
-          // Fill form
+          // Fill form fields
           document.getElementById("ms-fatwa-id").value = fatwa.id ?? "";
           document.getElementById("ms-fatwa-title").value = fatwa.Title ?? "";
           document.getElementById("ms-fatwa-slug").value = fatwa.slug ?? "";
@@ -423,32 +201,43 @@ document.addEventListener("DOMContentLoaded", async () => {
           document.getElementById("ms-fatwa-answer").innerHTML = fatwa.Answer ?? "";
           document.getElementById("ms-fatwa-mufti").value = fatwa.muftisahab ?? "";
 
-          // Set mozuwat select value if present. Wait a short time in case options are still rendering.
-          const setMozuwatValue = () => {
-            if (!mozuwatSelect) return;
-            // fatwa.mozuwat is expected to be tag id (or slug if you store slug)
-            const val = fatwa.mozuwat ?? fatwa.mozuwat_id ?? fatwa.mozuwatSlug ?? "";
-            if (!val) return;
-            // set value if option exists
-            const optionExists = Array.from(mozuwatSelect.options).some(o => String(o.value) === String(val));
-            if (optionExists) {
-              mozuwatSelect.value = String(val);
-            } else {
-              // create a temporary option if API didn't include this tag (defensive)
+          // === Prefill mozuwat ===
+          // fatwa may include mozuwat (id), mozuwat_id, mozuwatSlug, or mozuwat_name.
+          // We'll try to find the right option; if it's missing, create a temporary option.
+          if (mozuwatSelect) {
+            const valCandidates = [
+              fatwa.mozuwat,
+              fatwa.mozuwat_id,
+              fatwa.mozuwatSlug,
+              fatwa.mozuwatId, // extra fallback
+            ].filter(Boolean);
+
+            const candidate = valCandidates.length ? String(valCandidates[0]) : "";
+
+            const setMozuwatValue = (value) => {
+              if (!value) return;
+              const exists = Array.from(mozuwatSelect.options).some(
+                (o) => String(o.value) === String(value)
+              );
+              if (exists) {
+                mozuwatSelect.value = String(value);
+                return;
+              }
+              // not present in options: add temp option (show name if available)
               const tempOpt = document.createElement("option");
-              tempOpt.value = String(val);
-              // show the tag name if available, otherwise use id
-              tempOpt.textContent = fatwa.mozuwat_name ?? fatwa.mozuwatName ?? `Tag ${val}`;
+              tempOpt.value = String(value);
+              tempOpt.textContent =
+                fatwa.mozuwat_name ?? fatwa.mozuwatName ?? fatwa.mozuwatDisplay ?? `Tag ${value}`;
               mozuwatSelect.appendChild(tempOpt);
-              mozuwatSelect.value = String(val);
-            }
-          };
+              mozuwatSelect.value = String(value);
+            };
 
-          // Try immediately and again after 200ms to be robust
-          setMozuwatValue();
-          setTimeout(setMozuwatValue, 200);
+            // try immediately and again after a short delay in case options are still populating
+            setMozuwatValue(candidate);
+            setTimeout(() => setMozuwatValue(candidate), 200);
+          }
 
-          // Switch to form page
+          // switch to add/edit page
           window.location.hash = "add-fatwa";
         } catch (err) {
           console.error(err);
@@ -476,14 +265,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         muftisahab: document.getElementById("ms-fatwa-mufti").value.trim() || null,
         // mozuwat: selected tag id OR null if none selected
         mozuwat: (() => {
-          const v = mozuwatSelect ? mozuwatSelect.value : "";
+          if (!mozuwatSelect) return null;
+          const v = mozuwatSelect.value;
           return v === "" ? null : v;
         })(),
       };
 
       try {
         let res;
-
         if (id) {
           // Update existing fatwa
           res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`, {
@@ -531,9 +320,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 });
-
-
-// View , Add and Edit , delete fatawa end here 
 
 
 // View , Add and Edit , delete Article start here 
