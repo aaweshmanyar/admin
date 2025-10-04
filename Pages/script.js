@@ -1960,3 +1960,1098 @@ document.addEventListener("DOMContentLoaded", loadPendingFatwas);
 
 
 
+// Listing Fatawa Search 
+
+  (function () {
+    const tbody = document.getElementById('ms-fatawa-table-body');
+    const input = document.getElementById('ms-fatawa-search');
+    const btn = document.getElementById('ms-fatawa-search-btn');
+    const dd = document.getElementById('ms-fatawa-suggestions');
+
+    let currentIndex = -1; // for keyboard navigation
+    let lastQuery = '';
+
+    // Utility: get all row data (live)
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Build a display string per row for matching + a label for suggestions
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected order: [0]=number, [1]=title, [2]=mufti, [3]=date
+      const number = cells[0]?.innerText?.trim() || '';
+      const title = cells[1]?.innerText?.trim() || '';
+      const mufti = cells[2]?.innerText?.trim() || '';
+      const date  = cells[3]?.innerText?.trim() || '';
+      const haystack = [number, title, mufti, date].join(' | ').toLowerCase();
+      const label = title || number || '—';
+      return { tr, number, title, mufti, date, haystack, label };
+    }
+
+    // Show/hide dropdown
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    // Render suggestions list
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      let count = 0;
+      records.forEach(rec => {
+        if (count >= max) return;
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+        // Simple highlight (no HTML injection)
+        const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const title = rec.title || '—';
+        const meta = `${rec.number} • ${rec.mufti} • ${rec.date}`.replace(/^ • /, '');
+        li.innerHTML = `
+          <div class="font-medium">${safe(title)}</div>
+          <div class="text-sm text-gray-500">${safe(meta)}</div>
+        `;
+        li.addEventListener('click', () => {
+          input.value = rec.title || rec.number;
+          applyFilter(q);
+          hideDropdown();
+          // Scroll the matched row into view
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+        dd.appendChild(li);
+        count++;
+      });
+
+      if (count === 0) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    // Core filter
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      // Filter rows
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      // Rebuild suggestions based on matches
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      // If search cleared, hide dropdown
+      if (!query) hideDropdown();
+
+      // If no matches, still show "no result" dropdown
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    // Debounce helper
+    function debounce(fn, ms) {
+      let t; return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard navigation for dropdown
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          // run search if no selection
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // Watch for dynamic table changes (if rows come later via JS)
+    const mo = new MutationObserver(() => {
+      // Re-apply current filter when table updates
+      applyFilter(lastQuery);
+    });
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial pass (if table already has rows)
+    applyFilter('');
+  })();
+
+
+
+
+
+
+  // Listing Article Search 
+
+   (function () {
+    const tbody = document.getElementById('ms-articles-table-body');
+    const input = document.getElementById('ms-articles-search');
+    const btn = document.getElementById('ms-articles-search-btn');
+    const dd = document.getElementById('ms-articles-suggestions');
+
+    let currentIndex = -1;
+    let lastQuery = '';
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Map each row -> searchable record
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected order: [0]=title, [1]=author, [2]=date
+      const title  = cells[0]?.innerText?.trim() || '';
+      const author = cells[1]?.innerText?.trim() || '';
+      const date   = cells[2]?.innerText?.trim() || '';
+      const haystack = [title, author, date].join(' | ').toLowerCase();
+      const label = title || author || '—';
+      return { tr, title, author, date, haystack, label };
+    }
+
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      let count = 0;
+
+      records.slice(0, max).forEach(rec => {
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+
+        const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const meta = `${rec.author} • ${rec.date}`.replace(/^ • /, '');
+
+        li.innerHTML = `
+          <div class="font-medium">${safe(rec.title || '—')}</div>
+          <div class="text-sm text-gray-500">${safe(meta)}</div>
+        `;
+
+        li.addEventListener('click', () => {
+          input.value = rec.title || rec.author;
+          applyFilter(q);
+          hideDropdown();
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+
+        dd.appendChild(li);
+        count++;
+      });
+
+      if (count === 0) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      // Filter table rows
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      // Suggestions mirror the matches
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      if (!query) hideDropdown();
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    function debounce(fn, ms) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Wire up events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard nav for suggestions
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // If rows are injected later, keep filter in sync
+    const mo = new MutationObserver(() => applyFilter(lastQuery));
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial pass
+    applyFilter('');
+  })();
+
+
+  // Listing Book search 
+
+   (function () {
+    const tbody = document.getElementById('ms-books-table-body');
+    const input = document.getElementById('ms-books-search');
+    const btn = document.getElementById('ms-books-search-btn');
+    const dd = document.getElementById('ms-books-suggestions');
+
+    let currentIndex = -1;
+    let lastQuery = '';
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Convert a table row into a searchable record
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected order: [0]=book title, [1]=author, [2]=actions
+      const title  = cells[0]?.innerText?.trim() || '';
+      const author = cells[1]?.innerText?.trim() || '';
+      const haystack = [title, author].join(' | ').toLowerCase();
+      return { tr, title, author, haystack };
+    }
+
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      records.slice(0, max).forEach(rec => {
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+        li.innerHTML = `
+          <div class="font-medium">${safe(rec.title || '—')}</div>
+          <div class="text-sm text-gray-500">${safe(rec.author || '')}</div>
+        `;
+        li.addEventListener('click', () => {
+          input.value = rec.title || rec.author || '';
+          applyFilter(q);
+          hideDropdown();
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+        dd.appendChild(li);
+      });
+
+      if (!dd.children.length) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      if (!query) hideDropdown();
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    function debounce(fn, ms) {
+      let t; return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard navigation for the dropdown
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // Keep results in sync if rows load dynamically
+    const mo = new MutationObserver(() => applyFilter(lastQuery));
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial render
+    applyFilter('');
+  })();
+
+
+
+
+
+  // Listing Ulema Searching 
+
+  (function () {
+    const tbody = document.getElementById('ms-ulema-table-body');
+    const input = document.getElementById('ms-ulema-search');
+    const btn = document.getElementById('ms-ulema-search-btn');
+    const dd = document.getElementById('ms-ulema-suggestions');
+
+    let currentIndex = -1;
+    let lastQuery = '';
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Map row -> searchable record
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected order: [0]=name, [1]=designation, [2]=actions
+      const name = cells[0]?.innerText?.trim() || '';
+      const designation = cells[1]?.innerText?.trim() || '';
+      const haystack = [name, designation].join(' | ').toLowerCase();
+      return { tr, name, designation, haystack };
+    }
+
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      records.slice(0, max).forEach(rec => {
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+        li.innerHTML = `
+          <div class="font-medium">${safe(rec.name || '—')}</div>
+          <div class="text-sm text-gray-500">${safe(rec.designation || '')}</div>
+        `;
+        li.addEventListener('click', () => {
+          input.value = rec.name || rec.designation || '';
+          applyFilter(q);
+          hideDropdown();
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+        dd.appendChild(li);
+      });
+
+      if (!dd.children.length) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      if (!query) hideDropdown();
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    function debounce(fn, ms) {
+      let t; return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard navigation in dropdown
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // Keep in sync if rows load dynamically
+    const mo = new MutationObserver(() => applyFilter(lastQuery));
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial render
+    applyFilter('');
+  })();
+
+
+
+  // Listing Category Search 
+
+    (function () {
+    const tbody = document.getElementById('ms-categories-table-body');
+    const input = document.getElementById('ms-categories-search');
+    const btn = document.getElementById('ms-categories-search-btn');
+    const dd = document.getElementById('ms-categories-suggestions');
+
+    let currentIndex = -1;
+    let lastQuery = '';
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Extract searchable data from each row
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected order: [0]=thumbnail, [1]=name, [2]=icon, [3]=actions
+      const name = cells[1]?.innerText?.trim() || '';
+      const icon = cells[2]?.innerText?.trim() || '';
+      const haystack = [name, icon].join(' | ').toLowerCase();
+      return { tr, name, icon, haystack };
+    }
+
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      records.slice(0, max).forEach(rec => {
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+        li.innerHTML = `
+          <div class="font-medium">${safe(rec.name || '—')}</div>
+          <div class="text-sm text-gray-500">${safe(rec.icon || '')}</div>
+        `;
+        li.addEventListener('click', () => {
+          input.value = rec.name || rec.icon || '';
+          applyFilter(q);
+          hideDropdown();
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+        dd.appendChild(li);
+      });
+
+      if (!dd.children.length) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      if (!query) hideDropdown();
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    function debounce(fn, ms) {
+      let t; return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard navigation in dropdown
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // Keep in sync if rows load dynamically
+    const mo = new MutationObserver(() => applyFilter(lastQuery));
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial render
+    applyFilter('');
+  })();
+
+
+
+  // Listing Question Search input 
+
+  (function () {
+    const tbody = document.getElementById('ms-questions-table-body');
+    const input = document.getElementById('ms-questions-search');
+    const btn = document.getElementById('ms-questions-search-btn');
+    const dd = document.getElementById('ms-questions-suggestions');
+
+    let currentIndex = -1;
+    let lastQuery = '';
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Extract searchable data from each row
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected: [0]=user, [1]=summary, [2]=status, [3]=actions
+      const user = cells[0]?.innerText?.trim() || '';
+      const summary = cells[1]?.innerText?.trim() || '';
+      const status = cells[2]?.innerText?.trim() || '';
+      const haystack = [user, summary, status].join(' | ').toLowerCase();
+      return { tr, user, summary, status, haystack };
+    }
+
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      records.slice(0, max).forEach(rec => {
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+        li.innerHTML = `
+          <div class="font-medium">${safe(rec.summary || '—')}</div>
+          <div class="text-sm text-gray-500">${safe(rec.user)} • ${safe(rec.status)}</div>
+        `;
+        li.addEventListener('click', () => {
+          input.value = rec.summary || rec.user || '';
+          applyFilter(q);
+          hideDropdown();
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+        dd.appendChild(li);
+      });
+
+      if (!dd.children.length) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      if (!query) hideDropdown();
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    function debounce(fn, ms) {
+      let t; return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // Observe table for dynamic row updates
+    const mo = new MutationObserver(() => applyFilter(lastQuery));
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial filter
+    applyFilter('');
+  })();
+
+
+
+  // Listing a User search input 
+
+   (function () {
+    const tbody = document.getElementById('ms-users-table-body');
+    const input = document.getElementById('ms-users-search');
+    const btn = document.getElementById('ms-users-search-btn');
+    const dd = document.getElementById('ms-users-suggestions');
+
+    let currentIndex = -1;
+    let lastQuery = '';
+
+    function getRows() {
+      return Array.from(tbody.querySelectorAll('tr'));
+    }
+
+    // Extract searchable data
+    function rowToRecord(tr) {
+      const cells = tr.querySelectorAll('td, th');
+      // Expected: [0]=name, [1]=email, [2]=actions
+      const name = cells[0]?.innerText?.trim() || '';
+      const email = cells[1]?.innerText?.trim() || '';
+      const haystack = [name, email].join(' | ').toLowerCase();
+      return { tr, name, email, haystack };
+    }
+
+    function showDropdown() { dd.classList.remove('hidden'); }
+    function hideDropdown() {
+      dd.classList.add('hidden');
+      currentIndex = -1;
+      Array.from(dd.children).forEach(li => li.classList.remove('bg-gray-100'));
+    }
+
+    function renderSuggestions(records, q) {
+      dd.innerHTML = '';
+      if (!q) { hideDropdown(); return; }
+
+      const max = 10;
+      const safe = (s) => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+      records.slice(0, max).forEach(rec => {
+        const li = document.createElement('li');
+        li.tabIndex = 0;
+        li.className = 'px-4 py-2 cursor-pointer hover:bg-gray-100';
+        li.innerHTML = `
+          <div class="font-medium">${safe(rec.name || '—')}</div>
+          <div class="text-sm text-gray-500">${safe(rec.email || '')}</div>
+        `;
+        li.addEventListener('click', () => {
+          input.value = rec.name || rec.email || '';
+          applyFilter(q);
+          hideDropdown();
+          rec.tr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          rec.tr.classList.add('ring-2', 'ring-midnight_green', 'rounded');
+          setTimeout(() => rec.tr.classList.remove('ring-2', 'ring-midnight_green', 'rounded'), 1200);
+        });
+        li.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') li.click();
+        });
+        dd.appendChild(li);
+      });
+
+      if (!dd.children.length) {
+        const li = document.createElement('li');
+        li.className = 'px-4 py-2 text-gray-500';
+        li.textContent = 'کوئی نتیجہ نہیں ملا';
+        dd.appendChild(li);
+      }
+
+      showDropdown();
+    }
+
+    function applyFilter(q) {
+      const query = (q ?? input.value).trim().toLowerCase();
+      lastQuery = query;
+
+      const rows = getRows();
+      const records = rows.map(rowToRecord);
+
+      let visibleCount = 0;
+      records.forEach(rec => {
+        const match = !query || rec.haystack.includes(query);
+        rec.tr.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+      });
+
+      renderSuggestions(records.filter(r => r.haystack.includes(query)), query);
+
+      if (!query) hideDropdown();
+      if (query && visibleCount === 0) showDropdown();
+    }
+
+    function debounce(fn, ms) {
+      let t; return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), ms);
+      };
+    }
+
+    const debouncedFilter = debounce(() => applyFilter(input.value), 150);
+
+    // Events
+    input.addEventListener('input', debouncedFilter);
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      applyFilter(input.value);
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+      const items = Array.from(dd.querySelectorAll('li'));
+      if (dd.classList.contains('hidden') || items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentIndex = (currentIndex + 1) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentIndex = (currentIndex - 1 + items.length) % items.length;
+        items.forEach(li => li.classList.remove('bg-gray-100'));
+        items[currentIndex].classList.add('bg-gray-100');
+        items[currentIndex].scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (currentIndex >= 0 && items[currentIndex]) {
+          e.preventDefault();
+          items[currentIndex].click();
+        } else {
+          applyFilter(input.value);
+        }
+      } else if (e.key === 'Escape') {
+        hideDropdown();
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dd.contains(e.target) && e.target !== input) hideDropdown();
+    });
+
+    // Watch for table updates
+    const mo = new MutationObserver(() => applyFilter(lastQuery));
+    mo.observe(tbody, { childList: true, subtree: true });
+
+    // Initial
+    applyFilter('');
+  })();
