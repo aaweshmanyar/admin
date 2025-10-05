@@ -36,6 +36,115 @@
   </style>
 </head>
 
+<div class="flex h-screen">
+  <aside id="ms-sidebar"
+    class="w-64 bg-midnight_green text-beige flex-col shadow-2xl fixed top-0 right-0 h-full z-20 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 translate-x-full">
+    <div class="p-6 text-center border-b border-midnight_green-400">
+      <h1 class="text-3xl font-bold">مسائل ورلڈ</h1>
+      <p class="text-sm text-air_force_blue-700">ایڈمن پینل</p>
+    </div>
+    <nav class="flex-1 px-4 py-6 space-y-2">
+      <a href="#dashboard"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-speedometer2 ml-3 text-2xl"></i>
+        <span>ڈیش بورڈ</span>
+      </a>
+      <a href="#manage-fatawa"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-journal-check ml-3 text-2xl"></i>
+        <span>فتاویٰ</span>
+      </a>
+      <a href="#manage-articles"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-pencil-square ml-3 text-2xl"></i>
+        <span>مضامین</span>
+      </a>
+      <a href="#manage-books"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-book-half ml-3 text-2xl"></i>
+        <span>کتابیں</span>
+      </a>
+      <a href="#manage-ulema"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-people-fill ml-3 text-2xl"></i>
+        <span>علمائے کرام</span>
+      </a>
+      <a href="#manage-categories"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-grid-fill ml-3 text-2xl"></i>
+        <span>موضوعات</span>
+      </a>
+      <a href="#manage-questions"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-patch-question-fill ml-3 text-2xl"></i>
+        <span>موصول سوالات</span>
+      </a>
+      <!-- <a href="#manage-submissions"
+                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+                    <i class="bi bi-send-check ml-3 text-2xl"></i>
+                    <span>مفتی کی گذارشات</span>
+                </a> -->
+      <a href="#manage-users"
+        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
+        <i class="bi bi-person-gear ml-3 text-2xl"></i>
+        <span>صارفین کا انتظام</span>
+      </a>
+    </nav>
+    <div class="p-4 border-t border-midnight_green-400">
+      <div class="flex items-center p-2 rounded-md hover:bg-rich_black transition">
+        <img src="https://placehold.co/40x40/eff6e0/124559?text=A" class="w-10 h-10 rounded-full"
+          onerror="this.onerror=null;this.src='https://placehold.co/40x40/eff6e0/124559?text=A';">
+        <div class="mr-3">
+          <p id="user-name" class="font-bold text-lg">ایڈمن</p>
+          <a href="../Login.html" class="text-sm text-air_force_blue-700 hover:text-beige">لاگ
+            آؤٹ</a>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="ms-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden"></div>
+
+  <div class="flex-1 flex flex-col">
+
+
+    <header
+      class="bg-white shadow-md p-4 flex flex-col md:flex-row md:justify-between md:items-center gap-3 sticky top-0 z-10">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <button id="ms-sidebar-toggle" class="text-midnight_green text-2xl ml-4">
+            <i class="bi bi-list"></i>
+          </button>
+          <div id="ms-breadcrumb" class="hidden md:block text-sm"></div>
+        </div>
+        <h1 class="text-xl font-bold text-midnight_green md:hidden">ایڈمن پینل</h1>
+      </div>
+
+      <!-- Global Search (added) -->
+      <div class="w-full md:w-1/2 relative" dir="rtl">
+        <label for="ms-global-search" class="sr-only">تلاش کریں</label>
+        <div class="flex gap-2">
+          <input id="ms-global-search" type="text"
+            class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+            placeholder="تلاش کریں… (فتاویٰ، مضامین، کتابیں، علما وغیرہ)" />
+          <button id="ms-global-search-btn"
+            class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+            تلاش
+          </button>
+        </div>
+
+        <!-- Dropdown (added) -->
+        <ul id="ms-global-search-suggestions"
+          class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-auto hidden">
+          <!-- filled dynamically -->
+        </ul>
+      </div>
+    </header>
+
+
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+      <div id="ms-admin-main-content">
+
 <body class="bg-gray-100">
 
   <div class="as-admin-page qalam-admin-page max-w-4xl mx-auto py-8">
@@ -95,6 +204,10 @@
       </form>
     </div>
   </div>
+
+  </body>
+  </div>
+  </main>
 
   <script>
     const API_URL = "https://masailworld.onrender.com/api/aleem";
