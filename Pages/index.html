@@ -252,15 +252,41 @@
         <div id="ms-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden"></div>
 
         <div class="flex-1 flex flex-col">
-            <header class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
-                <div class="flex items-center">
-                    <button id="ms-sidebar-toggle" class="text-midnight_green text-2xl ml-4">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <div id="ms-breadcrumb" class="hidden md:block text-sm"></div>
+           
+
+            <header
+                class="bg-white shadow-md p-4 flex flex-col md:flex-row md:justify-between md:items-center gap-3 sticky top-0 z-10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="ms-sidebar-toggle" class="text-midnight_green text-2xl ml-4">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <div id="ms-breadcrumb" class="hidden md:block text-sm"></div>
+                    </div>
+                    <h1 class="text-xl font-bold text-midnight_green md:hidden">ایڈمن پینل</h1>
                 </div>
-                <h1 class="text-xl font-bold text-midnight_green md:hidden">ایڈمن پینل</h1>
+
+                <!-- Global Search (added) -->
+                <div class="w-full md:w-1/2 relative" dir="rtl">
+                    <label for="ms-global-search" class="sr-only">تلاش کریں</label>
+                    <div class="flex gap-2">
+                        <input id="ms-global-search" type="text"
+                            class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                            placeholder="تلاش کریں… (فتاویٰ، مضامین، کتابیں، علما وغیرہ)" />
+                        <button id="ms-global-search-btn"
+                            class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                            تلاش
+                        </button>
+                    </div>
+
+                    <!-- Dropdown (added) -->
+                    <ul id="ms-global-search-suggestions"
+                        class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-auto hidden">
+                        <!-- filled dynamically -->
+                    </ul>
+                </div>
             </header>
+
 
             <main class="flex-1 p-4 md:p-6 overflow-y-auto">
                 <div id="ms-admin-main-content">
@@ -316,88 +342,7 @@
                             </div>
                         </div>
 
-                        <!-- Dashboard Status Redirection -->
-                        <!-- <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-600">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">کل فتاویٰ</p>
-                                        <p id="ms-total-fatawa" class="text-4xl font-bold text-rich_black mt-2">0</p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-journal-check text-3xl text-midnight_green"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-air_force_blue">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">کل مضامین</p>
-                                        <p id="ms-total-articles" class="text-4xl font-bold text-rich_black mt-2">0</p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-pencil-square text-3xl text-air_force_blue"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-ash_gray">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">کل کتابیں</p>
-                                        <p id="ms-total-books" class="text-4xl font-bold text-rich_black mt-2">0</p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-book-half text-3xl text-ash_gray-500"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-midnight_green-700">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">کل موضوعات</p>
-                                        <p id="ms-total-categories" class="text-4xl font-bold text-rich_black mt-2">0
-                                        </p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-grid-fill text-3xl text-midnight_green-700"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-rich_black-700">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">نئے سوالات</p>
-                                        <p id="ms-total-questions" class="text-4xl font-bold text-rich_black mt-2">0</p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-patch-question-fill text-3xl text-rich_black-700"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-beige-300">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">کل صارفین</p>
-                                        <p id="ms-total-users" class="text-4xl font-bold text-rich_black mt-2">0</p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-people text-3xl text-beige-400"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-xl text-air_force_blue">التوا میں گذارشات</p>
-                                        <p id="ms-total-submissions" class="text-4xl font-bold text-rich_black mt-2">0
-                                        </p>
-                                    </div>
-                                    <div class="p-3 bg-gray-100 rounded-full">
-                                        <i class="bi bi-send-exclamation text-3xl text-yellow-600"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
+
 
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
 
@@ -503,6 +448,81 @@
 
                         </div>
 
+                        <!-- ==== Recent Activity (تازہ ترین سرگرمیاں) ==== -->
+<section id="ms-recent-activity" class="mt-10">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl font-bold text-midnight_green">
+      تازہ ترین سرگرمیاں (Recent Activity)
+    </h2>
+    <div id="ms-recent-activity-loader" class="hidden">
+      <div class="inline-flex items-center gap-2 text-air_force_blue text-sm">
+        <span class="w-4 h-4 border-2 border-midnight_green border-t-transparent rounded-full animate-spin"></span>
+        لوڈ ہو رہا ہے…
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    <!-- Books -->
+    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-rich_black">کتب (Books)</h3>
+        <a href="index.html#manage-books" class="text-sm text-midnight_green hover:underline">مزید</a>
+      </div>
+      <ul id="ms-activity-books" class="space-y-2"></ul>
+    </div>
+
+    <!-- Articles -->
+    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-rich_black">مضامین (Articles)</h3>
+        <a href="index.html#manage-articles" class="text-sm text-midnight_green hover:underline">مزید</a>
+      </div>
+      <ul id="ms-activity-articles" class="space-y-2"></ul>
+    </div>
+
+    <!-- Fatawa -->
+    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-rich_black">فتاویٰ (Fatawa)</h3>
+        <a href="index.html#manage-fatawa" class="text-sm text-midnight_green hover:underline">مزید</a>
+      </div>
+      <ul id="ms-activity-fatawa" class="space-y-2"></ul>
+    </div>
+
+    <!-- Ulema -->
+    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-rich_black">علمائے کرام (Ulema)</h3>
+        <a href="index.html#manage-ulema" class="text-sm text-midnight_green hover:underline">مزید</a>
+      </div>
+      <ul id="ms-activity-ulema" class="space-y-2"></ul>
+    </div>
+
+    <!-- Tags -->
+    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-rich_black">موضوعات (Tags)</h3>
+        <a href="index.html#manage-categories" class="text-sm text-midnight_green hover:underline">مزید</a>
+      </div>
+      <ul id="ms-activity-tags" class="space-y-2"></ul>
+    </div>
+
+    <!-- Users -->
+    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-rich_black">صارفین (Users)</h3>
+        <a href="index.html#manage-users" class="text-sm text-midnight_green hover:underline">مزید</a>
+      </div>
+      <ul id="ms-activity-users" class="space-y-2"></ul>
+    </div>
+
+  </div>
+</section>
+
+
 
                     </div>
 
@@ -531,11 +551,10 @@
                     </div> -->
 
 
-                    <div id="ms-page-manage-fatawa" class="as-admin-page qalam-admin-page">
+                    <!-- <div id="ms-page-manage-fatawa" class="as-admin-page qalam-admin-page">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                             <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">فتاویٰ کا انتظام</h1>
 
-                            <!-- Search + button + suggestions (added) -->
                             <div class="w-full md:w-1/2 relative" dir="rtl">
                                 <label for="ms-fatawa-search" class="sr-only">فتویٰ تلاش کریں</label>
                                 <div class="flex gap-2">
@@ -548,10 +567,9 @@
                                     </button>
                                 </div>
 
-                                <!-- Suggestions dropdown (added) -->
                                 <ul id="ms-fatawa-suggestions"
                                     class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-                                    <!-- filled dynamically -->
+                                    
                                 </ul>
                             </div>
 
@@ -574,8 +592,76 @@
                                 <tbody id="ms-fatawa-table-body"></tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> -->
 
+
+                    <div id="ms-page-manage-fatawa" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">فتاویٰ کا انتظام</h1>
+
+                            <!-- Search + button + suggestions -->
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-fatawa-search" class="sr-only">فتویٰ تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-fatawa-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="فتویٰ تلاش کریں (نمبر، عنوان، مفتی، تاریخ)…" />
+                                    <button id="ms-fatawa-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
+
+                                <!-- Suggestions dropdown -->
+                                <ul id="ms-fatawa-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                    <!-- filled dynamically -->
+                                </ul>
+                            </div>
+
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <button id="ms-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد فتاویٰ حذف کریں
+                                </button>
+
+                                <button
+                                    class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                    data-target="add-fatwa">
+                                    نیا فتویٰ شامل کریں
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <th class="py-3 px-4">نمبر</th>
+                                            <th class="py-3 px-4">عنوان</th>
+                                            <th class="py-3 px-4">مفتی صاحب</th>
+                                            <th class="py-3 px-4">حالت</th>
+                                            <th class="py-3 px-4">تاریخ</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-fatawa-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div id="ms-fatawa-pagination" class="mt-4 flex flex-wrap items-center justify-center gap-2"
+                                dir="rtl">
+                                <!-- buttons inserted dynamically -->
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Add Fatawa -->
                     <div id="ms-page-add-fatwa" class="as-admin-page qalam-admin-page">
@@ -697,11 +783,11 @@
                         </div>
                     </div> -->
 
-                    <div id="ms-page-manage-articles" class="as-admin-page qalam-admin-page">
+                    <!-- <div id="ms-page-manage-articles" class="as-admin-page qalam-admin-page">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                             <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">مضامین کا انتظام</h1>
 
-                            <!-- Search + button + suggestions (added) -->
+                           
                             <div class="w-full md:w-1/2 relative" dir="rtl">
                                 <label for="ms-articles-search" class="sr-only">مضمون تلاش کریں</label>
                                 <div class="flex gap-2">
@@ -714,10 +800,10 @@
                                     </button>
                                 </div>
 
-                                <!-- Suggestions dropdown (added) -->
+                                
                                 <ul id="ms-articles-suggestions"
                                     class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-                                    <!-- filled dynamically -->
+                                    
                                 </ul>
                             </div>
 
@@ -739,7 +825,72 @@
                                 <tbody id="ms-articles-table-body"></tbody>
                             </table>
                         </div>
+                    </div> -->
+
+                    <div id="ms-page-manage-articles" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">مضامین کا انتظام</h1>
+
+                            <!-- Search + button + suggestions -->
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-articles-search" class="sr-only">مضمون تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-articles-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="مضمون تلاش کریں (عنوان، مصنف، تاریخ)…" />
+                                    <button id="ms-articles-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
+
+                                <!-- Suggestions dropdown -->
+                                <ul id="ms-articles-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                    <!-- filled dynamically -->
+                                </ul>
+                            </div>
+
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <button id="ms-articles-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد مضامین حذف کریں
+                                </button>
+
+                                <button
+                                    class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                    data-target="add-article">نیا مضمون شامل کریں</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-articles-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <th class="py-3 px-4">عنوان</th>
+                                            <th class="py-3 px-4">مصنف</th>
+                                            <th class="py-3 px-4">تاریخ</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-articles-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div id="ms-articles-pagination"
+                                class="mt-4 flex flex-wrap items-center justify-center gap-2" dir="rtl">
+                                <!-- buttons inserted dynamically -->
+                            </div>
+                        </div>
                     </div>
+
                     <!-- Adding Articles -->
                     <div id="ms-page-add-article" class="as-admin-page qalam-admin-page">
                         <div class="flex justify-between items-center mb-8">
@@ -867,11 +1018,11 @@
                         </div>
                     </div> -->
 
-                    <div id="ms-page-manage-books" class="as-admin-page qalam-admin-page">
+                    <!-- <div id="ms-page-manage-books" class="as-admin-page qalam-admin-page">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                             <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">کتابوں کا انتظام</h1>
 
-                            <!-- Search + button + suggestions (added) -->
+                            
                             <div class="w-full md:w-1/2 relative" dir="rtl">
                                 <label for="ms-books-search" class="sr-only">کتاب تلاش کریں</label>
                                 <div class="flex gap-2">
@@ -884,10 +1035,10 @@
                                     </button>
                                 </div>
 
-                                <!-- Suggestions dropdown (added) -->
+                               
                                 <ul id="ms-books-suggestions"
                                     class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-                                    <!-- filled dynamically -->
+                                    
                                 </ul>
                             </div>
 
@@ -907,6 +1058,69 @@
                                 </thead>
                                 <tbody id="ms-books-table-body"></tbody>
                             </table>
+                        </div>
+                    </div> -->
+
+                    <div id="ms-page-manage-books" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">کتابوں کا انتظام</h1>
+
+                            <!-- Search + button + suggestions -->
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-books-search" class="sr-only">کتاب تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-books-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="کتاب تلاش کریں (نام، مصنف)…" />
+                                    <button id="ms-books-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
+
+                                <!-- Suggestions dropdown (optional) -->
+                                <ul id="ms-books-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                    <!-- filled dynamically if you wire it -->
+                                </ul>
+                            </div>
+
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <button id="ms-books-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد کتابیں حذف کریں
+                                </button>
+
+                                <button
+                                    class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                    data-target="add-book">نئی کتاب شامل کریں</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-books-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <th class="py-3 px-4">کتاب کا نام</th>
+                                            <th class="py-3 px-4">مصنف</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-books-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div id="ms-books-pagination" class="mt-4 flex flex-wrap items-center justify-center gap-2"
+                                dir="rtl">
+                                <!-- buttons inserted dynamically -->
+                            </div>
                         </div>
                     </div>
 
@@ -998,11 +1212,11 @@
                     </div> -->
 
 
-                    <div id="ms-page-manage-ulema" class="as-admin-page qalam-admin-page">
+                    <!-- <div id="ms-page-manage-ulema" class="as-admin-page qalam-admin-page">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                             <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">علمائے کرام کا انتظام</h1>
 
-                            <!-- Search + button + suggestions (added) -->
+                            
                             <div class="w-full md:w-1/2 relative" dir="rtl">
                                 <label for="ms-ulema-search" class="sr-only">عالم تلاش کریں</label>
                                 <div class="flex gap-2">
@@ -1015,10 +1229,10 @@
                                     </button>
                                 </div>
 
-                                <!-- Suggestions dropdown (added) -->
+                              
                                 <ul id="ms-ulema-suggestions"
                                     class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-                                    <!-- filled dynamically -->
+                               
                                 </ul>
                             </div>
 
@@ -1039,14 +1253,124 @@
                                 <tbody id="ms-ulema-table-body"></tbody>
                             </table>
                         </div>
+                    </div> -->
+
+                    <!-- ==== Manage Ulema Page (unchanged IDs/classes) ==== -->
+                    <div id="ms-page-manage-ulema" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">علمائے کرام کا انتظام</h1>
+
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-ulema-search" class="sr-only">عالم تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-ulema-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="عالم تلاش کریں (نام، عہدہ)…" />
+                                    <button id="ms-ulema-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
+
+                                <ul id="ms-ulema-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                </ul>
+                            </div>
+
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <button id="ms-ulema-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد علما حذف کریں
+                                </button>
+
+                                <button
+                                    class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                    data-target="add-ulema">نئے عالم شامل کریں</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-ulema-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <th class="py-3 px-4">نام</th>
+                                            <th class="py-3 px-4">عہدہ</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-ulema-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <div id="ms-ulema-pagination" class="mt-4 flex flex-wrap items-center justify-center gap-2"
+                                dir="rtl"></div>
+                        </div>
                     </div>
 
+                    <!-- ==== Quick View Modal (unchanged IDs/classes) ==== -->
+                    <div id="ms-ulema-modal" class="fixed inset-0 z-50 hidden">
+                        <div class="absolute inset-0 bg-black/60"></div>
+                        <div class="relative max-w-xl mx-auto mt-24 bg-white rounded-2xl shadow-xl overflow-hidden">
+                            <div class="flex items-center justify-between px-5 py-4 border-b">
+                                <h3 class="text-xl font-semibold text-midnight_green">عالم کی تفصیل</h3>
+                                <button id="ms-ulema-modal-close"
+                                    class="text-gray-500 hover:text-gray-800 text-2xl leading-none">&times;</button>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex gap-4 items-start">
+                                    <img id="ms-ulema-modal-photo" src="" alt="Profile"
+                                        class="w-24 h-24 rounded-xl object-cover bg-gray-100">
+                                    <div class="flex-1">
+                                        <div class="text-lg font-bold" id="ms-ulema-modal-name">—</div>
+                                        <div class="text-sm text-gray-600" id="ms-ulema-modal-position">—</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="text-sm text-gray-800 leading-7" id="ms-ulema-modal-about">—</div>
+                                </div>
+                            </div>
+                            <div class="px-5 py-4 border-t flex justify-end">
+                                <button id="ms-ulema-modal-ok"
+                                    class="px-4 py-2 rounded-lg bg-midnight_green text-white hover:bg-midnight_green-400">
+                                    بند کریں
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Add a Ulema -->
+                    <!-- ==== Global overlay spinner (added) ==== -->
+                    <div id="ulema-global-loader" class="fixed inset-0 hidden z-50">
+                        <div class="absolute inset-0 bg-black/50"></div>
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==== Upload progress overlay (added) ==== -->
+                    <div id="ulema-upload-overlay" class="fixed inset-0 hidden z-50">
+                        <div class="absolute inset-0 bg-black/60"></div>
+                        <div class="relative max-w-md mx-auto mt-40 bg-white rounded-2xl shadow-xl p-6">
+                            <h3 class="text-lg font-semibold text-midnight_green mb-4">تصویر اپلوڈ ہو رہی ہے…</h3>
+                            <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+                                <div id="ulema-upload-bar" class="h-3 bg-midnight_green" style="width:0%"></div>
+                            </div>
+                            <div id="ulema-upload-text" class="mt-3 text-sm text-gray-700 text-center">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- ==== Add Ulema Page (unchanged IDs/classes) ==== -->
                     <div id="ms-page-add-ulema" class="as-admin-page qalam-admin-page">
                         <div class="flex justify-between items-center mb-8">
-                            <h1 id="ms-ulema-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">نئے
-                                عالم شامل کریں</h1>
+                            <h1 id="ms-ulema-form-title" class="text-3xl md:text-4xl font-bold text-midnight_green">
+                                نئے عالم شامل کریں
+                            </h1>
                             <a href="#manage-ulema"
                                 class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
                                 <i class="bi bi-arrow-right ml-2"></i>
@@ -1073,8 +1397,13 @@
                                 <div>
                                     <label for="ms-ulema-photo"
                                         class="block text-xl font-bold text-midnight_green mb-2">تصویر</label>
-                                    <input type="file" id="ms-ulema-photo"
+                                    <input type="file" id="ms-ulema-photo" accept="image/*"
                                         class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                                    <!-- (optional) local preview -->
+                                    <div class="mt-3">
+                                        <img id="ms-ulema-photo-preview"
+                                            class="w-24 h-24 object-cover rounded-xl hidden" alt="Preview">
+                                    </div>
                                 </div>
                                 <div>
                                     <label for="ms-ulema-bio"
@@ -1084,16 +1413,18 @@
                                 <div
                                     class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
                                     <button type="submit"
-                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">پبلش
-                                        کریں</button>
+                                        class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        پبلش کریں
+                                    </button>
                                     <button type="button"
                                         class="as-cancel-btn w-full md:w-auto bg-ash_gray text-rich_black py-3 px-8 rounded-lg text-lg hover:bg-ash_gray-400 transition"
-                                        data-target="manage-ulema">منسوخ کریں</button>
+                                        data-target="manage-ulema">
+                                        منسوخ کریں
+                                    </button>
                                 </div>
                             </form>
                         </div>
                     </div>
-
                     <!-- Listing Category -->
 
                     <!-- <div id="ms-page-manage-categories" class="as-admin-page qalam-admin-page">
@@ -1119,53 +1450,123 @@
                     </div> -->
 
 
+                    <!-- <div id="ms-page-manage-categories" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موضوعات کا انتظام</h1>
+
+                            
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-categories-search" class="sr-only">موضوع تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-categories-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="موضوع تلاش کریں (نام، آئیکن)…" />
+                                    <button id="ms-categories-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
+
+                              
+                                <ul id="ms-categories-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                               
+                                </ul>
+                            </div>
+
+                            <button
+                                class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                data-target="add-category">نیا موضوع شامل کریں</button>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="py-3 px-4">تھمبنیل</th>
+                                        <th class="py-3 px-4">موضوع کا نام</th>
+                                        <th class="py-3 px-4">آئیکن</th>
+                                        <th class="py-3 px-4">اعمال</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ms-categories-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div> -->
+
+                    <!-- ==== Manage Categories Page (unchanged main IDs/classes) ==== -->
                     <div id="ms-page-manage-categories" class="as-admin-page qalam-admin-page">
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-    <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موضوعات کا انتظام</h1>
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موضوعات کا انتظام</h1>
 
-    <!-- Search + button + suggestions (added) -->
-    <div class="w-full md:w-1/2 relative" dir="rtl">
-      <label for="ms-categories-search" class="sr-only">موضوع تلاش کریں</label>
-      <div class="flex gap-2">
-        <input
-          id="ms-categories-search"
-          type="text"
-          class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
-          placeholder="موضوع تلاش کریں (نام، آئیکن)…" />
-        <button
-          id="ms-categories-search-btn"
-          class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
-          تلاش
-        </button>
-      </div>
+                            <!-- Search + suggestions -->
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-categories-search" class="sr-only">موضوع تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-categories-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="موضوع تلاش کریں (نام، آئیکن)…" />
+                                    <button id="ms-categories-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
+                                <ul id="ms-categories-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                </ul>
+                            </div>
 
-      <!-- Suggestions dropdown (added) -->
-      <ul
-        id="ms-categories-suggestions"
-        class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-        <!-- dynamically filled -->
-      </ul>
-    </div>
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <!-- Bulk delete -->
+                                <button id="ms-categories-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد موضوعات حذف کریں
+                                </button>
 
-    <button
-      class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
-      data-target="add-category">نیا موضوع شامل کریں</button>
-  </div>
+                                <button
+                                    class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                    data-target="add-category">نیا موضوع شامل کریں</button>
+                            </div>
+                        </div>
 
-  <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
-    <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
-      <thead>
-        <tr class="border-b-2 border-gray-200">
-          <th class="py-3 px-4">تھمبنیل</th>
-          <th class="py-3 px-4">موضوع کا نام</th>
-          <th class="py-3 px-4">آئیکن</th>
-          <th class="py-3 px-4">اعمال</th>
-        </tr>
-      </thead>
-      <tbody id="ms-categories-table-body"></tbody>
-    </table>
-  </div>
-</div>
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <!-- Select-all -->
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-categories-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <th class="py-3 px-4">آئی ڈی</th>
+                                            <th class="py-3 px-4">تھمبنیل</th>
+                                            <th class="py-3 px-4">موضوع کا نام</th>
+                                            <th class="py-3 px-4">آئیکن</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-categories-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div id="ms-categories-pagination"
+                                class="mt-4 flex flex-wrap items-center justify-center gap-2" dir="rtl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Global overlay spinner -->
+                    <div id="categories-global-loader" class="fixed inset-0 hidden z-50">
+                        <div class="absolute inset-0 bg-black/50"></div>
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin">
+                            </div>
+                        </div>
+                    </div>
+
+
 
 
                     <!-- Add Category -->
@@ -1253,49 +1654,76 @@
                         </div>
                     </div> -->
 
-<div id="ms-page-manage-questions" class="as-admin-page qalam-admin-page">
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-    <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موصول سوالات</h1>
+                    <!-- ==== Manage Questions Page (unchanged main wrapper ID) ==== -->
+                    <div id="ms-page-manage-questions" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موصول سوالات</h1>
 
-    <!-- Search + button + suggestions (added) -->
-    <div class="w-full md:w-1/2 relative" dir="rtl">
-      <label for="ms-questions-search" class="sr-only">سوال تلاش کریں</label>
-      <div class="flex gap-2">
-        <input
-          id="ms-questions-search"
-          type="text"
-          class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
-          placeholder="سوال تلاش کریں (صارف، خلاصہ، کیفیت)…" />
-        <button
-          id="ms-questions-search-btn"
-          class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
-          تلاش
-        </button>
-      </div>
+                            <!-- Search + suggestions -->
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-questions-search" class="sr-only">سوال تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-questions-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="سوال تلاش کریں (صارف، خلاصہ، کیفیت)…" />
+                                    <button id="ms-questions-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
 
-      <!-- Suggestions dropdown (added) -->
-      <ul
-        id="ms-questions-suggestions"
-        class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-        <!-- dynamically filled -->
-      </ul>
-    </div>
-  </div>
+                                <!-- Suggestions dropdown (kept hidden unless you wire it later) -->
+                                <ul id="ms-questions-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                </ul>
+                            </div>
 
-  <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
-    <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
-      <thead>
-        <tr class="border-b-2 border-gray-200">
-          <th class="py-3 px-4">صارف</th>
-          <th class="py-3 px-4">سوال کا خلاصہ</th>
-          <th class="py-3 px-4">کیفیت</th>
-          <th class="py-3 px-4">اعمال</th>
-        </tr>
-      </thead>
-      <tbody id="ms-questions-table-body"></tbody>
-    </table>
-  </div>
-</div>
+                            <!-- Bulk delete -->
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <button id="ms-questions-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد سوالات حذف کریں
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <!-- Select-all -->
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-questions-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <th class="py-3 px-4">آئی ڈی</th>
+                                            <th class="py-3 px-4">صارف</th>
+                                            <th class="py-3 px-4">سوال کا خلاصہ</th>
+                                            <th class="py-3 px-4">کیفیت</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-questions-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div id="ms-questions-pagination"
+                                class="mt-4 flex flex-wrap items-center justify-center gap-2" dir="rtl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Global overlay spinner -->
+                    <div id="questions-global-loader" class="fixed inset-0 hidden z-50">
+                        <div class="absolute inset-0 bg-black/50"></div>
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin">
+                            </div>
+                        </div>
+                    </div>
+
 
                     <!-- Answer Questions -->
                     <div id="ms-page-answer-question" class="as-admin-page qalam-admin-page">
@@ -1357,53 +1785,74 @@
                         </div>
                     </div> -->
 
-                  <div id="ms-page-manage-users" class="as-admin-page qalam-admin-page">
-  <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-    <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">صارفین کا انتظام</h1>
+                    <!-- ==== Manage Users Page (unchanged main wrapper ID) ==== -->
+                    <div id="ms-page-manage-users" class="as-admin-page qalam-admin-page">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">صارفین کا انتظام</h1>
 
-    <!-- Search + button + suggestions (added) -->
-    <div class="w-full md:w-1/2 relative" dir="rtl">
-      <label for="ms-users-search" class="sr-only">صارف تلاش کریں</label>
-      <div class="flex gap-2">
-        <input
-          id="ms-users-search"
-          type="text"
-          class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
-          placeholder="صارف تلاش کریں (نام، ای میل)…" />
-        <button
-          id="ms-users-search-btn"
-          class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
-          تلاش
-        </button>
-      </div>
+                            <!-- Search + suggestions -->
+                            <div class="w-full md:w-1/2 relative" dir="rtl">
+                                <label for="ms-users-search" class="sr-only">صارف تلاش کریں</label>
+                                <div class="flex gap-2">
+                                    <input id="ms-users-search" type="text"
+                                        class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+                                        placeholder="صارف تلاش کریں (نام، ای میل)…" />
+                                    <button id="ms-users-search-btn"
+                                        class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
+                                        تلاش
+                                    </button>
+                                </div>
 
-      <!-- Suggestions dropdown (added) -->
-      <ul
-        id="ms-users-suggestions"
-        class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
-        <!-- dynamically filled -->
-      </ul>
-    </div>
+                                <!-- Suggestions dropdown (kept hidden unless you wire it later) -->
+                                <ul id="ms-users-suggestions"
+                                    class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-auto hidden">
+                                </ul>
+                            </div>
 
-    <button
-      class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
-      data-target="add-user">نیا صارف شامل کریں</button>
-  </div>
+                            <div class="flex items-center gap-2 w-full md:w-auto">
+                                <!-- NEW: bulk delete -->
+                                <button id="ms-users-bulk-delete-btn"
+                                    class="bg-red-600 text-white py-3 px-4 rounded-lg text-lg hover:bg-red-700 transition disabled:opacity-50"
+                                    disabled>
+                                    متعدد صارفین حذف کریں
+                                </button>
 
-  <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
-    <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
-      <thead>
-        <tr class="border-b-2 border-gray-200">
-          <th class="py-3 px-4">نام</th>
-          <th class="py-3 px-4">ای میل</th>
-          <th class="py-3 px-4">اعمال</th>
-        </tr>
-      </thead>
-      <tbody id="ms-users-table-body"></tbody>
-    </table>
-  </div>
-</div>
-                  
+                                <button
+                                    class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
+                                    data-target="add-user">نیا صارف شامل کریں</button>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-2 md:p-6 rounded-xl shadow-lg">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
+                                    <thead>
+                                        <tr class="border-b-2 border-gray-200">
+                                            <!-- NEW: select-all -->
+                                            <th class="py-3 px-4 w-10">
+                                                <input id="ms-users-select-all" type="checkbox"
+                                                    class="w-5 h-5 accent-midnight_green" />
+                                            </th>
+                                            <!-- NEW: ID column -->
+                                            <th class="py-3 px-4">آئی ڈی</th>
+                                            <th class="py-3 px-4">نام</th>
+                                            <th class="py-3 px-4">ای میل</th>
+                                            <th class="py-3 px-4">اعمال</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ms-users-table-body"></tbody>
+                                </table>
+                            </div>
+
+                            <!-- NEW: pagination -->
+                            <div id="ms-users-pagination" class="mt-4 flex flex-wrap items-center justify-center gap-2"
+                                dir="rtl"></div>
+                        </div>
+                    </div>
+
+                    <!-- Reuse your global loader with id="loader" (already created in your script) -->
+
+
                     <!--Add Users  -->
                     <div id="ms-page-add-user" class="as-admin-page qalam-admin-page">
                         <div class="flex justify-between items-center mb-8">
