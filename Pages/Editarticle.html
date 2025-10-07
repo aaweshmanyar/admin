@@ -17,7 +17,7 @@
   <!-- Quill CSS -->
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-  <style>
+  <!-- <style>
     @font-face {
       font-family: 'NaatFont';
       src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
@@ -33,8 +33,168 @@
     /* ensure container keeps input at end and wraps pills */
     .as-tag-input-container{ min-height:48px; display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px; }
     .as-tag-input-field{ min-width:120px; border:0; outline:0; padding:8px 4px; background:transparent; font-size:16px; color:#0f172a }
-  </style>
-</head>
+  </style> -->
+
+  <style>
+        @font-face {
+            font-family: 'NaatFont';
+            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'NaatFont', serif;
+            font-size: 80%;
+            overscroll-behavior: none;
+        }
+
+        .qalam-admin-page {
+            display: none;
+        }
+
+        .qalam-admin-page.qalam-active {
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #124559;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0b2935;
+        }
+
+        .qalam-sidebar-link.qalam-active {
+            background-color: #01161e;
+            border-right: 4px solid #eff6e0;
+        }
+
+        @media (max-width: 768px) {
+            .qalam-responsive-table thead {
+                display: none;
+            }
+
+            .qalam-responsive-table tr {
+                display: block;
+                margin-bottom: 1.5rem;
+                border: 1px solid #dee2e6;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+
+            .qalam-responsive-table td {
+                display: block;
+                text-align: left;
+                padding: 0.5rem 0;
+                border-bottom: 1px dashed #e5e7eb;
+            }
+
+            .qalam-responsive-table td:last-child {
+                border-bottom: none;
+            }
+
+            .qalam-responsive-table td::before {
+                content: attr(data-label);
+                float: right;
+                font-weight: bold;
+                margin-left: 1rem;
+            }
+        }
+
+        .qalam-dropdown-options {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .qalam-dropdown-option {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .qalam-dropdown-option:hover {
+            background-color: #f0f0f1;
+        }
+
+        .qalam-tag-pill {
+            background-color: #124559;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .qalam-tag-remove-btn {
+            margin-right: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .qalam-rich-text-editor {
+            background-color: white;
+            border-radius: 0.5rem;
+            border: 2px solid #aec3b0;
+        }
+
+        .ql-editor {
+            min-height: 250px;
+            font-family: 'Jameel Noori Nastaleeq', serif;
+            font-size: 18px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=jameel]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=jameel]::before {
+            content: 'نستعلیق';
+            font-family: 'Jameel Noori Nastaleeq', serif;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=lateef]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=lateef]::before {
+            content: 'لطیف';
+            font-family: 'Lateef', cursive;
+        }
+
+        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=scheherazade]::before,
+        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=scheherazade]::before {
+            content: 'شہرزاد';
+            font-family: 'Scheherazade New', serif;
+        }
+
+        .ql-toolbar.ql-snow {
+            direction: ltr;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rich_black': { DEFAULT: '#01161e', 100: '#000406', 200: '#00090c', 300: '#010d12', 400: '#011118', 500: '#01161e', 600: '#04597b', 700: '#079cd8', 800: '#45c6f9', 900: '#a2e3fc' },
+                        'midnight_green': { DEFAULT: '#124559', 100: '#040e12', 200: '#071c24', 300: '#0b2935', 400: '#0f3747', 500: '#124559', 600: '#20799c', 700: '#36a9d6', 800: '#79c5e4', 900: '#bce2f1' },
+                        'air_force_blue': { DEFAULT: '#598392', 100: '#121a1d', 200: '#24343a', 300: '#354e57', 400: '#476874', 500: '#598392', 600: '#769dab', 700: '#99b6c0', 800: '#bbced5', 900: '#dde7ea' },
+                        'ash_gray': { DEFAULT: '#aec3b0', 100: '#1f2a20', 200: '#3e5441', 300: '#5e7f61', 400: '#83a386', 500: '#aec3b0', 600: '#bdcebf', 700: '#cedbcf', 800: '#dee7df', 900: '#eff3ef' },
+                        'beige': { DEFAULT: '#eff6e0', 100: '#384915', 200: '#71912a', 300: '#a4cc4e', 400: '#c9e197', 500: '#eff6e0', 600: '#f2f8e6', 700: '#f5f9ec', 800: '#f8fbf2', 900: '#fcfdf9' }
+                    }
+                }
+            }
+        }
+    </script>
+    </head>
 
 
 <div class="flex h-screen">
@@ -45,37 +205,37 @@
       <p class="text-sm text-air_force_blue-700">ایڈمن پینل</p>
     </div>
     <nav class="flex-1 px-4 py-6 space-y-2">
-      <a href="#dashboard"
+      <a href="./index.html#dashboard"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-speedometer2 ml-3 text-2xl"></i>
         <span>ڈیش بورڈ</span>
       </a>
-      <a href="#manage-fatawa"
+      <a href="./index.html#manage-fatawa"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-journal-check ml-3 text-2xl"></i>
         <span>فتاویٰ</span>
       </a>
-      <a href="#manage-articles"
+      <a href="./index.html#manage-articles"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-pencil-square ml-3 text-2xl"></i>
         <span>مضامین</span>
       </a>
-      <a href="#manage-books"
+      <a href="./index.html#manage-books"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-book-half ml-3 text-2xl"></i>
         <span>کتابیں</span>
       </a>
-      <a href="#manage-ulema"
+      <a href="./index.html#manage-ulema"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-people-fill ml-3 text-2xl"></i>
         <span>علمائے کرام</span>
       </a>
-      <a href="#manage-categories"
+      <a href="./index.html#manage-categories"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-grid-fill ml-3 text-2xl"></i>
         <span>موضوعات</span>
       </a>
-      <a href="#manage-questions"
+      <a href="./index.html#manage-questions"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-patch-question-fill ml-3 text-2xl"></i>
         <span>موصول سوالات</span>
@@ -85,7 +245,7 @@
                     <i class="bi bi-send-check ml-3 text-2xl"></i>
                     <span>مفتی کی گذارشات</span>
                 </a> -->
-      <a href="#manage-users"
+      <a href="./index.html#manage-users"
         class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
         <i class="bi bi-person-gear ml-3 text-2xl"></i>
         <span>صارفین کا انتظام</span>
@@ -177,7 +337,7 @@
               <label for="ms-article-keywords-input" class="block text-xl font-bold text-midnight_green mb-2">کلیدی الفاظ (Tags)</label>
               <div class="relative">
                 <div id="ms-article-keywords-container" class="as-tag-input-container w-full border-2 border-ash_gray rounded-lg">
-                  <input type="text" id="ms-article-keywords-input" class="as-tag-input-field" placeholder="ٹیگ شامل کریں... (Enter یا , دبائیں)">
+                  <input type="text" id="ms-article-keywords-input" class="w-full py-3 px-4 border-2  rounded-lg text-rich_black text-lg font-sans" placeholder="ٹیگ شامل کریں... (Enter یا , دبائیں)">
                 </div>
                 <input type="hidden" id="ms-article-keywords" name="tags" value="">
               </div>
