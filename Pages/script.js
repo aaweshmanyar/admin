@@ -1263,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const apiBase = "https://masailworld.onrender.com/api/article"; // API endpoint
+  const apiBase = "https://api.masailworld.com/api/article"; // API endpoint
 
   // DOM references
   const tableBody = document.getElementById("ms-articles-table-body");
@@ -1416,8 +1416,31 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentQuery = "";
 
   function formatDate(value) {
-    const d = new Date(value || Date.now());
+    const d = value ? new Date(value) : new Date();
     return d.toLocaleDateString("ur-PK", { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  // ===== helpers to unwrap API shapes =====
+  function unwrapArray(payload) {
+    // Accept: [ ... ] OR { data: [ ... ] } OR { success: true, data: [ ... ] }
+    if (Array.isArray(payload)) return payload;
+    if (payload && Array.isArray(payload.data)) return payload.data;
+    return null;
+  }
+  function unwrapObject(payload) {
+    // Accept: { ... } OR { data: { ... } }
+    if (payload && payload.data && typeof payload.data === "object") return payload.data;
+    if (payload && typeof payload === "object") return payload;
+    return null;
+  }
+  function extractTotal(payload) {
+    // Try a few common spots
+    if (payload == null) return null;
+    if (Number.isFinite(payload.total)) return payload.total;
+    if (Number.isFinite(payload.count)) return payload.count;
+    if (payload.meta && Number.isFinite(payload.meta.total)) return payload.meta.total;
+    if (payload.data && Number.isFinite(payload.data.total)) return payload.data.total;
+    return null;
   }
 
   // ===== Try count endpoint if available =====
@@ -1426,8 +1449,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`${apiBase}/count`);
       if (!res.ok) return null;
       const data = await res.json();
-      const count = typeof data === "number" ? data : data?.count;
-      return Number.isFinite(count) ? count : null;
+      // Accept number, {count}, {total}, {data:{count}}, etc.
+      if (Number.isFinite(data)) return data;
+      const unwrapped = unwrapObject(data);
+      const candidates = [
+        data?.count,
+        data?.total,
+        unwrapped?.count,
+        unwrapped?.total,
+      ];
+      const firstNumber = candidates.find((n) => Number.isFinite(n));
+      return Number.isFinite(firstNumber) ? firstNumber : null;
     } catch {
       return null;
     }
@@ -1543,17 +1575,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ===== Fetch a page (robust to {success,data:[...]} etc.) =====
   async function fetchPage(page) {
     const offset = (page - 1) * PAGE_SIZE;
     const url = new URL(apiBase);
     url.searchParams.set("limit", PAGE_SIZE);
     url.searchParams.set("offset", offset);
     if (currentQuery.trim()) url.searchParams.set("q", currentQuery.trim());
+
     const res = await fetch(url.toString());
-    const data = await res.json();
-    if (!res.ok) throw new Error(data?.error || "Failed to load articles");
-    if (!Array.isArray(data)) throw new Error("Unexpected response format");
-    return data;
+    const raw = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = raw?.error || `HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+
+    const items = unwrapArray(raw);
+    if (!Array.isArray(items)) {
+      throw new Error("Unexpected response format");
+    }
+
+    // Try to set totals if provided by API (optional)
+    const maybeTotal = extractTotal(raw);
+    if (Number.isFinite(maybeTotal)) {
+      totalItems = maybeTotal;
+      totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+    }
+
+    return items;
   }
 
   async function refreshTotalsIfNeeded(firstPageLength) {
@@ -1753,11 +1802,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const url = id ? `${apiBase}/${id}` : apiBase;
 
         const res = await fetch(url, { method, body: fd });
-        if (!res.ok) {
-          const errBody = await res.json().catch(() => ({}));
-          throw new Error(errBody.error || `HTTP ${res.status}`);
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok || body?.success === false) {
+          const errMsg = body?.error || body?.message || `HTTP ${res.status}`;
+          throw new Error(errMsg);
         }
-        await res.json();
+
         alert(id ? "✅ Article updated!" : "✅ Article created!");
 
         resetForm();
@@ -1822,8 +1872,14 @@ document.addEventListener("DOMContentLoaded", () => {
   async function populateForm(id) {
     try {
       const res = await fetch(`${apiBase}/${id}`);
-      if (!res.ok) throw new Error(`Server returned ${res.status}`);
-      const article = await res.json();
+      const raw = await res.json().catch(() => ({}));
+      if (!res.ok || raw?.success === false) {
+        const msg = raw?.error || raw?.message || `Server returned ${res.status}`;
+        throw new Error(msg);
+      }
+
+      const article = unwrapObject(raw);
+      if (!article) throw new Error("Unexpected response format for article");
 
       resetForm();
 
@@ -1834,7 +1890,15 @@ document.addEventListener("DOMContentLoaded", () => {
       authorInput.value = article.writer || article.author || "";
 
       if (article.tags) {
-        article.tags.split(",").forEach((tag) => addTagPill(tag.trim()));
+        // tags can be "a,b" OR "[]"
+        const tagStr = Array.isArray(article.tags)
+          ? article.tags.join(",")
+          : String(article.tags);
+        tagStr
+          .split(",")
+          .map((t) => t.replace(/^\[|\]$/g, "").trim()) // clean "[]"
+          .filter(Boolean)
+          .forEach((tag) => addTagPill(tag));
       }
 
       if (quillInstance) {
@@ -1861,6 +1925,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== Initial load =====
   refreshTable();
 });
+
 
 // -----------------------------------------------------------------
 
