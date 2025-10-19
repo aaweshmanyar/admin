@@ -3658,23 +3658,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // -------------------------------------------------------- Categories
 
-
 (() => {
-  const TAGS_API = "https://masailworld.onrender.com/api/tags";
+  const TAGS_API = "https://api.masailworld.com/api/tags";
+
+  /* ---------- Tunables ---------- */
+  const SUGGESTION_LIMIT = 10;
 
   document.addEventListener("DOMContentLoaded", () => {
     cacheDom();
     initUI();
     initSearch();
-    initForm();       // create/update if the form exists on the page
-    refreshTable();   // initial load
+    initForm();
+    refreshTable();
   });
 
   /* ---------- State ---------- */
   const STATE = {
     pageSize: 10,
     currentPage: 1,
-    hasNext: false,     // computed using "one extra" fetch
+    hasNext: false,
     selected: new Set(),
     query: "",
   };
@@ -3691,7 +3693,6 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.searchBtn   = document.getElementById("ms-categories-search-btn");
     DOM.suggestions = document.getElementById("ms-categories-suggestions");
 
-    // Form (if present on the same page)
     DOM.form       = document.getElementById("ms-category-form");
     DOM.fId        = document.getElementById("ms-category-id");
     DOM.fName      = document.getElementById("ms-category-name");
@@ -3700,7 +3701,6 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.fDesc      = document.getElementById("ms-category-description");
     DOM.fThumb     = document.getElementById("ms-category-thumbnail");
 
-    // loader overlay
     DOM.overlay = document.getElementById("categories-global-loader");
   }
 
@@ -3710,37 +3710,112 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 
-  function showOverlay() { DOM.overlay?.classList.remove("hidden"); }
-  function hideOverlay() { DOM.overlay?.classList.add("hidden"); }
+  const showOverlay = () => DOM.overlay?.classList.remove("hidden");
+  const hideOverlay = () => DOM.overlay?.classList.add("hidden");
+
+  // Normalize the tag object (no roman fields)
+  function normalizeTag(tag) {
+    const id =
+      tag.id ?? tag.Id ?? tag.ID ?? tag._id ?? tag.tagId ?? null;
+
+    const name =
+      tag.Name ?? tag.name ?? tag.title ?? tag.label ?? "";
+
+    const iconClass =
+      tag.iconClass ?? tag.IconClass ?? tag.icon ?? "";
+
+    const createdRaw =
+      tag.createdAt ?? tag.CreatedAt ?? tag.created ?? tag.dateAdded ?? tag.insertedAt ?? null;
+
+    let createdTs = null;
+    if (createdRaw) {
+      const ts = Date.parse(createdRaw);
+      createdTs = isNaN(ts) ? null : ts;
+    }
+
+    let idNum = null;
+    if (id != null && /^[0-9]+$/.test(String(id))) idNum = Number(id);
+
+    const nameLower = String(name).toLowerCase();
+    const slug = String(tag.slug ?? "").toLowerCase();
+
+    return { raw: tag, id, name, iconClass, createdTs, idNum, nameLower, slug };
+  }
+
+  // Enforce DESC (latest first): createdAt desc → numeric id desc → name desc
+  function sortTagsDesc(list) {
+    return list.slice().sort((a, b) => {
+      const A = normalizeTag(a);
+      const B = normalizeTag(b);
+
+      if (A.createdTs !== null && B.createdTs !== null) return B.createdTs - A.createdTs;
+      if (A.createdTs !== null) return -1;
+      if (B.createdTs !== null) return 1;
+
+      if (A.idNum !== null && B.idNum !== null) return B.idNum - A.idNum;
+      if (A.idNum !== null) return -1;
+      if (B.idNum !== null) return 1;
+
+      return String(B.name).localeCompare(String(A.name));
+    });
+  }
+
+  function debounce(fn, ms) {
+    let t = null;
+    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+  }
 
   /* ---------- Fetch helpers ---------- */
-  // CORE: use "one extra" technique to discover if next page exists
-  async function fetchPage(page) {
-    const offset = (page - 1) * STATE.pageSize;
+  async function fetchRaw({ limit, offset, q }) {
     const url = new URL(TAGS_API);
-    // request one more than page size
-    url.searchParams.set("limit", STATE.pageSize + 1);
-    url.searchParams.set("offset", offset);
-    if (STATE.query) url.searchParams.set("q", STATE.query);
+    if (limit != null)  url.searchParams.set("limit", limit);
+    if (offset != null) url.searchParams.set("offset", offset);
+
+    // Ask the server for newest-first, but we still sort on the client.
+    url.searchParams.set("sort", "-createdAt");
+    url.searchParams.set("order", "desc");
+
+    if ((q || "").trim()) {
+      url.searchParams.set("q", q);
+      url.searchParams.set("search", q);
+    }
 
     const res = await fetch(url.toString());
-    const json = await res.json();
+    const json = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
-    // accept multiple shapes
-    let rows = Array.isArray(json) ? json
-            : Array.isArray(json.rows) ? json.rows
-            : Array.isArray(json.data) ? json.data
-            : Array.isArray(json.items) ? json.items
-            : [];
+    const rows = Array.isArray(json) ? json
+              : Array.isArray(json.rows) ? json.rows
+              : Array.isArray(json.data) ? json.data
+              : Array.isArray(json.items) ? json.items
+              : [];
+    return rows;
+  }
 
-    // determine hasNext using the extra record
+  async function fetchPage(page) {
+    const offset = (page - 1) * STATE.pageSize;
+    let rows = await fetchRaw({ limit: STATE.pageSize + 1, offset, q: STATE.query || "" });
+
+    // Always sort client-side to guarantee DESC
+    rows = sortTagsDesc(rows);
+
     let hasNext = false;
     if (rows.length > STATE.pageSize) {
       hasNext = true;
       rows = rows.slice(0, STATE.pageSize);
     }
     return { rows, hasNext };
+  }
+
+  async function fetchSuggestions(q) {
+    if (!q) return [];
+    try {
+      let rows = await fetchRaw({ limit: Math.max(SUGGESTION_LIMIT * 2, 20), offset: 0, q });
+      rows = sortTagsDesc(rows);
+      return rows.slice(0, SUGGESTION_LIMIT);
+    } catch {
+      return [];
+    }
   }
 
   /* ---------- Render ---------- */
@@ -3753,48 +3828,33 @@ document.addEventListener("DOMContentLoaded", () => {
       b.textContent = label;
       b.className =
         "min-w-[2.5rem] px-3 py-2 rounded-md border text-sm " +
-        (active
-          ? "bg-midnight_green text-white border-midnight_green"
-          : "bg-white border-gray-300 hover:bg-gray-50") +
+        (active ? "bg-midnight_green text-white border-midnight_green"
+                : "bg-white border-gray-300 hover:bg-gray-50") +
         (disabled ? " opacity-50 cursor-not-allowed" : "");
       b.disabled = disabled;
-      if (!disabled) {
-        b.addEventListener("click", () => {
-          if (page !== STATE.currentPage) {
-            STATE.currentPage = page;
-            refreshTable();
-          }
-        });
-      }
+      if (!disabled) b.addEventListener("click", () => {
+        if (page !== STATE.currentPage) { STATE.currentPage = page; refreshTable(); }
+      });
       return b;
     };
 
-    // First & Prev
     DOM.pager.appendChild(makeBtn("اول", 1, STATE.currentPage === 1));
-    DOM.pager.appendChild(
-      makeBtn("پچھلا", Math.max(1, STATE.currentPage - 1), STATE.currentPage === 1)
-    );
+    DOM.pager.appendChild(makeBtn("پچھلا", Math.max(1, STATE.currentPage - 1), STATE.currentPage === 1));
 
-    // Simple numeric window (no totals); show up to 5 pages centered on current.
-    const start = Math.max(1, STATE.currentPage - 2);
-    const end   = STATE.hasNext ? STATE.currentPage + 2 : STATE.currentPage;
-    for (let p = start; p <= end; p++) {
+    const windowSize = 5;
+    let start = Math.max(1, STATE.currentPage - 2);
+    for (let p = start; p < start + windowSize; p++) {
       if (p <= 0) continue;
       DOM.pager.appendChild(makeBtn(String(p), p, false, p === STATE.currentPage));
+      if (!STATE.hasNext && p > STATE.currentPage) break;
     }
 
-    // Next & Last (Last behaves like Next when totals are unknown)
-    DOM.pager.appendChild(
-      makeBtn("اگلا", STATE.currentPage + 1, !STATE.hasNext)
-    );
-    DOM.pager.appendChild(
-      makeBtn("آخری", STATE.currentPage + 1, !STATE.hasNext)
-    );
+    DOM.pager.appendChild(makeBtn("اگلا", STATE.currentPage + 1, !STATE.hasNext));
+    DOM.pager.appendChild(makeBtn("آخری", STATE.currentPage + 1, !STATE.hasNext));
   }
 
   function renderRows(list) {
     if (!DOM.tbody) return;
-
     DOM.tbody.innerHTML = "";
     STATE.selected.clear();
     if (DOM.selectAll) DOM.selectAll.checked = false;
@@ -3806,27 +3866,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     list.forEach((tag) => {
-      const id = tag.id ?? tag.Id ?? tag.ID;
-      const name = tag.Name ?? tag.name ?? "-";
-      const iconClass = tag.iconClass ?? tag.IconClass ?? "";
-
+      const n = normalizeTag(tag);
+      const id = n.id ?? "-";
       const tr = document.createElement("tr");
       tr.className = "border-b border-gray-200 hover:bg-gray-50";
       tr.innerHTML = `
         <td class="py-3 px-4 align-middle">
-          <input type="checkbox" class="ms-category-row-check w-5 h-5 accent-midnight_green" data-id="${id}" />
+          <input type="checkbox" class="ms-category-row-check w-5 h-5 accent-midnight_green" data-id="${escapeHtml(String(id))}" />
         </td>
         <td class="py-3 px-4 align-middle">${escapeHtml(String(id))}</td>
         <td class="py-3 px-4 align-middle">
-          <img src="${TAGS_API}/${id}/cover?ts=${Date.now()}" alt="thumbnail" class="w-12 h-12 rounded object-cover"
+          <img src="${TAGS_API}/${encodeURIComponent(id)}/cover?ts=${Date.now()}" alt="thumbnail" class="w-12 h-12 rounded object-cover"
                onerror="this.src=''; this.classList.add('bg-gray-100')" />
         </td>
-        <td class="py-3 px-4 align-middle">${escapeHtml(name)}</td>
-        <td class="py-3 px-4 align-middle"><i class="${escapeHtml(iconClass)}"></i></td>
+        <td class="py-3 px-4 align-middle">${escapeHtml(n.name || "-")}</td>
+        <td class="py-3 px-4 align-middle"><i class="${escapeHtml(n.iconClass || "")}"></i></td>
         <td class="py-3 px-4 align-middle">
           <div class="flex gap-3 justify-end">
-            <button class="ms-edit-btn text-blue-600 hover:underline" data-id="${id}">ترمیم</button>
-            <button class="ms-delete-btn text-red-600 hover:underline" data-id="${id}">حذف کریں</button>
+            <button class="ms-edit-btn text-blue-600 hover:underline" data-id="${escapeHtml(String(id))}">ترمیم</button>
+            <button class="ms-delete-btn text-red-600 hover:underline" data-id="${escapeHtml(String(id))}">حذف کریں</button>
           </div>
         </td>
       `;
@@ -3840,10 +3898,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (DOM.tbody) {
         DOM.tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6">Loading…</td></tr>`;
       }
-
       const { rows, hasNext } = await fetchPage(STATE.currentPage);
 
-      // if overshot (nothing on this page), step back to previous page once
       if (rows.length === 0 && STATE.currentPage > 1) {
         STATE.currentPage -= 1;
         const back = await fetchPage(STATE.currentPage);
@@ -3866,18 +3922,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- UI / Events ---------- */
   function initUI() {
-    // row + actions delegation
     DOM.tbody?.addEventListener("click", (e) => {
       const rowCheck = e.target.closest(".ms-category-row-check");
       const editBtn  = e.target.closest(".ms-edit-btn");
       const delBtn   = e.target.closest(".ms-delete-btn");
 
-      // select row
-      if (rowCheck) {
+    if (rowCheck) {
         const id = rowCheck.dataset.id;
-        if (rowCheck.checked) STATE.selected.add(id);
-        else STATE.selected.delete(id);
-
+        if (rowCheck.checked) STATE.selected.add(id); else STATE.selected.delete(id);
         if (DOM.bulkDel) DOM.bulkDel.disabled = STATE.selected.size === 0;
 
         const checks = DOM.tbody.querySelectorAll(".ms-category-row-check");
@@ -3886,14 +3938,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // edit
       if (editBtn) {
         const id = editBtn.dataset.id;
-        if (id) window.location.href = `./Editcategory.html?id=${id}`;
+        if (id) window.location.href = `./Editcategory.html?id=${encodeURIComponent(id)}`;
         return;
       }
 
-      // delete single
       if (delBtn) {
         const id = delBtn.dataset.id;
         if (id) deleteOne(id);
@@ -3901,19 +3951,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // header select all
     DOM.selectAll?.addEventListener("change", () => {
       const checks = DOM.tbody?.querySelectorAll(".ms-category-row-check") ?? [];
       const on = DOM.selectAll.checked;
       STATE.selected.clear();
-      checks.forEach((c) => {
-        c.checked = on;
-        if (on) STATE.selected.add(c.dataset.id);
-      });
+      checks.forEach((c) => { c.checked = on; if (on) STATE.selected.add(c.dataset.id); });
       if (DOM.bulkDel) DOM.bulkDel.disabled = STATE.selected.size === 0;
     });
 
-    // bulk delete
     DOM.bulkDel?.addEventListener("click", async () => {
       if (STATE.selected.size === 0) return;
       if (!confirm(`کیا آپ واقعی ${STATE.selected.size} موضوعات حذف کرنا چاہتے ہیں؟`)) return;
@@ -3922,19 +3967,13 @@ document.addEventListener("DOMContentLoaded", () => {
         showOverlay();
         const ids = Array.from(STATE.selected);
         const results = await Promise.allSettled(
-          ids.map((id) => fetch(`${TAGS_API}/${id}`, { method: "DELETE" }))
+          ids.map((id) => fetch(`${TAGS_API}/${encodeURIComponent(id)}`, { method: "DELETE" }))
         );
-
         const failed = [];
-        results.forEach((r, i) => {
-          if (r.status !== "fulfilled" || !r.value.ok) failed.push(ids[i]);
-        });
+        results.forEach((r, i) => { if (r.status !== "fulfilled" || !r.value.ok) failed.push(ids[i]); });
 
-        if (failed.length) {
-          alert(`⚠️ کچھ حذف نہ ہو سکیں: ${failed.join(", ")}`);
-        } else {
-          alert("✅ منتخب موضوعات حذف کر دیے گئے!");
-        }
+        if (failed.length) alert(`⚠️ کچھ حذف نہ ہو سکیں: ${failed.join(", ")}`);
+        else alert("✅ منتخب موضوعات حذف کر دیے گئے!");
         await refreshTable();
       } catch (e) {
         console.error(e);
@@ -3945,20 +3984,62 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ---------- Search ---------- */
+  /* ---------- Search (debounced; server-only) ---------- */
   function initSearch() {
     const trigger = async () => {
       STATE.query = (DOM.searchInput?.value || "").trim();
       STATE.currentPage = 1;
       await refreshTable();
+      hideSuggestions();
     };
     DOM.searchBtn?.addEventListener("click", trigger);
+
+    const handleInput = debounce(async () => {
+      const q = (DOM.searchInput?.value || "").trim();
+      if (!q) return hideSuggestions();
+      try {
+        const items = await fetchSuggestions(q);
+        if (!items.length) return hideSuggestions();
+
+        DOM.suggestions.innerHTML = "";
+        items.forEach((item) => {
+          const n = normalizeTag(item);
+          const li = document.createElement("li");
+          li.className = "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between gap-2";
+          li.innerHTML = `
+            <span class="truncate">${escapeHtml(n.name || "-")}</span>
+            <span class="text-sm text-gray-400">${escapeHtml(String(n.id ?? ""))}</span>
+          `;
+          li.addEventListener("click", () => {
+            DOM.searchInput.value = n.name || "";
+            STATE.query = n.name || "";
+            STATE.currentPage = 1;
+            refreshTable();
+            hideSuggestions();
+          });
+          DOM.suggestions.appendChild(li);
+        });
+        DOM.suggestions.classList.remove("hidden");
+      } catch {
+        hideSuggestions();
+      }
+    }, 250);
+
+    DOM.searchInput?.addEventListener("input", handleInput);
     DOM.searchInput?.addEventListener("keydown", (e) => {
       if (e.key === "Enter") trigger();
+      if (e.key === "Escape") hideSuggestions();
     });
-    DOM.searchInput?.addEventListener("input", () => {
-      DOM.suggestions?.classList.add("hidden");
+
+    document.addEventListener("click", (e) => {
+      if (!DOM.suggestions?.contains(e.target) && e.target !== DOM.searchInput) hideSuggestions();
     });
+
+    function hideSuggestions() {
+      if (!DOM.suggestions) return;
+      DOM.suggestions.innerHTML = "";
+      DOM.suggestions.classList.add("hidden");
+    }
   }
 
   /* ---------- Create/Update form ---------- */
@@ -3989,7 +4070,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         showOverlay();
-        const res = await fetch(id ? `${TAGS_API}/${id}` : TAGS_API, {
+        const res = await fetch(id ? `${TAGS_API}/${encodeURIComponent(id)}` : TAGS_API, {
           method: id ? "PUT" : "POST",
           body: formData,
         });
@@ -4003,9 +4084,9 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(id ? "✅ موضوع اپ ڈیٹ ہوگیا!" : "✅ موضوع کامیابی سے شامل ہوگیا!");
         DOM.form.reset();
         if (DOM.fId) DOM.fId.value = "";
+        STATE.currentPage = 1; // jump to newest
         await refreshTable();
 
-        // optional: switch back to list
         const backBtn = document.querySelector('[data-target="manage-categories"]');
         if (backBtn) backBtn.click();
       } catch (error) {
@@ -4023,7 +4104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       showOverlay();
-      const res = await fetch(`${TAGS_API}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${TAGS_API}/${encodeURIComponent(id)}`, { method: "DELETE" });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {

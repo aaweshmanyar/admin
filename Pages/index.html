@@ -252,7 +252,7 @@
         <div id="ms-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden"></div>
 
         <div class="flex-1 flex flex-col">
-           
+
 
             <header
                 class="bg-white shadow-md p-4 flex flex-col md:flex-row md:justify-between md:items-center gap-3 sticky top-0 z-10">
@@ -449,78 +449,85 @@
                         </div>
 
                         <!-- ==== Recent Activity (تازہ ترین سرگرمیاں) ==== -->
-<section id="ms-recent-activity" class="mt-10">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl font-bold text-midnight_green">
-      تازہ ترین سرگرمیاں (Recent Activity)
-    </h2>
-    <div id="ms-recent-activity-loader" class="hidden">
-      <div class="inline-flex items-center gap-2 text-air_force_blue text-sm">
-        <span class="w-4 h-4 border-2 border-midnight_green border-t-transparent rounded-full animate-spin"></span>
-        لوڈ ہو رہا ہے…
-      </div>
-    </div>
-  </div>
+                        <section id="ms-recent-activity" class="mt-10">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-2xl font-bold text-midnight_green">
+                                    تازہ ترین سرگرمیاں (Recent Activity)
+                                </h2>
+                                <div id="ms-recent-activity-loader" class="hidden">
+                                    <div class="inline-flex items-center gap-2 text-air_force_blue text-sm">
+                                        <span
+                                            class="w-4 h-4 border-2 border-midnight_green border-t-transparent rounded-full animate-spin"></span>
+                                        لوڈ ہو رہا ہے…
+                                    </div>
+                                </div>
+                            </div>
 
-  <!-- Cards grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Cards grid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    <!-- Books -->
-    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-rich_black">کتب (Books)</h3>
-        <a href="index.html#manage-books" class="text-sm text-midnight_green hover:underline">مزید</a>
-      </div>
-      <ul id="ms-activity-books" class="space-y-2"></ul>
-    </div>
+                                <!-- Books -->
+                                <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-lg font-semibold text-rich_black">کتب (Books)</h3>
+                                        <a href="index.html#manage-books"
+                                            class="text-sm text-midnight_green hover:underline">مزید</a>
+                                    </div>
+                                    <ul id="ms-activity-books" class="space-y-2"></ul>
+                                </div>
 
-    <!-- Articles -->
-    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-rich_black">مضامین (Articles)</h3>
-        <a href="index.html#manage-articles" class="text-sm text-midnight_green hover:underline">مزید</a>
-      </div>
-      <ul id="ms-activity-articles" class="space-y-2"></ul>
-    </div>
+                                <!-- Articles -->
+                                <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-lg font-semibold text-rich_black">مضامین (Articles)</h3>
+                                        <a href="index.html#manage-articles"
+                                            class="text-sm text-midnight_green hover:underline">مزید</a>
+                                    </div>
+                                    <ul id="ms-activity-articles" class="space-y-2"></ul>
+                                </div>
 
-    <!-- Fatawa -->
-    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-rich_black">فتاویٰ (Fatawa)</h3>
-        <a href="index.html#manage-fatawa" class="text-sm text-midnight_green hover:underline">مزید</a>
-      </div>
-      <ul id="ms-activity-fatawa" class="space-y-2"></ul>
-    </div>
+                                <!-- Fatawa -->
+                                <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-lg font-semibold text-rich_black">فتاویٰ (Fatawa)</h3>
+                                        <a href="index.html#manage-fatawa"
+                                            class="text-sm text-midnight_green hover:underline">مزید</a>
+                                    </div>
+                                    <ul id="ms-activity-fatawa" class="space-y-2"></ul>
+                                </div>
 
-    <!-- Ulema -->
-    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-rich_black">علمائے کرام (Ulema)</h3>
-        <a href="index.html#manage-ulema" class="text-sm text-midnight_green hover:underline">مزید</a>
-      </div>
-      <ul id="ms-activity-ulema" class="space-y-2"></ul>
-    </div>
+                                <!-- Ulema -->
+                                <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-lg font-semibold text-rich_black">علمائے کرام (Ulema)</h3>
+                                        <a href="index.html#manage-ulema"
+                                            class="text-sm text-midnight_green hover:underline">مزید</a>
+                                    </div>
+                                    <ul id="ms-activity-ulema" class="space-y-2"></ul>
+                                </div>
 
-    <!-- Tags -->
-    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-rich_black">موضوعات (Tags)</h3>
-        <a href="index.html#manage-categories" class="text-sm text-midnight_green hover:underline">مزید</a>
-      </div>
-      <ul id="ms-activity-tags" class="space-y-2"></ul>
-    </div>
+                                <!-- Tags -->
+                                <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-lg font-semibold text-rich_black">موضوعات (Tags)</h3>
+                                        <a href="index.html#manage-categories"
+                                            class="text-sm text-midnight_green hover:underline">مزید</a>
+                                    </div>
+                                    <ul id="ms-activity-tags" class="space-y-2"></ul>
+                                </div>
 
-    <!-- Users -->
-    <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold text-rich_black">صارفین (Users)</h3>
-        <a href="index.html#manage-users" class="text-sm text-midnight_green hover:underline">مزید</a>
-      </div>
-      <ul id="ms-activity-users" class="space-y-2"></ul>
-    </div>
+                                <!-- Users -->
+                                <div class="bg-white p-5 rounded-xl shadow-lg border border-gray-100">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h3 class="text-lg font-semibold text-rich_black">صارفین (Users)</h3>
+                                        <a href="index.html#manage-users"
+                                            class="text-sm text-midnight_green hover:underline">مزید</a>
+                                    </div>
+                                    <ul id="ms-activity-users" class="space-y-2"></ul>
+                                </div>
 
-  </div>
-</section>
+                            </div>
+                        </section>
 
 
 
@@ -1505,7 +1512,7 @@
                                 <div class="flex gap-2">
                                     <input id="ms-categories-search" type="text"
                                         class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
-                                        placeholder="موضوع تلاش کریں (نام، آئیکن)…" />
+                                        placeholder="موضوع تلاش کریں (نام، آئیکن)…" autocomplete="off" />
                                     <button id="ms-categories-search-btn"
                                         class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
                                         تلاش
@@ -1526,7 +1533,9 @@
 
                                 <button
                                     class="as-add-new-btn bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto"
-                                    data-target="add-category">نیا موضوع شامل کریں</button>
+                                    data-target="add-category">
+                                    نیا موضوع شامل کریں
+                                </button>
                             </div>
                         </div>
 
@@ -1535,7 +1544,6 @@
                                 <table class="w-full text-right text-lg as-responsive-table qalam-responsive-table">
                                     <thead>
                                         <tr class="border-b-2 border-gray-200">
-                                            <!-- Select-all -->
                                             <th class="py-3 px-4 w-10">
                                                 <input id="ms-categories-select-all" type="checkbox"
                                                     class="w-5 h-5 accent-midnight_green" />
@@ -1554,6 +1562,13 @@
                             <!-- Pagination -->
                             <div id="ms-categories-pagination"
                                 class="mt-4 flex flex-wrap items-center justify-center gap-2" dir="rtl"></div>
+                        </div>
+
+                        <!-- Minimal global loader -->
+                        <div id="categories-global-loader"
+                            class="hidden fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50"
+                            aria-hidden="true">
+                            <div class="bg-white rounded-xl shadow p-4 text-midnight_green">Loading…</div>
                         </div>
                     </div>
 
