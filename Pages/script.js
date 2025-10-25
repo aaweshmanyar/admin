@@ -3658,8 +3658,131 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // -------------------------------------------------------- Categories
 
+
+ const BOOTSTRAP_ICONS = [
+    "bi bi-book","bi bi-bookmark","bi bi-book-half","bi bi-journal","bi bi-journals",
+    "bi bi-collection","bi bi-grid","bi bi-tags","bi bi-tag","bi bi-hash",
+    "bi bi-star","bi bi-star-fill","bi bi-heart","bi bi-heart-fill","bi bi-gem",
+    "bi bi-lightning","bi bi-lightning-charge","bi bi-award","bi bi-badge-ad",
+    "bi bi-people","bi bi-person","bi bi-person-badge","bi bi-person-lines-fill",
+    "bi bi-chat","bi bi-chat-dots","bi bi-chat-left-text","bi bi-envelope",
+    "bi bi-bell","bi bi-calendar","bi bi-clock","bi bi-pin-map","bi bi-geo",
+    "bi bi-archive","bi bi-box","bi bi-folder","bi bi-folder2","bi bi-folder-plus",
+    "bi bi-upload","bi bi-download","bi bi-cloud-upload","bi bi-cloud",
+    "bi bi-pencil","bi bi-pen","bi bi-brush","bi bi-eye","bi bi-eye-fill",
+    "bi bi-search","bi bi-filter","bi bi-funnel","bi bi-list","bi bi-list-ul",
+    "bi bi-grid-3x3-gap","bi bi-columns-gap","bi bi-layout-text-sidebar",
+    "bi bi-link-45deg","bi bi-share","bi bi-share-fill","bi bi-box-arrow-up-right",
+    "bi bi-gear","bi bi-sliders","bi bi-shield","bi bi-lock","bi bi-unlock",
+    "bi bi-check-circle","bi bi-x-circle","bi bi-info-circle","bi bi-question-circle",
+    "bi bi-exclamation-triangle","bi bi-flag","bi bi-trophy","bi bi-mortarboard",
+    "bi bi-globe","bi bi-translate","bi bi-type","bi bi-fonts","bi bi-image",
+    "bi bi-images","bi bi-camera","bi bi-collection-play","bi bi-music-note",
+    "bi bi-bookmark-star","bi bi-clipboard","bi bi-clipboard-check","bi bi-diagram-3",
+    "bi bi-diagram-3-fill","bi bi-card-list","bi bi-credit-card","bi bi-cpu",
+    "bi bi-database","bi bi-server","bi bi-wrench","bi bi-tools","bi bi-rocket",
+  ];
+
+  (function iconPicker(){
+    const hidden = document.getElementById("ms-category-icon"); // hidden real value
+    const trigger = document.getElementById("ms-icon-trigger");
+    const panel = document.querySelector("#ms-icon-panel > div");
+    const listEl = document.getElementById("ms-icon-list");
+    const filterEl = document.getElementById("ms-icon-filter");
+    const curIcon = document.getElementById("ms-icon-current");
+    const curLabel = document.getElementById("ms-icon-current-label");
+    const bigPreview = document.getElementById("ms-icon-preview");
+
+    let open = false;
+    let options = BOOTSTRAP_ICONS.slice();
+    let selected = options[0] || "";
+
+    function setSelected(value){
+      selected = value;
+      hidden.value = value;              // submit this
+      curIcon.className = `text-2xl ${value}`;
+      curLabel.textContent = value || "—";
+      bigPreview.className = `text-3xl ${value}`;
+    }
+
+    function renderList(items){
+      listEl.innerHTML = "";
+      items.forEach(cls => {
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "w-full flex items-center justify-between py-2.5 px-3 hover:bg-ash_gray/20 rounded-lg text-right";
+        row.setAttribute("role","option");
+        row.setAttribute("aria-selected", String(cls === selected));
+
+        const left = document.createElement("span");
+        left.className = "flex items-center gap-3";
+        const ico = document.createElement("i");
+        ico.className = `text-xl ${cls}`;
+        const txt = document.createElement("span");
+        txt.className = "text-base text-rich_black";
+        txt.textContent = cls;
+
+        left.appendChild(ico);
+        left.appendChild(txt);
+
+        const check = document.createElement("i");
+        check.className = cls === selected ? "bi bi-check-lg text-xl" : "bi bi-dot text-xl opacity-0";
+
+        row.appendChild(left);
+        row.appendChild(check);
+
+        row.addEventListener("click", () => {
+          setSelected(cls);
+          renderList(options);
+          closePanel();
+        });
+
+        listEl.appendChild(row);
+      });
+    }
+
+    function openPanel(){
+      open = true;
+      panel.classList.remove("hidden");
+      filterEl.focus();
+    }
+    function closePanel(){
+      open = false;
+      panel.classList.add("hidden");
+      trigger.focus();
+    }
+
+    trigger.addEventListener("click", () => {
+      open ? closePanel() : openPanel();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+        if (open) closePanel();
+      }
+    });
+
+    filterEl.addEventListener("input", () => {
+      const q = (filterEl.value || "").toLowerCase().trim();
+      options = q ? BOOTSTRAP_ICONS.filter(c => c.toLowerCase().includes(q)) : BOOTSTRAP_ICONS.slice();
+      renderList(options);
+    });
+
+    // Keyboard basics for trigger
+    trigger.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        open ? closePanel() : openPanel();
+      }
+    });
+
+    // init
+    setSelected(selected);
+    renderList(options);
+  })();
+
 (() => {
-  const TAGS_API = "https://api.masailworld.com/api/tags";
+  const TAGS_API = "https://dynamicmasailworld.onrender.com/api/tags";
 
   /* ---------- Tunables ---------- */
   const SUGGESTION_LIMIT = 10;

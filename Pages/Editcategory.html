@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ur" dir="rtl">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,14 +11,12 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Jameel+Noori+Nastaleeq&family=Lateef&family=Scheherazade+New&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jameel+Noori+Nastaleeq&family=Lateef&family=Scheherazade+New&display=swap" rel="stylesheet">
 
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
-  <!-- <style>
+  <style>
     @font-face {
       font-family: 'NaatFont';
       src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
@@ -27,386 +24,378 @@
       font-style: normal;
     }
 
-    body {
-      font-family: 'NaatFont', serif;
-      font-size: 80%;
-      overscroll-behavior: none;
+    body { font-family: 'NaatFont', serif; font-size: 80%; overscroll-behavior: none; }
+    .qalam-admin-page { display: none; }
+    .qalam-admin-page.qalam-active { display: block; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #124559; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #0b2935; }
+
+    .qalam-sidebar-link.qalam-active { background-color: #01161e; border-right: 4px solid #eff6e0; }
+
+    @media (max-width: 768px) {
+      .qalam-responsive-table thead { display: none; }
+      .qalam-responsive-table tr {
+        display: block; margin-bottom: 1.5rem; border: 1px solid #dee2e6;
+        border-radius: 0.5rem; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+      .qalam-responsive-table td { display: block; text-align: left; padding: 0.5rem 0; border-bottom: 1px dashed #e5e7eb; }
+      .qalam-responsive-table td:last-child { border-bottom: none; }
+      .qalam-responsive-table td::before { content: attr(data-label); float: right; font-weight: bold; margin-left: 1rem; }
     }
 
-    .qalam-rich-text-editor {
-      background-color: white;
-      border-radius: 0.5rem;
-      border: 2px solid #aec3b0;
-    }
+    .qalam-dropdown-options { max-height: 150px; overflow-y: auto; }
+    .qalam-dropdown-option { padding: 8px 12px; cursor: pointer; }
+    .qalam-dropdown-option:hover { background-color: #f0f0f1; }
 
+    .qalam-tag-pill {
+      background-color: #124559; color: white; padding: 4px 8px; border-radius: 16px;
+      display: flex; align-items: center; font-size: 14px;
+    }
+    .qalam-tag-remove-btn { margin-right: 6px; cursor: pointer; font-weight: bold; }
+
+    .qalam-rich-text-editor { background-color: white; border-radius: 0.5rem; border: 2px solid #aec3b0; }
     .ql-editor {
-      min-height: 250px;
-      font-family: 'Jameel Noori Nastaleeq', serif;
-      font-size: 18px;
-      direction: rtl;
-      text-align: right;
+      min-height: 250px; font-family: 'Jameel Noori Nastaleeq', serif; font-size: 18px;
+      direction: rtl; text-align: right;
     }
-
-    .ql-toolbar.ql-snow {
-      direction: ltr;
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=jameel]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=jameel]::before {
+      content: 'نستعلیق'; font-family: 'Jameel Noori Nastaleeq', serif;
     }
- 
- </style> -->
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=lateef]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=lateef]::before {
+      content: 'لطیف'; font-family: 'Lateef', cursive;
+    }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=scheherazade]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=scheherazade]::before {
+      content: 'شہرزاد'; font-family: 'Scheherazade New', serif;
+    }
+    .ql-toolbar.ql-snow { direction: ltr; }
+  </style>
 
-
-   <style>
-        @font-face {
-            font-family: 'NaatFont';
-            src: url('https://res.cloudinary.com/awescreative/raw/upload/v1749150996/Awes/naatfont.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'rich_black': { DEFAULT: '#01161e', 100: '#000406', 200: '#00090c', 300: '#010d12', 400: '#011118', 500: '#01161e', 600: '#04597b', 700: '#079cd8', 800: '#45c6f9', 900: '#a2e3fc' },
+            'midnight_green': { DEFAULT: '#124559', 100: '#040e12', 200: '#071c24', 300: '#0b2935', 400: '#0f3747', 500: '#124559', 600: '#20799c', 700: '#36a9d6', 800: '#79c5e4', 900: '#bce2f1' },
+            'air_force_blue': { DEFAULT: '#598392', 100: '#121a1d', 200: '#24343a', 300: '#354e57', 400: '#476874', 500: '#598392', 600: '#769dab', 700: '#99b6c0', 800: '#bbced5', 900: '#dde7ea' },
+            'ash_gray': { DEFAULT: '#aec3b0', 100: '#1f2a20', 200: '#3e5441', 300: '#5e7f61', 400: '#83a386', 500: '#aec3b0', 600: '#bdcebf', 700: '#cedbcf', 800: '#dee7df', 900: '#eff3ef' },
+            'beige': { DEFAULT: '#eff6e0', 100: '#384915', 200: '#71912a', 300: '#a4cc4e', 400: '#c9e197', 500: '#eff6e0', 600: '#f2f8e6', 700: '#f5f9ec', 800: '#f8fbf2', 900: '#fcfdf9' }
+          }
         }
-
-        body {
-            font-family: 'NaatFont', serif;
-            font-size: 80%;
-            overscroll-behavior: none;
-        }
-
-        .qalam-admin-page {
-            display: none;
-        }
-
-        .qalam-admin-page.qalam-active {
-            display: block;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #124559;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0b2935;
-        }
-
-        .qalam-sidebar-link.qalam-active {
-            background-color: #01161e;
-            border-right: 4px solid #eff6e0;
-        }
-
-        @media (max-width: 768px) {
-            .qalam-responsive-table thead {
-                display: none;
-            }
-
-            .qalam-responsive-table tr {
-                display: block;
-                margin-bottom: 1.5rem;
-                border: 1px solid #dee2e6;
-                border-radius: 0.5rem;
-                padding: 1rem;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            }
-
-            .qalam-responsive-table td {
-                display: block;
-                text-align: left;
-                padding: 0.5rem 0;
-                border-bottom: 1px dashed #e5e7eb;
-            }
-
-            .qalam-responsive-table td:last-child {
-                border-bottom: none;
-            }
-
-            .qalam-responsive-table td::before {
-                content: attr(data-label);
-                float: right;
-                font-weight: bold;
-                margin-left: 1rem;
-            }
-        }
-
-        .qalam-dropdown-options {
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .qalam-dropdown-option {
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-
-        .qalam-dropdown-option:hover {
-            background-color: #f0f0f1;
-        }
-
-        .qalam-tag-pill {
-            background-color: #124559;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .qalam-tag-remove-btn {
-            margin-right: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .qalam-rich-text-editor {
-            background-color: white;
-            border-radius: 0.5rem;
-            border: 2px solid #aec3b0;
-        }
-
-        .ql-editor {
-            min-height: 250px;
-            font-family: 'Jameel Noori Nastaleeq', serif;
-            font-size: 18px;
-            direction: rtl;
-            text-align: right;
-        }
-
-        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=jameel]::before,
-        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=jameel]::before {
-            content: 'نستعلیق';
-            font-family: 'Jameel Noori Nastaleeq', serif;
-        }
-
-        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=lateef]::before,
-        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=lateef]::before {
-            content: 'لطیف';
-            font-family: 'Lateef', cursive;
-        }
-
-        .ql-snow .ql-picker.ql-font .ql-picker-label[data-value=scheherazade]::before,
-        .ql-snow .ql-picker.ql-font .ql-picker-item[data-value=scheherazade]::before {
-            content: 'شہرزاد';
-            font-family: 'Scheherazade New', serif;
-        }
-
-        .ql-toolbar.ql-snow {
-            direction: ltr;
-        }
-    </style>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'rich_black': { DEFAULT: '#01161e', 100: '#000406', 200: '#00090c', 300: '#010d12', 400: '#011118', 500: '#01161e', 600: '#04597b', 700: '#079cd8', 800: '#45c6f9', 900: '#a2e3fc' },
-                        'midnight_green': { DEFAULT: '#124559', 100: '#040e12', 200: '#071c24', 300: '#0b2935', 400: '#0f3747', 500: '#124559', 600: '#20799c', 700: '#36a9d6', 800: '#79c5e4', 900: '#bce2f1' },
-                        'air_force_blue': { DEFAULT: '#598392', 100: '#121a1d', 200: '#24343a', 300: '#354e57', 400: '#476874', 500: '#598392', 600: '#769dab', 700: '#99b6c0', 800: '#bbced5', 900: '#dde7ea' },
-                        'ash_gray': { DEFAULT: '#aec3b0', 100: '#1f2a20', 200: '#3e5441', 300: '#5e7f61', 400: '#83a386', 500: '#aec3b0', 600: '#bdcebf', 700: '#cedbcf', 800: '#dee7df', 900: '#eff3ef' },
-                        'beige': { DEFAULT: '#eff6e0', 100: '#384915', 200: '#71912a', 300: '#a4cc4e', 400: '#c9e197', 500: '#eff6e0', 600: '#f2f8e6', 700: '#f5f9ec', 800: '#f8fbf2', 900: '#fcfdf9' }
-                    }
-                }
-            }
-        }
-    </script>
+      }
+    }
+  </script>
 </head>
 
-
-<div class="flex h-screen">
-  <aside id="ms-sidebar"
-    class="w-64 bg-midnight_green text-beige flex-col shadow-2xl fixed top-0 right-0 h-full z-20 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 translate-x-full">
-    <div class="p-6 text-center border-b border-midnight_green-400">
-      <h1 class="text-3xl font-bold">مسائل ورلڈ</h1>
-      <p class="text-sm text-air_force_blue-700">ایڈمن پینل</p>
-    </div>
-    <nav class="flex-1 px-4 py-6 space-y-2">
-      <a href="./index.html#dashboard"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-speedometer2 ml-3 text-2xl"></i>
-        <span>ڈیش بورڈ</span>
-      </a>
-      <a href="./index.html#manage-fatawa"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-journal-check ml-3 text-2xl"></i>
-        <span>فتاویٰ</span>
-      </a>
-      <a href="./index.html#manage-articles"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-pencil-square ml-3 text-2xl"></i>
-        <span>مضامین</span>
-      </a>
-      <a href="./index.html#manage-books"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-book-half ml-3 text-2xl"></i>
-        <span>کتابیں</span>
-      </a>
-      <a href="./index.html#manage-ulema"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-people-fill ml-3 text-2xl"></i>
-        <span>علمائے کرام</span>
-      </a>
-      <a href="./index.html#manage-categories"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-grid-fill ml-3 text-2xl"></i>
-        <span>موضوعات</span>
-      </a>
-      <a href="./index.html#manage-questions"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-patch-question-fill ml-3 text-2xl"></i>
-        <span>موصول سوالات</span>
-      </a>
-      <!-- <a href="#manage-submissions"
-                    class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-                    <i class="bi bi-send-check ml-3 text-2xl"></i>
-                    <span>مفتی کی گذارشات</span>
-                </a> -->
-      <a href="./index.html#manage-users"
-        class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition">
-        <i class="bi bi-person-gear ml-3 text-2xl"></i>
-        <span>صارفین کا انتظام</span>
-      </a>
-    </nav>
-    <div class="p-4 border-t border-midnight_green-400">
-      <div class="flex items-center p-2 rounded-md hover:bg-rich_black transition">
-        <img src="https://placehold.co/40x40/eff6e0/124559?text=A" class="w-10 h-10 rounded-full"
-          onerror="this.onerror=null;this.src='https://placehold.co/40x40/eff6e0/124559?text=A';">
-        <div class="mr-3">
-          <p id="user-name" class="font-bold text-lg">ایڈمن</p>
-          <a href="../index.html" class="text-sm text-air_force_blue-700 hover:text-beige">لاگ
-            آؤٹ</a>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <div id="ms-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden"></div>
-
-  <div class="flex-1 flex flex-col">
-
-
-    <header
-      class="bg-white shadow-md p-4 flex flex-col md:flex-row md:justify-between md:items-center gap-3 sticky top-0 z-10">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center">
-          <button id="ms-sidebar-toggle" class="text-midnight_green text-2xl ml-4">
-            <i class="bi bi-list"></i>
-          </button>
-          <div id="ms-breadcrumb" class="hidden md:block text-sm"></div>
-        </div>
-        <h1 class="text-xl font-bold text-midnight_green md:hidden">ایڈمن پینل</h1>
-      </div>
-
-      <!-- Global Search (added) -->
-      <div class="w-full md:w-1/2 relative" dir="rtl">
-        <label for="ms-global-search" class="sr-only">تلاش کریں</label>
-        <div class="flex gap-2">
-          <input id="ms-global-search" type="text"
-            class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
-            placeholder="تلاش کریں… (فتاویٰ، مضامین، کتابیں، علما وغیرہ)" />
-          <button id="ms-global-search-btn"
-            class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">
-            تلاش
-          </button>
-        </div>
-
-        <!-- Dropdown (added) -->
-        <ul id="ms-global-search-suggestions"
-          class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-auto hidden">
-          <!-- filled dynamically -->
-        </ul>
-      </div>
-    </header>
-
-
-    <main class="flex-1 p-4 md:p-6 overflow-y-auto">
-      <div id="ms-admin-main-content">
-
 <body class="bg-gray-100">
-
-  <div class="max-w-4xl mx-auto p-6">
-    <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">
-        موضوع میں ترمیم کریں
-      </h1>
-      <a href="./index.html#manage-categories"
-        class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
-        <i class="bi bi-arrow-right ml-2"></i>
-        فہرست پر واپس جائیں
-      </a>
-    </div>
-
-    <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
-      <form id="edit-category-form" class="space-y-6">
-        <input type="hidden" id="ms-category-id">
-
-        <div>
-          <label for="ms-category-name"
-            class="block text-xl font-bold text-midnight_green mb-2">موضوع کا نام</label>
-          <input type="text" id="ms-category-name"
-            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
-            required>
-        </div>
-
-        <div>
-          <label for="ms-category-slug"
-            class="block text-xl font-bold text-midnight_green mb-2">URL سلگ</label>
-          <input type="text" id="ms-category-slug"
-            class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
-            style="direction: ltr;" placeholder="auto-generated-slug">
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="ms-category-icon"
-              class="block text-xl font-bold text-midnight_green mb-2">آئیکن کلاس</label>
-            <input type="text" id="ms-category-icon" placeholder="مثال: bi bi-gem"
-              class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
-              required>
+  <div class="flex h-screen">
+    <aside id="ms-sidebar"
+      class="w-64 bg-midnight_green text-beige flex-col shadow-2xl fixed top-0 right-0 h-full z-20 transition-transform duration-300 ease-in-out md:relative md:translate-x-0 translate-x-full">
+      <div class="p-6 text-center border-b border-midnight_green-400">
+        <h1 class="text-3xl font-bold">مسائل ورلڈ</h1>
+        <p class="text-sm text-air_force_blue-700">ایڈمن پینل</p>
+      </div>
+      <nav class="flex-1 px-4 py-6 space-y-2">
+        <a href="./index.html#dashboard" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-speedometer2 ml-3 text-2xl"></i><span>ڈیش بورڈ</span></a>
+        <a href="./index.html#manage-fatawa" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-journal-check ml-3 text-2xl"></i><span>فتاویٰ</span></a>
+        <a href="./index.html#manage-articles" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-pencil-square ml-3 text-2xl"></i><span>مضامین</span></a>
+        <a href="./index.html#manage-books" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-book-half ml-3 text-2xl"></i><span>کتابیں</span></a>
+        <a href="./index.html#manage-ulema" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-people-fill ml-3 text-2xl"></i><span>علمائے کرام</span></a>
+        <a href="./index.html#manage-categories" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-grid-fill ml-3 text-2xl"></i><span>موضوعات</span></a>
+        <a href="./index.html#manage-questions" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-patch-question-fill ml-3 text-2xl"></i><span>موصول سوالات</span></a>
+        <a href="./index.html#manage-users" class="as-admin-nav-link as-sidebar-link qalam-sidebar-link flex items-center px-4 py-3 text-lg rounded-md hover:bg-rich_black transition"><i class="bi bi-person-gear ml-3 text-2xl"></i><span>صارفین کا انتظام</span></a>
+      </nav>
+      <div class="p-4 border-t border-midnight_green-400">
+        <div class="flex items-center p-2 rounded-md hover:bg-rich_black transition">
+          <img src="https://placehold.co/40x40/eff6e0/124559?text=A" class="w-10 h-10 rounded-full"
+               onerror="this.onerror=null;this.src='https://placehold.co/40x40/eff6e0/124559?text=A';">
+          <div class="mr-3">
+            <p id="user-name" class="font-bold text-lg">ایڈمن</p>
+            <a href="../index.html" class="text-sm text-air_force_blue-700 hover:text-beige">لاگ آؤٹ</a>
           </div>
-          <div>
-            <label for="ms-category-thumbnail"
-              class="block text-xl font-bold text-midnight_green mb-2">موضوع کا تھمبنیل</label>
-            <input type="file" id="ms-category-thumbnail"
-              class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
-            <div class="mt-2">
-              <img id="current-thumbnail" src="" alt="موجودہ تھمبنیل" class="h-20 rounded border hidden">
+        </div>
+      </div>
+    </aside>
+
+    <div id="ms-sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-10 hidden md:hidden"></div>
+
+    <div class="flex-1 flex flex-col">
+      <header class="bg-white shadow-md p-4 flex flex-col md:flex-row md:justify-between md:items-center gap-3 sticky top-0 z-10">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <button id="ms-sidebar-toggle" class="text-midnight_green text-2xl ml-4"><i class="bi bi-list"></i></button>
+            <div id="ms-breadcrumb" class="hidden md:block text-sm"></div>
+          </div>
+          <h1 class="text-xl font-bold text-midnight_green md:hidden">ایڈمن پینل</h1>
+        </div>
+
+        <!-- Global Search -->
+        <div class="w-full md:w-1/2 relative" dir="rtl">
+          <label for="ms-global-search" class="sr-only">تلاش کریں</label>
+          <div class="flex gap-2">
+            <input id="ms-global-search" type="text"
+              class="w-full border border-gray-300 rounded-lg py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-midnight_green"
+              placeholder="تلاش کریں… (فتاویٰ، مضامین، کتابیں، علما وغیرہ)" />
+            <button id="ms-global-search-btn"
+              class="bg-midnight_green text-white py-3 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition">تلاش</button>
+          </div>
+          <ul id="ms-global-search-suggestions"
+              class="absolute z-20 mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-auto hidden"></ul>
+        </div>
+      </header>
+
+      <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+        <div id="ms-admin-main-content">
+          <div class="max-w-4xl mx-auto p-6">
+            <div class="flex justify-between items-center mb-8">
+              <h1 class="text-3xl md:text-4xl font-bold text-midnight_green">موضوع میں ترمیم کریں</h1>
+              <a href="./index.html#manage-categories" class="as-back-link as-admin-nav-link hidden md:flex items-center text-lg text-midnight_green hover:text-rich_black transition">
+                <i class="bi bi-arrow-right ml-2"></i> فہرست پر واپس جائیں
+              </a>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg">
+              <form id="edit-category-form" class="space-y-6">
+                <input type="hidden" id="ms-category-id">
+
+                <div>
+                  <label for="ms-category-name" class="block text-xl font-bold text-midnight_green mb-2">موضوع کا نام</label>
+                  <input type="text" id="ms-category-name"
+                    class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg"
+                    required>
+                </div>
+
+                <div>
+                  <label for="ms-category-slug" class="block text-xl font-bold text-midnight_green mb-2">URL سلگ</label>
+                  <input type="text" id="ms-category-slug"
+                    class="w-full py-3 px-4 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-lg font-sans"
+                    style="direction:ltr;" placeholder="auto-generated-slug">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Icon picker (visual dropdown) -->
+                  <div>
+                    <label class="block text-xl font-bold text-midnight_green mb-2">آئیکن منتخب کریں</label>
+
+                    <!-- Hidden field that preserves your original id/value -->
+                    <input type="hidden" id="ms-category-icon" name="iconClass" required>
+
+                    <!-- Trigger -->
+                    <button type="button" id="ms-icon-trigger"
+                      class="w-full flex items-center justify-between py-3 px-4 border-2 border-ash_gray rounded-lg hover:border-midnight_green focus:outline-none focus:ring-2 focus:ring-midnight_green">
+                      <span class="flex items-center gap-3">
+                        <i id="ms-icon-current" class="text-2xl"></i>
+                        <span id="ms-icon-current-label" class="text-lg text-rich_black">—</span>
+                      </span>
+                      <i class="bi bi-chevron-down text-xl"></i>
+                    </button>
+
+                    <!-- Dropdown panel -->
+                    <div id="ms-icon-panel" class="relative">
+                      <div class="absolute z-50 mt-2 w-full bg-white rounded-xl border border-ash_gray shadow-xl p-3 hidden" role="listbox" aria-label="Icon list">
+                        <input id="ms-icon-filter" type="text" placeholder="آئیکن تلاش کریں (book, gem, star)"
+                          class="mb-3 w-full py-2 px-3 border-2 border-ash_gray rounded-lg focus:outline-none focus:ring-2 focus:ring-midnight_green text-rich_black text-base"/>
+                        <div id="ms-icon-list" class="max-h-64 overflow-auto divide-y divide-ash_gray/30" style="scrollbar-width: thin;"></div>
+                      </div>
+                    </div>
+
+                    <!-- Helper + big preview -->
+                    <div class="mt-3 flex items-center gap-3">
+                      <span class="text-sm text-air_force_blue">بوٹسٹریپ آئیکنز میں سے انتخاب کریں۔</span>
+                      <i id="ms-icon-preview" class="text-3xl"></i>
+                    </div>
+                  </div>
+
+                  <!-- Thumbnail -->
+                  <div>
+                    <label for="ms-category-thumbnail" class="block text-xl font-bold text-midnight_green mb-2">موضوع کا تھمبنیل</label>
+                    <input type="file" id="ms-category-thumbnail"
+                      class="w-full text-lg file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-beige file:text-midnight_green hover:file:bg-ash_gray">
+                    <div class="mt-2">
+                      <img id="current-thumbnail" src="" alt="موجودہ تھمبنیل" class="h-20 rounded border hidden">
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="ms-category-description" class="block text-xl font-bold text-midnight_green mb-2">موضوع کا تعارف</label>
+                  <div id="ms-category-description" class="qalam-rich-text-editor"></div>
+                </div>
+
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
+                  <button type="submit" class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg bg-gray-800 transition">اپڈیٹ کریں</button>
+                  <a href="./index.html#manage-categories" class="as-cancel-btn w-full md:w-auto bg-ash_gray text-white py-3 px-8 rounded-lg text-lg bg-gray-800 transition text-center">منسوخ کریں</a>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-
-        <div>
-          <label for="ms-category-description"
-            class="block text-xl font-bold text-midnight_green mb-2">موضوع کا تعارف</label>
-          <div id="ms-category-description" class="qalam-rich-text-editor"></div>
-        </div>
-
-        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:space-x-reverse pt-4">
-          <button type="submit"
-            class="w-full md:w-auto bg-midnight_green text-white py-3 px-8 rounded-lg text-lg bg-gray-800 transition">
-            اپڈیٹ کریں
-          </button>
-          <a href="./index.html#manage-categories"
-            class="as-cancel-btn w-full md:w-auto bg-ash_gray text-white py-3 px-8 rounded-lg text-lg bg-gray-800 transition text-center">
-            منسوخ کریں
-          </a>
-        </div>
-      </form>
+      </main>
     </div>
   </div>
 
-  </body>
-  </div>
-  </main>
+  <!-- ====== Scripts ====== -->
+  <script>
+    const API_URL = "https://dynamicmasailworld.onrender.com/api/tags";
+
+    // Bootstrap Icons list (extend as you like)
+    const BOOTSTRAP_ICONS = [
+      "bi bi-book","bi bi-bookmark","bi bi-book-half","bi bi-journal","bi bi-journals",
+      "bi bi-collection","bi bi-grid","bi bi-tags","bi bi-tag","bi bi-hash",
+      "bi bi-star","bi bi-star-fill","bi bi-heart","bi bi-heart-fill","bi bi-gem",
+      "bi bi-lightning","bi bi-lightning-charge","bi bi-award","bi bi-badge-ad",
+      "bi bi-people","bi bi-person","bi bi-person-badge","bi bi-person-lines-fill",
+      "bi bi-chat","bi bi-chat-dots","bi bi-chat-left-text","bi bi-envelope",
+      "bi bi-bell","bi bi-calendar","bi bi-clock","bi bi-pin-map","bi bi-geo",
+      "bi bi-archive","bi bi-box","bi bi-folder","bi bi-folder2","bi bi-folder-plus",
+      "bi bi-upload","bi bi-download","bi bi-cloud-upload","bi bi-cloud",
+      "bi bi-pencil","bi bi-pen","bi bi-brush","bi bi-eye","bi bi-eye-fill",
+      "bi bi-search","bi bi-filter","bi bi-funnel","bi bi-list","bi bi-list-ul",
+      "bi bi-grid-3x3-gap","bi bi-columns-gap","bi bi-layout-text-sidebar",
+      "bi bi-link-45deg","bi bi-share","bi bi-share-fill","bi bi-box-arrow-up-right",
+      "bi bi-gear","bi bi-sliders","bi bi-shield","bi bi-lock","bi bi-unlock",
+      "bi bi-check-circle","bi bi-x-circle","bi bi-info-circle","bi bi-question-circle",
+      "bi bi-exclamation-triangle","bi bi-flag","bi bi-trophy","bi bi-mortarboard",
+      "bi bi-globe","bi bi-translate","bi bi-type","bi bi-fonts","bi bi-image",
+      "bi bi-images","bi bi-camera","bi bi-collection-play","bi bi-music-note",
+      "bi bi-bookmark-star","bi bi-clipboard","bi bi-clipboard-check","bi bi-diagram-3",
+      "bi bi-diagram-3-fill","bi bi-card-list","bi bi-credit-card","bi bi-cpu",
+      "bi bi-database","bi bi-server","bi bi-wrench","bi bi-tools","bi bi-rocket",
+    ];
+
+    // ---- Icon picker (visual dropdown with preview) ----
+    (function iconPicker(){
+      const hidden = document.getElementById("ms-category-icon");   // hidden real value (same id)
+      const trigger = document.getElementById("ms-icon-trigger");
+      const panel = document.querySelector("#ms-icon-panel > div");
+      const listEl = document.getElementById("ms-icon-list");
+      const filterEl = document.getElementById("ms-icon-filter");
+      const curIcon = document.getElementById("ms-icon-current");
+      const curLabel = document.getElementById("ms-icon-current-label");
+      const bigPreview = document.getElementById("ms-icon-preview");
+
+      let open = false;
+      let options = BOOTSTRAP_ICONS.slice();
+      let selected = ""; // will be set from hidden (prefill) or default
+
+      function setSelected(value){
+        selected = value || "";
+        hidden.value = selected;
+        curIcon.className = selected ? `text-2xl ${selected}` : "text-2xl";
+        curLabel.textContent = selected || "—";
+        bigPreview.className = selected ? `text-3xl ${selected}` : "text-3xl";
+      }
+
+      function renderList(items){
+        listEl.innerHTML = "";
+        items.forEach(cls => {
+          const row = document.createElement("button");
+          row.type = "button";
+          row.className = "w-full flex items-center justify-between py-2.5 px-3 hover:bg-ash_gray/20 rounded-lg text-right";
+          row.setAttribute("role","option");
+          row.setAttribute("aria-selected", String(cls === selected));
+
+          const left = document.createElement("span");
+          left.className = "flex items-center gap-3";
+          const ico = document.createElement("i");
+          ico.className = `text-xl ${cls}`;
+          const txt = document.createElement("span");
+          txt.className = "text-base text-rich_black";
+          txt.textContent = cls;
+
+          left.appendChild(ico);
+          left.appendChild(txt);
+
+          const check = document.createElement("i");
+          check.className = cls === selected ? "bi bi-check-lg text-xl" : "bi bi-dot text-xl opacity-0";
+
+          row.appendChild(left);
+          row.appendChild(check);
+
+          row.addEventListener("click", () => {
+            setSelected(cls);
+            renderList(options);
+            closePanel();
+          });
+
+          listEl.appendChild(row);
+        });
+      }
+
+      function openPanel(){ open = true; panel.classList.remove("hidden"); filterEl.focus(); }
+      function closePanel(){ open = false; panel.classList.add("hidden"); trigger.focus(); }
+
+      trigger.addEventListener("click", () => { open ? closePanel() : openPanel(); });
+
+      document.addEventListener("click", (e) => {
+        if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
+          if (open) closePanel();
+        }
+      });
+
+      filterEl.addEventListener("input", () => {
+        const q = (filterEl.value || "").toLowerCase().trim();
+        options = q ? BOOTSTRAP_ICONS.filter(c => c.toLowerCase().includes(q)) : BOOTSTRAP_ICONS.slice();
+        renderList(options);
+      });
+
+      trigger.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open ? closePanel() : openPanel(); }
+      });
+
+      // expose a setter so fetchCategory can preselect
+      window.MS_ICON_PICKER = {
+        set(value) {
+          if (value && !BOOTSTRAP_ICONS.includes(value)) {
+            BOOTSTRAP_ICONS.unshift(value);
+            options = BOOTSTRAP_ICONS.slice();
+          }
+          setSelected(value);
+          renderList(options);
+        }
+      };
+
+      // init: empty selection by default
+      setSelected("");
+      renderList(options);
+    })();
+  </script>
 
   <script>
-    const API_URL = "https://masailworld.onrender.com/api/tags";
-
     const urlParams = new URLSearchParams(window.location.search);
-    const tagId = urlParams.get("id");
+
+    // --- Robustly get id from either ?id=... OR #...?...id=... ---
+    function getIdFromUrl() {
+      // 1) Normal querystring
+      const direct = urlParams.get("id");
+      if (direct) return direct;
+
+      // 2) Inside hash, e.g. index.html#edit-category?id=123 or #manage-categories&foo=1&id=123
+      const hash = window.location.hash || "";
+      if (!hash) return null;
+
+      // If there's a query part inside hash, parse it
+      // e.g. "#edit-category?id=123&x=1"
+      const qIndex = hash.indexOf("?");
+      if (qIndex !== -1) {
+        const hashQuery = hash.slice(qIndex + 1);
+        const hsp = new URLSearchParams(hashQuery);
+        const fromHash = hsp.get("id");
+        if (fromHash) return fromHash;
+      }
+
+      // Fallback: try plain regex search in hash
+      const m = hash.match(/[?&]id=([^&]+)/i);
+      return m ? decodeURIComponent(m[1]) : null;
+    }
+
+    const tagId = getIdFromUrl();
 
     // ✅ Initialize Quill
     const quill = new Quill('#ms-category-description', {
@@ -422,25 +411,48 @@
       }
     });
 
+    // Helper: normalize whatever the API returns
+    function pickTagObject(payload) {
+      if (!payload) return null;
+      // common shapes
+      if (payload.data) {
+        if (Array.isArray(payload.data)) return payload.data[0] || null;
+        return payload.data;
+      }
+      if (payload.tag) return payload.tag;
+      if (payload.Tag) return payload.Tag;
+      if (Array.isArray(payload)) return payload[0] || null;
+      // assume object is the tag itself
+      return payload;
+    }
+
     async function fetchCategory(id) {
       try {
-        const res = await fetch(`${API_URL}/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch category");
-        const data = await res.json();
+        console.log("Fetching tag by id:", id);
+        const res = await fetch(`${API_URL}/${encodeURIComponent(id)}`);
+        if (!res.ok) throw new Error(`Failed to fetch category (HTTP ${res.status})`);
+        const json = await res.json();
+        console.log("Fetch payload:", json);
 
-        // ✅ Prefill inputs with fetched data
-        document.getElementById("ms-category-id").value = data.id || "";
-        document.getElementById("ms-category-name").value = data.Name || "";
-        document.getElementById("ms-category-slug").value = data.slug || "";
-        document.getElementById("ms-category-icon").value = data.iconClass || "";
-       
+        const tag = pickTagObject(json) || {};
+        console.log("Using tag object:", tag);
+
+        // ✅ Prefill inputs with fetched data (support multiple casings/keys)
+        document.getElementById("ms-category-id").value = tag.id ?? tag.ID ?? tag.Id ?? id ?? "";
+        document.getElementById("ms-category-name").value = tag.Name ?? tag.name ?? "";
+        document.getElementById("ms-category-slug").value = tag.slug ?? tag.Slug ?? "";
+
+        // Icon preselect
+        const savedIcon = tag.iconClass ?? tag.IconClass ?? "";
+        document.getElementById("ms-category-icon").value = savedIcon;
+        if (window.MS_ICON_PICKER?.set) window.MS_ICON_PICKER.set(savedIcon);
 
         // ✅ Set Quill editor content
-        quill.clipboard.dangerouslyPasteHTML(data.AboutTags || "");
+        quill.clipboard.dangerouslyPasteHTML(tag.AboutTags ?? tag.about ?? tag.description ?? "");
 
         // ✅ Show current thumbnail if available
         const imgEl = document.getElementById("current-thumbnail");
-        imgEl.src = `${API_URL}/${id}/cover`;
+        imgEl.src = `${API_URL}/${encodeURIComponent(id)}/cover`;
         imgEl.classList.remove("hidden");
       } catch (err) {
         console.error("❌ Error fetching category:", err);
@@ -456,8 +468,6 @@
       formData.append("Name", document.getElementById("ms-category-name").value.trim());
       formData.append("slug", document.getElementById("ms-category-slug").value.trim());
       formData.append("iconClass", document.getElementById("ms-category-icon").value.trim());
-
-      // ✅ Get Quill editor content
       formData.append("AboutTags", quill.root.innerHTML.trim());
 
       const fileInput = document.getElementById("ms-category-thumbnail");
@@ -466,11 +476,8 @@
       }
 
       try {
-        const res = await fetch(`${API_URL}/${id}`, {
-          method: "PUT",
-          body: formData
-        });
-        if (!res.ok) throw new Error("Failed to update category");
+        const res = await fetch(`${API_URL}/${encodeURIComponent(id)}`, { method: "PUT", body: formData });
+        if (!res.ok) throw new Error(`Failed to update category (HTTP ${res.status})`);
         alert("✅ موضوع کامیابی سے اپڈیٹ ہوگیا!");
         window.location.href = "./index.html#manage-categories";
       } catch (err) {
@@ -479,7 +486,11 @@
       }
     });
 
-    if (tagId) fetchCategory(tagId);
+    if (tagId) {
+      fetchCategory(tagId);
+    } else {
+      console.warn("No id found in URL. Expecting ?id=... or #...?...id=...");
+    }
   </script>
 </body>
 </html>
