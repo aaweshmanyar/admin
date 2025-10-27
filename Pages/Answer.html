@@ -409,7 +409,7 @@
       document.getElementById("ms-question-id").value = id;
 
       try {
-        const res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}`);
+        const res = await fetch(`https://masailworld.com/api/fatwa/${id}`);
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error || "سوال لوڈ کرنے میں ناکامی");
@@ -443,7 +443,7 @@
       }
 
       try {
-        const res = await fetch(`https://masailworld.onrender.com/api/fatwa/${id}/answer`, {
+        const res = await fetch(`https://masailworld.com/api/fatwa/${id}/answer`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

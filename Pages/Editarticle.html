@@ -614,7 +614,7 @@
       document.getElementById('ms-article-id').value = id;
 
       try{
-        const res = await fetch(`https://masailworld.onrender.com/api/article/${id}`);
+        const res = await fetch(`https://masailworld.com/api/article/${id}`);
         if (!res.ok) throw new Error(`Server returned ${res.status}`);
         const data = await res.json();
 
@@ -645,7 +645,7 @@
           }
         } else {
           // optional: attempt HEAD check if your API supports /:id/image
-          const tryImageUrl = `https://masailworld.onrender.com/api/article/${id}/image`;
+          const tryImageUrl = `https://masailworld.com/api/article/${id}/image`;
           try {
             const chk = await fetch(tryImageUrl, { method: 'HEAD' });
             if (chk.ok && imagePreview){
@@ -713,7 +713,7 @@
       }
 
       try{
-        const resp = await fetch(`https://masailworld.onrender.com/api/article/${id}`, {
+        const resp = await fetch(`https://masailworld.com/api/article/${id}`, {
           method: 'PUT',
           body: fd
         });

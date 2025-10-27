@@ -15,339 +15,6 @@ if (userParam) {
   ).src = `https://placehold.co/40x40/eff6e0/124559?text=${firstLetter}`;
 }
 
-// View , Add and Edit , delete fatawa end here
-// document.addEventListener("DOMContentLoaded", async () => {
-//   // DOM elements
-//   const form = document.getElementById("ms-fatwa-form");
-//   const tableBody = document.getElementById("ms-fatawa-table-body");
-//   const manageFatawaPage = document.getElementById("ms-page-manage-fatawa");
-//   const mozuwatSelect = document.getElementById("ms-fatwa-mozuwat");
-
-//   // === Loader ===
-//   const loader = document.createElement("div");
-//   loader.id = "form-loader";
-//   loader.className =
-//     "fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50";
-//   loader.innerHTML = `
-//     <div class="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-3">
-//       <span class="loader border-4 border-midnight_green border-t-transparent rounded-full w-8 h-8 animate-spin"></span>
-//       <p class="text-lg font-bold text-midnight_green">براہ کرم انتظار کریں...</p>
-//     </div>
-//   `;
-//   document.body.appendChild(loader);
-//   const showLoader = () => loader.classList.remove("hidden");
-//   const hideLoader = () => loader.classList.add("hidden");
-
-//   // === Pagination setup ===
-//   const loadMoreBtn = document.createElement("button");
-//   loadMoreBtn.textContent = "آگے دیکھیں";
-//   loadMoreBtn.className =
-//     "mt-4 bg-midnight_green text-white py-2 px-6 rounded-lg text-lg hover:bg-midnight_green-400 transition w-full md:w-auto";
-//   loadMoreBtn.style.display = "none";
-//   if (manageFatawaPage) manageFatawaPage.appendChild(loadMoreBtn);
-
-//   let offset = 0;
-//   const limit = 2;
-//   let hasMore = true;
-
-//   // === Mozuwat dropdown loader ===
-//   const MOZUWAT_API = "https://masailworld.onrender.com/api/tags";
-//   async function loadMozuwatDropdown() {
-//     if (!mozuwatSelect) return;
-//     mozuwatSelect.innerHTML = `<option value="">لوڈ ہو رہا ہے...</option>`;
-//     try {
-//       const res = await fetch(MOZUWAT_API);
-//       if (!res.ok) throw new Error("Failed to fetch tags: " + res.status);
-//       const data = await res.json();
-
-//       mozuwatSelect.innerHTML = `<option value="">-- موزوٰع منتخب کریں --</option>`;
-
-//       if (!Array.isArray(data) || data.length === 0) {
-//         mozuwatSelect.innerHTML = `<option value="">(کوئی موزوٰعات دستیاب نہیں)</option>`;
-//         return;
-//       }
-
-//       data.forEach((tag) => {
-//         const opt = document.createElement("option");
-//         // store tag.id by default. Change to tag.slug if you prefer slug.
-//         opt.value = String(tag.id ?? tag.slug ?? tag.Name ?? "");
-//         opt.textContent = tag.Name ?? tag.slug ?? String(tag.id ?? "");
-//         mozuwatSelect.appendChild(opt);
-//       });
-//     } catch (err) {
-//       console.error("Error loading Mozuwat tags:", err);
-//       mozuwatSelect.innerHTML = `<option value="">(لوڈ کرنے میں ناکامی)</option>`;
-//     }
-//   }
-
-//   // load tags first — ensures edit-prefill can set the select value reliably
-//   await loadMozuwatDropdown();
-
-//   // === Load fatawa into table ===
-//   async function loadFatawa() {
-//     try {
-//       const res = await fetch(
-//         `https://masailworld.onrender.com/api/fatwa?limit=${limit}&offset=${offset}`
-//       );
-//       const fatawa = await res.json();
-
-//       if (!res.ok) {
-//         console.error("❌ Error loading fatawa:", fatawa.error || fatawa);
-//         return;
-//       }
-
-//       if (!Array.isArray(fatawa) || fatawa.length === 0) {
-//         hasMore = false;
-//         loadMoreBtn.style.display = "none";
-//         return;
-//       }
-
-//       fatawa.forEach((fatwa) => {
-//         const row = document.createElement("tr");
-//         row.className = "border-b border-gray-200";
-
-//         row.innerHTML = `
-//           <td class="py-3 px-4">${fatwa.id}</td>
-//           <td class="py-3 px-4">${fatwa.Title || "—"}</td>
-//           <td class="py-3 px-4">${fatwa.muftisahab || "—"}</td>
-//           <td class="py-3 px-4">${fatwa.mozuwat || "—"}</td>
-//           <td class="py-3 px-4">${fatwa.tags || "—"}</td>
-//           <td class="py-3 px-4">${fatwa.tafseel || "—"}</td>
-//           <td class="py-3 px-4">${new Date(
-//             fatwa.created_at || fatwa.createdAt || Date.now()
-//           ).toLocaleDateString("ur-PK")}</td>
-//           <td class="py-3 px-4 flex space-x-2 justify-end">
-//             <button class="edit-btn text-green-600 hover:underline" data-id="${
-//               fatwa.id
-//             }">✏️</button>
-//             <button class="delete-btn text-red-600 hover:underline" data-id="${
-//               fatwa.id
-//             }">🗑️</button>
-//           </td>
-//         `;
-//         if (tableBody) tableBody.appendChild(row);
-//       });
-
-//       offset += fatawa.length;
-
-//       if (fatawa.length < limit) {
-//         hasMore = false;
-//         loadMoreBtn.style.display = "none";
-//       } else {
-//         loadMoreBtn.style.display = "block";
-//       }
-//     } catch (err) {
-//       console.error("❌ Network error:", err);
-//     }
-//   }
-
-//   if (tableBody) loadFatawa();
-
-//   loadMoreBtn.addEventListener("click", () => {
-//     if (hasMore) loadFatawa();
-//   });
-
-//   // === Edit / Delete handlers ===
-//   if (tableBody) {
-//     tableBody.addEventListener("click", async (e) => {
-//       const target = e.target;
-
-//       // Delete
-//       if (target.classList.contains("delete-btn")) {
-//         const id = target.dataset.id;
-//         if (!id) return;
-//         if (confirm("کیا آپ واقعی اس فتویٰ کو حذف کرنا چاہتے ہیں؟")) {
-//           try {
-//             const res = await fetch(
-//               `https://masailworld.onrender.com/api/fatwa/${id}`,
-//               {
-//                 method: "DELETE",
-//               }
-//             );
-//             const data = await res.json();
-
-//             if (res.ok) {
-//               alert("✅ فتویٰ حذف کر دیا گیا!");
-//               const row = target.closest("tr");
-//               if (row) row.remove();
-//             } else {
-//               alert("❌ Error: " + (data.error || "Failed to delete"));
-//             }
-//           } catch (err) {
-//             console.error(err);
-//             alert("❌ Network error. Please try again.");
-//           }
-//         }
-//       }
-
-//       // Edit
-//       if (target.classList.contains("edit-btn")) {
-//         const id = target.dataset.id;
-//         if (!id) return;
-//         try {
-//           const res = await fetch(
-//             `https://masailworld.onrender.com/api/fatwa/${id}`
-//           );
-//           const fatwa = await res.json();
-
-//           if (!res.ok) {
-//             alert("❌ Error fetching fatwa for edit");
-//             return;
-//           }
-
-//           // Fill form fields
-//           document.getElementById("ms-fatwa-id").value = fatwa.id ?? "";
-//           document.getElementById("ms-fatwa-title").value = fatwa.Title ?? "";
-//           document.getElementById("ms-fatwa-slug").value = fatwa.slug ?? "";
-//           document.getElementById("ms-fatwa-keywords-input").value =
-//             fatwa.tags ?? "";
-//           document.getElementById("ms-fatwa-meta-description").value =
-//             fatwa.tafseel ?? "";
-//           document.getElementById("ms-fatwa-question").innerHTML =
-//             fatwa.detailquestion ?? "";
-//           document.getElementById("ms-fatwa-answer").innerHTML =
-//             fatwa.Answer ?? "";
-//           document.getElementById("ms-fatwa-mufti").value =
-//             fatwa.muftisahab ?? "";
-
-//           // === Prefill mozuwat ===
-//           // fatwa may include mozuwat (id), mozuwat_id, mozuwatSlug, or mozuwat_name.
-//           // We'll try to find the right option; if it's missing, create a temporary option.
-//           if (mozuwatSelect) {
-//             const valCandidates = [
-//               fatwa.mozuwat,
-//               fatwa.mozuwat_id,
-//               fatwa.mozuwatSlug,
-//               fatwa.mozuwatId, // extra fallback
-//             ].filter(Boolean);
-
-//             const candidate = valCandidates.length
-//               ? String(valCandidates[0])
-//               : "";
-
-//             const setMozuwatValue = (value) => {
-//               if (!value) return;
-//               const exists = Array.from(mozuwatSelect.options).some(
-//                 (o) => String(o.value) === String(value)
-//               );
-//               if (exists) {
-//                 mozuwatSelect.value = String(value);
-//                 return;
-//               }
-//               // not present in options: add temp option (show name if available)
-//               const tempOpt = document.createElement("option");
-//               tempOpt.value = String(value);
-//               tempOpt.textContent =
-//                 fatwa.mozuwat_name ??
-//                 fatwa.mozuwatName ??
-//                 fatwa.mozuwatDisplay ??
-//                 `Tag ${value}`;
-//               mozuwatSelect.appendChild(tempOpt);
-//               mozuwatSelect.value = String(value);
-//             };
-
-//             // try immediately and again after a short delay in case options are still populating
-//             setMozuwatValue(candidate);
-//             setTimeout(() => setMozuwatValue(candidate), 200);
-//           }
-
-//           // switch to add/edit page
-//           window.location.hash = "add-fatwa";
-//         } catch (err) {
-//           console.error(err);
-//           alert("❌ Network error while fetching fatwa.");
-//         }
-//       }
-//     });
-//   }
-
-//   // === Form submission (create or update) ===
-//   if (form) {
-//     form.addEventListener("submit", async (e) => {
-//       e.preventDefault();
-//       showLoader();
-
-//       const id = document.getElementById("ms-fatwa-id").value;
-
-//       const fatwaData = {
-//         Title: document.getElementById("ms-fatwa-title").value.trim(),
-//         slug: document.getElementById("ms-fatwa-slug").value.trim(),
-//         tags:
-//           document.getElementById("ms-fatwa-keywords-input").value.trim() ||
-//           null,
-//         tafseel:
-//           document.getElementById("ms-fatwa-meta-description").value.trim() ||
-//           null,
-//         detailquestion:
-//           document.getElementById("ms-fatwa-question").innerHTML.trim() || null,
-//         Answer:
-//           document.getElementById("ms-fatwa-answer").innerHTML.trim() || null,
-//         muftisahab:
-//           document.getElementById("ms-fatwa-mufti").value.trim() || null,
-//         // mozuwat: selected tag id OR null if none selected
-//         mozuwat: (() => {
-//           if (!mozuwatSelect) return null;
-//           const v = mozuwatSelect.value;
-//           return v === "" ? null : v;
-//         })(),
-//       };
-
-//       try {
-//         let res;
-//         if (id) {
-//           // Update existing fatwa
-//           res = await fetch(
-//             `https://masailworld.onrender.com/api/fatwa/${id}`,
-//             {
-//               method: "PUT",
-//               headers: { "Content-Type": "application/json" },
-//               body: JSON.stringify(fatwaData),
-//             }
-//           );
-//         } else {
-//           // Create new fatwa
-//           res = await fetch(
-//             "https://masailworld.onrender.com/api/fatwa/dashboard",
-//             {
-//               method: "POST",
-//               headers: { "Content-Type": "application/json" },
-//               body: JSON.stringify(fatwaData),
-//             }
-//           );
-//         }
-
-//         const data = await res.json();
-//         hideLoader();
-
-//         if (res.ok) {
-//           alert(
-//             id
-//               ? "✅ فتویٰ کامیابی سے اپڈیٹ کر دیا گیا!"
-//               : "✅ فتویٰ کامیابی سے شامل کر دیا گیا!"
-//           );
-//           form.reset();
-//           document.getElementById("ms-fatwa-id").value = "";
-
-//           // Refresh table after a short delay
-//           setTimeout(() => {
-//             window.location.hash = "manage-fatawa";
-//             if (tableBody) tableBody.innerHTML = "";
-//             offset = 0;
-//             hasMore = true;
-//             loadFatawa();
-//           }, 1000);
-//         } else {
-//           alert("❌ Error: " + (data.error || "Failed to save fatwa"));
-//         }
-//       } catch (err) {
-//         console.error(err);
-//         hideLoader();
-//         alert("❌ Network error. Please try again.");
-//       }
-//     });
-//   }
-// });
-
 document.addEventListener("DOMContentLoaded", async () => {
   // ===== DOM elements =====
   const form = document.getElementById("ms-fatwa-form"); // existing add/edit form on your other screen
@@ -364,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const selectAllCheckbox = document.getElementById("ms-select-all");
 
   // ===== API base =====
-  const API_BASE = "https://masailworld.onrender.com/api";
+  const API_BASE = "https://masailworld.com/api";
 
   // ===== Loader =====
   const loader = document.createElement("div");
@@ -425,24 +92,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadMozuwatDropdown();
 
   // ===== Try to fetch total count (optional endpoint). Fallback if missing. =====
-  async function tryFetchCount() {
-    try {
-      const res = await fetch(`${API_BASE}/fatwa/count`);
-      if (!res.ok) return null;
-      const data = await res.json();
-      // accept common shapes: {count: N} or a number
-      const count = typeof data === "number" ? data : data?.count;
-      return Number.isFinite(count) ? count : null;
-    } catch {
-      return null;
-    }
-  }
 
   // ===== Helpers =====
   function formatDate(value) {
     const d = new Date(value || Date.now());
     // Urdu Pakistan locale
-    return d.toLocaleDateString("ur-PK", { year: "numeric", month: "short", day: "numeric" });
+    return d.toLocaleDateString("ur-PK", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   }
 
   function resolveStatus(fatwa) {
@@ -451,8 +110,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       fatwa.status ??
       fatwa.Status ??
       fatwa.state ??
-      (typeof fatwa.published !== "undefined" ? (fatwa.published ? "published" : "draft") : null) ??
-      (typeof fatwa.is_published !== "undefined" ? (fatwa.is_published ? "published" : "draft") : null) ??
+      (typeof fatwa.published !== "undefined"
+        ? fatwa.published
+          ? "published"
+          : "draft"
+        : null) ??
+      (typeof fatwa.is_published !== "undefined"
+        ? fatwa.is_published
+          ? "published"
+          : "draft"
+        : null) ??
       null;
 
     const val = String(raw ?? "").toLowerCase();
@@ -467,8 +134,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       return { text: "مسودہ", color: "bg-gray-100 text-gray-800" };
 
     // fallback: show the raw text
-    return { text: fatwa.status ?? fatwa.Status ?? "نامعلوم", color: "bg-gray-100 text-gray-800" };
-    }
+    return {
+      text: fatwa.status ?? fatwa.Status ?? "نامعلوم",
+      color: "bg-gray-100 text-gray-800",
+    };
+  }
 
   function renderPagination() {
     if (!paginationEl) return;
@@ -496,10 +166,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // if we know total pages, build full number list; otherwise show prev/next only
-    const haveTotals = Number.isFinite(totalItems) && Number.isFinite(totalPages);
+    const haveTotals =
+      Number.isFinite(totalItems) && Number.isFinite(totalPages);
 
     const first = makeBtn("اول", 1, currentPage === 1);
-    const prev = makeBtn("پچھلا", Math.max(1, currentPage - 1), currentPage === 1);
+    const prev = makeBtn(
+      "پچھلا",
+      Math.max(1, currentPage - 1),
+      currentPage === 1
+    );
     paginationEl.appendChild(first);
     paginationEl.appendChild(prev);
 
@@ -507,7 +182,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const MAX_SHOWN = 7; // compact window
       let start = Math.max(1, currentPage - 3);
       let end = Math.min(totalPages, start + MAX_SHOWN - 1);
-      if (end - start < MAX_SHOWN - 1) start = Math.max(1, end - (MAX_SHOWN - 1));
+      if (end - start < MAX_SHOWN - 1)
+        start = Math.max(1, end - (MAX_SHOWN - 1));
 
       if (start > 1) {
         paginationEl.appendChild(makeBtn("1", 1, false, currentPage === 1));
@@ -520,7 +196,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       for (let p = start; p <= end; p++) {
-        paginationEl.appendChild(makeBtn(String(p), p, false, p === currentPage));
+        paginationEl.appendChild(
+          makeBtn(String(p), p, false, p === currentPage)
+        );
       }
 
       if (end < totalPages) {
@@ -530,7 +208,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           ell.className = "px-2 text-gray-500";
           paginationEl.appendChild(ell);
         }
-        paginationEl.appendChild(makeBtn(String(totalPages), totalPages, false, currentPage === totalPages));
+        paginationEl.appendChild(
+          makeBtn(
+            String(totalPages),
+            totalPages,
+            false,
+            currentPage === totalPages
+          )
+        );
       }
     } else {
       // If totals unknown, show a small hint
@@ -540,8 +225,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       paginationEl.appendChild(hint);
     }
 
-    const next = makeBtn("اگلا", currentPage + 1, haveTotals ? currentPage >= totalPages : false);
-    const last = makeBtn("آخری", haveTotals ? totalPages : currentPage, haveTotals ? currentPage >= totalPages : true);
+    const next = makeBtn(
+      "اگلا",
+      currentPage + 1,
+      haveTotals ? currentPage >= totalPages : false
+    );
+    const last = makeBtn(
+      "آخری",
+      haveTotals ? totalPages : currentPage,
+      haveTotals ? currentPage >= totalPages : true
+    );
     paginationEl.appendChild(next);
     paginationEl.appendChild(last);
   }
@@ -559,19 +252,29 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       tr.innerHTML = `
         <td class="py-3 px-4 align-middle">
-          <input type="checkbox" class="ms-row-check w-5 h-5 accent-midnight_green" data-id="${fatwa.id}" />
+          <input type="checkbox" class="ms-row-check w-5 h-5 accent-midnight_green" data-id="${
+            fatwa.id
+          }" />
         </td>
         <td class="py-3 px-4 align-middle">${fatwa.id}</td>
         <td class="py-3 px-4 align-middle">${fatwa.Title ?? "—"}</td>
         <td class="py-3 px-4 align-middle">${fatwa.muftisahab ?? "—"}</td>
         <td class="py-3 px-4 align-middle">
-          <span class="inline-block text-sm px-2 py-1 rounded ${status.color}">${status.text}</span>
+          <span class="inline-block text-sm px-2 py-1 rounded ${
+            status.color
+          }">${status.text}</span>
         </td>
-        <td class="py-3 px-4 align-middle">${formatDate(fatwa.created_at || fatwa.createdAt)}</td>
+        <td class="py-3 px-4 align-middle">${formatDate(
+          fatwa.created_at || fatwa.createdAt
+        )}</td>
         <td class="py-3 px-4 align-middle">
           <div class="flex items-center gap-3 justify-end">
-            <button class="edit-btn text-green-700 hover:underline" data-id="${fatwa.id}" title="ترمیم">✏️</button>
-            <button class="delete-btn text-red-700 hover:underline" data-id="${fatwa.id}" title="حذف">🗑️</button>
+            <button class="edit-btn text-green-700 hover:underline" data-id="${
+              fatwa.id
+            }" title="ترمیم">✏️</button>
+            <button class="delete-btn text-red-700 hover:underline" data-id="${
+              fatwa.id
+            }" title="حذف">🗑️</button>
           </div>
         </td>
       `;
@@ -599,12 +302,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (Number.isFinite(totalItems)) return; // already known
 
     // Try the count endpoint first
-    const count = await tryFetchCount();
-    if (Number.isFinite(count)) {
-      totalItems = count;
-      totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-      return;
-    }
 
     // Fallback: if we got a "short" first page, we know totals
     if (firstPageLength < PAGE_SIZE) {
@@ -682,7 +379,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       try {
         showLoader();
-        const res = await fetch(`${API_BASE}/fatwa/${id}`, { method: "DELETE" });
+        const res = await fetch(`${API_BASE}/fatwa/${id}`, {
+          method: "DELETE",
+        });
         const data = await res.json();
         if (!res.ok) {
           alert("❌ Error: " + (data.error || "Failed to delete"));
@@ -717,11 +416,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("ms-fatwa-id").value = fatwa.id ?? "";
         document.getElementById("ms-fatwa-title").value = fatwa.Title ?? "";
         document.getElementById("ms-fatwa-slug").value = fatwa.slug ?? "";
-        document.getElementById("ms-fatwa-keywords-input").value = fatwa.tags ?? "";
-        document.getElementById("ms-fatwa-meta-description").value = fatwa.tafseel ?? "";
-        document.getElementById("ms-fatwa-question").innerHTML = fatwa.detailquestion ?? "";
-        document.getElementById("ms-fatwa-answer").innerHTML = fatwa.Answer ?? "";
-        document.getElementById("ms-fatwa-mufti").value = fatwa.muftisahab ?? "";
+        document.getElementById("ms-fatwa-keywords-input").value =
+          fatwa.tags ?? "";
+        document.getElementById("ms-fatwa-meta-description").value =
+          fatwa.tafseel ?? "";
+        document.getElementById("ms-fatwa-question").innerHTML =
+          fatwa.detailquestion ?? "";
+        document.getElementById("ms-fatwa-answer").innerHTML =
+          fatwa.Answer ?? "";
+        document.getElementById("ms-fatwa-mufti").value =
+          fatwa.muftisahab ?? "";
 
         // Prefill mozuwat
         if (mozuwatSelect) {
@@ -732,7 +436,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             fatwa.mozuwatId,
           ].filter(Boolean);
 
-          const candidate = valCandidates.length ? String(valCandidates[0]) : "";
+          const candidate = valCandidates.length
+            ? String(valCandidates[0])
+            : "";
 
           const setMozuwatValue = (value) => {
             if (!value) return;
@@ -746,7 +452,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             const tempOpt = document.createElement("option");
             tempOpt.value = String(value);
             tempOpt.textContent =
-              fatwa.mozuwat_name ?? fatwa.mozuwatName ?? fatwa.mozuwatDisplay ?? `Tag ${value}`;
+              fatwa.mozuwat_name ??
+              fatwa.mozuwatName ??
+              fatwa.mozuwatDisplay ??
+              `Tag ${value}`;
             mozuwatSelect.appendChild(tempOpt);
             mozuwatSelect.value = String(value);
           };
@@ -796,7 +505,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Bulk Delete
   bulkDeleteBtn?.addEventListener("click", async () => {
     if (selectedIds.size === 0) return;
-    if (!confirm(`کیا آپ واقعی ${selectedIds.size} فتاویٰ حذف کرنا چاہتے ہیں؟`)) return;
+    if (!confirm(`کیا آپ واقعی ${selectedIds.size} فتاویٰ حذف کرنا چاہتے ہیں؟`))
+      return;
 
     try {
       showLoader();
@@ -841,11 +551,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       const fatwaData = {
         Title: document.getElementById("ms-fatwa-title").value.trim(),
         slug: document.getElementById("ms-fatwa-slug").value.trim(),
-        tags: document.getElementById("ms-fatwa-keywords-input").value.trim() || null,
-        tafseel: document.getElementById("ms-fatwa-meta-description").value.trim() || null,
-        detailquestion: document.getElementById("ms-fatwa-question").innerHTML.trim() || null,
-        Answer: document.getElementById("ms-fatwa-answer").innerHTML.trim() || null,
-        muftisahab: document.getElementById("ms-fatwa-mufti").value.trim() || null,
+        tags:
+          document.getElementById("ms-fatwa-keywords-input").value.trim() ||
+          null,
+        tafseel:
+          document.getElementById("ms-fatwa-meta-description").value.trim() ||
+          null,
+        detailquestion:
+          document.getElementById("ms-fatwa-question").innerHTML.trim() || null,
+        Answer:
+          document.getElementById("ms-fatwa-answer").innerHTML.trim() || null,
+        muftisahab:
+          document.getElementById("ms-fatwa-mufti").value.trim() || null,
         mozuwat: (() => {
           if (!mozuwatSelect) return null;
           const v = mozuwatSelect.value;
@@ -871,7 +588,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const data = await res.json();
         if (res.ok) {
-          alert(id ? "✅ فتویٰ کامیابی سے اپڈیٹ کر دیا گیا!" : "✅ فتویٰ کامیابی سے شامل کر دیا گیا!");
+          alert(
+            id
+              ? "✅ فتویٰ کامیابی سے اپڈیٹ کر دیا گیا!"
+              : "✅ فتویٰ کامیابی سے شامل کر دیا گیا!"
+          );
           form.reset();
           document.getElementById("ms-fatwa-id").value = "";
 
@@ -911,9 +632,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
-
 // View , Add and Edit , delete Article start here
-
 
 // document.addEventListener("DOMContentLoaded", () => {
 //   const apiBase = "https://masailworld.onrender.com/api/article"; // API endpoint
@@ -1263,7 +982,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const apiBase = "https://api.masailworld.com/api/article"; // API endpoint
+  const apiBase = "https://masailworld.com/api/article"; // API endpoint
 
   // DOM references
   const tableBody = document.getElementById("ms-articles-table-body");
@@ -1417,7 +1136,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function formatDate(value) {
     const d = value ? new Date(value) : new Date();
-    return d.toLocaleDateString("ur-PK", { year: "numeric", month: "short", day: "numeric" });
+    return d.toLocaleDateString("ur-PK", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   }
 
   // ===== helpers to unwrap API shapes =====
@@ -1429,7 +1152,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function unwrapObject(payload) {
     // Accept: { ... } OR { data: { ... } }
-    if (payload && payload.data && typeof payload.data === "object") return payload.data;
+    if (payload && payload.data && typeof payload.data === "object")
+      return payload.data;
     if (payload && typeof payload === "object") return payload;
     return null;
   }
@@ -1438,32 +1162,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (payload == null) return null;
     if (Number.isFinite(payload.total)) return payload.total;
     if (Number.isFinite(payload.count)) return payload.count;
-    if (payload.meta && Number.isFinite(payload.meta.total)) return payload.meta.total;
-    if (payload.data && Number.isFinite(payload.data.total)) return payload.data.total;
+    if (payload.meta && Number.isFinite(payload.meta.total))
+      return payload.meta.total;
+    if (payload.data && Number.isFinite(payload.data.total))
+      return payload.data.total;
     return null;
   }
 
   // ===== Try count endpoint if available =====
-  async function tryFetchCount() {
-    try {
-      const res = await fetch(`${apiBase}/count`);
-      if (!res.ok) return null;
-      const data = await res.json();
-      // Accept number, {count}, {total}, {data:{count}}, etc.
-      if (Number.isFinite(data)) return data;
-      const unwrapped = unwrapObject(data);
-      const candidates = [
-        data?.count,
-        data?.total,
-        unwrapped?.count,
-        unwrapped?.total,
-      ];
-      const firstNumber = candidates.find((n) => Number.isFinite(n));
-      return Number.isFinite(firstNumber) ? firstNumber : null;
-    } catch {
-      return null;
-    }
-  }
 
   function renderPagination() {
     if (!paginationEl) return;
@@ -1490,10 +1196,15 @@ document.addEventListener("DOMContentLoaded", () => {
       return btn;
     };
 
-    const haveTotals = Number.isFinite(totalItems) && Number.isFinite(totalPages);
+    const haveTotals =
+      Number.isFinite(totalItems) && Number.isFinite(totalPages);
 
     const first = makeBtn("اول", 1, currentPage === 1);
-    const prev = makeBtn("پچھلا", Math.max(1, currentPage - 1), currentPage === 1);
+    const prev = makeBtn(
+      "پچھلا",
+      Math.max(1, currentPage - 1),
+      currentPage === 1
+    );
     paginationEl.appendChild(first);
     paginationEl.appendChild(prev);
 
@@ -1501,7 +1212,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const MAX_SHOWN = 7;
       let start = Math.max(1, currentPage - 3);
       let end = Math.min(totalPages, start + MAX_SHOWN - 1);
-      if (end - start < MAX_SHOWN - 1) start = Math.max(1, end - (MAX_SHOWN - 1));
+      if (end - start < MAX_SHOWN - 1)
+        start = Math.max(1, end - (MAX_SHOWN - 1));
 
       if (start > 1) {
         paginationEl.appendChild(makeBtn("1", 1, false, currentPage === 1));
@@ -1514,7 +1226,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       for (let p = start; p <= end; p++) {
-        paginationEl.appendChild(makeBtn(String(p), p, false, p === currentPage));
+        paginationEl.appendChild(
+          makeBtn(String(p), p, false, p === currentPage)
+        );
       }
 
       if (end < totalPages) {
@@ -1524,7 +1238,14 @@ document.addEventListener("DOMContentLoaded", () => {
           ell.className = "px-2 text-gray-500";
           paginationEl.appendChild(ell);
         }
-        paginationEl.appendChild(makeBtn(String(totalPages), totalPages, false, currentPage === totalPages));
+        paginationEl.appendChild(
+          makeBtn(
+            String(totalPages),
+            totalPages,
+            false,
+            currentPage === totalPages
+          )
+        );
       }
     } else {
       const hint = document.createElement("span");
@@ -1533,8 +1254,16 @@ document.addEventListener("DOMContentLoaded", () => {
       paginationEl.appendChild(hint);
     }
 
-    const next = makeBtn("اگلا", currentPage + 1, haveTotals ? currentPage >= totalPages : false);
-    const last = makeBtn("آخری", haveTotals ? totalPages : currentPage, haveTotals ? currentPage >= totalPages : true);
+    const next = makeBtn(
+      "اگلا",
+      currentPage + 1,
+      haveTotals ? currentPage >= totalPages : false
+    );
+    const last = makeBtn(
+      "آخری",
+      haveTotals ? totalPages : currentPage,
+      haveTotals ? currentPage >= totalPages : true
+    );
     paginationEl.appendChild(next);
     paginationEl.appendChild(last);
   }
@@ -1607,13 +1336,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function refreshTotalsIfNeeded(firstPageLength) {
     if (Number.isFinite(totalItems)) return;
-
-    const count = await tryFetchCount();
-    if (Number.isFinite(count)) {
-      totalItems = count;
-      totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-      return;
-    }
 
     if (firstPageLength < PAGE_SIZE) {
       totalItems = firstPageLength;
@@ -1730,7 +1452,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===== Bulk Delete =====
   bulkDeleteBtn?.addEventListener("click", async () => {
     if (selectedIds.size === 0) return;
-    if (!confirm(`کیا آپ واقعی ${selectedIds.size} مضامین حذف کرنا چاہتے ہیں؟`)) return;
+    if (!confirm(`کیا آپ واقعی ${selectedIds.size} مضامین حذف کرنا چاہتے ہیں؟`))
+      return;
 
     try {
       const ids = Array.from(selectedIds);
@@ -1813,7 +1536,9 @@ document.addEventListener("DOMContentLoaded", () => {
         resetForm();
         if (typeof refreshTable === "function") refreshTable();
 
-        const backBtn = document.querySelector('[data-target="manage-articles"]');
+        const backBtn = document.querySelector(
+          '[data-target="manage-articles"]'
+        );
         if (backBtn) backBtn.click();
       } catch (err) {
         console.error("submit error:", err);
@@ -1874,7 +1599,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`${apiBase}/${id}`);
       const raw = await res.json().catch(() => ({}));
       if (!res.ok || raw?.success === false) {
-        const msg = raw?.error || raw?.message || `Server returned ${res.status}`;
+        const msg =
+          raw?.error || raw?.message || `Server returned ${res.status}`;
         throw new Error(msg);
       }
 
@@ -1926,244 +1652,28 @@ document.addEventListener("DOMContentLoaded", () => {
   refreshTable();
 });
 
-
 // -----------------------------------------------------------------
 
-
-
-// Books section 
-
-// document.addEventListener("DOMContentLoaded", () => {
-//   const bookForm = document.getElementById("ms-book-form");
-//   const booksTableBody = document.getElementById("ms-books-table-body");
-//   const bookIdField = document.getElementById("ms-book-id");
-//   const formTitle = document.getElementById("ms-book-form-title");
-
-//   // 🔄 Loader element
-//   const loader = document.createElement("div");
-//   loader.id = "global-loader";
-//   loader.className =
-//     "fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden";
-//   loader.innerHTML = `
-//     <div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-//   `;
-//   document.body.appendChild(loader);
-
-//   function showLoader() {
-//     loader.classList.remove("hidden");
-//   }
-
-//   function hideLoader() {
-//     loader.classList.add("hidden");
-//   }
-
-//   let offset = 0;
-//   const limit = 5; // show more by default
-//   let isEditing = false;
-
-//   // ✅ Load books
-//   async function loadBooks() {
-//     showLoader();
-//     try {
-//       const res = await fetch(
-//         `https://masailworld.onrender.com/api/book?limit=${limit}&offset=${offset}`
-//       );
-//       if (!res.ok) throw new Error("Failed to fetch books");
-
-//       const books = await res.json();
-
-//       if (offset === 0) {
-//         booksTableBody.innerHTML = ""; // reset only on first load
-//       }
-
-//       if (books.length === 0) {
-//         document.getElementById("load-more-books")?.remove();
-//         return;
-//       }
-
-//       books.forEach((book) => {
-//         const tr = document.createElement("tr");
-//         tr.classList.add("border-b", "border-gray-200");
-
-//         tr.innerHTML = `
-//           <td class="py-3 px-4">${book.BookName}</td>
-//           <td class="py-3 px-4">${book.BookWriter || "-"}</td>
-//           <td class="py-3 px-4 flex gap-3">
-//             <button onclick="editBook(${
-//               book.id
-//             })" title="Edit" class="text-blue-600 hover:text-blue-800">✏️</button>
-//             <button onclick="deleteBook(${
-//               book.id
-//             }, this)" title="Delete" class="text-red-600 hover:text-red-800">🗑️</button>
-//           </td>
-//         `;
-
-//         booksTableBody.appendChild(tr);
-//       });
-
-//       if (!document.getElementById("load-more-books")) {
-//         const btn = document.createElement("button");
-//         btn.id = "load-more-books";
-//         btn.textContent = "آگے دیکھیں";
-//         btn.className =
-//           "mt-4 bg-midnight_green text-white py-2 px-6 rounded-lg hover:bg-midnight_green-400 transition";
-//         btn.addEventListener("click", () => {
-//           offset += limit;
-//           loadBooks();
-//         });
-//         booksTableBody.parentElement.appendChild(btn);
-//       }
-//     } catch (err) {
-//       console.error("❌ Error loading books:", err);
-//       alert("کتابیں لوڈ کرنے میں مسئلہ ہے");
-//     } finally {
-//       hideLoader();
-//     }
-//   }
-
-//   // ✅ Add / Update book
-//   bookForm.addEventListener("submit", async (e) => {
-//     e.preventDefault();
-//     showLoader();
-
-//     try {
-//       const formData = new FormData();
-//       formData.append(
-//         "BookName",
-//         document.getElementById("ms-book-name").value.trim()
-//       );
-//       formData.append(
-//         "BookWriter",
-//         document.getElementById("ms-book-author").value.trim()
-//       );
-//       formData.append(
-//         "BookDescription",
-//         document.getElementById("ms-book-description").innerHTML.trim()
-//       );
-
-//       const coverFile = document.getElementById("ms-book-cover").files[0];
-//       if (coverFile) formData.append("BookCoverImg", coverFile);
-
-//       const pdfFile = document.getElementById("ms-book-file").files[0];
-//       if (pdfFile) formData.append("BookPDF", pdfFile);
-
-//       let url = "https://masailworld.onrender.com/api/book";
-//       let method = "POST";
-
-//       if (isEditing) {
-//         const id = bookIdField.value;
-//         url = `https://masailworld.onrender.com/api/book/${id}`;
-//         method = "PUT";
-//       }
-
-//       const res = await fetch(url, {
-//         method,
-//         body: formData,
-//       });
-
-//       const data = await res.json();
-
-//       if (res.ok) {
-//         alert(
-//           isEditing
-//             ? "✅ کتاب کامیابی سے اپڈیٹ ہو گئی!"
-//             : "✅ کتاب کامیابی سے شامل کر دی گئی!"
-//         );
-
-//         // Reset form
-//         bookForm.reset();
-//         document.getElementById("ms-book-description").innerHTML = "";
-//         bookIdField.value = "";
-//         formTitle.textContent = "نئی کتاب شامل کریں";
-//         isEditing = false;
-
-//         // Reload books
-//         offset = 0;
-//         await loadBooks();
-
-//         // Redirect back
-//         window.location.hash = "manage-books";
-//       } else {
-//         alert("❌ Error: " + (data.error || "کتاب محفوظ کرنے میں مسئلہ ہے"));
-//       }
-//     } catch (err) {
-//       console.error("❌ Network error:", err);
-//       alert("❌ نیٹ ورک مسئلہ۔ دوبارہ کوشش کریں");
-//     } finally {
-//       hideLoader();
-//     }
-//   });
-
-//   // ✅ Delete book
-//   window.deleteBook = async (id, btn) => {
-//     if (!confirm("کیا آپ واقعی اس کتاب کو حذف کرنا چاہتے ہیں؟")) return;
-//     showLoader();
-
-//     try {
-//       const res = await fetch(
-//         `https://masailworld.onrender.com/api/book/${id}`,
-//         {
-//           method: "DELETE",
-//         }
-//       );
-//       const data = await res.json();
-
-//       if (res.ok) {
-//         alert("📕 کتاب حذف کر دی گئی");
-//         btn.closest("tr").remove();
-//       } else {
-//         alert("❌ Error: " + (data.error || "کتاب حذف کرنے میں مسئلہ"));
-//       }
-//     } catch (err) {
-//       console.error(err);
-//       alert("❌ نیٹ ورک مسئلہ۔ دوبارہ کوشش کریں");
-//     } finally {
-//       hideLoader();
-//     }
-//   };
-
-//   // ✅ Edit book (prefill form)
-//   window.editBook = async (id) => {
-//     showLoader();
-//     try {
-//       const res = await fetch(
-//         `https://masailworld.onrender.com/api/book/${id}`
-//       );
-//       if (!res.ok) throw new Error("Failed to fetch book");
-
-//       const book = await res.json();
-
-//       bookIdField.value = book.id;
-//       document.getElementById("ms-book-name").value = book.BookName;
-//       document.getElementById("ms-book-author").value = book.BookWriter || "";
-//       document.getElementById("ms-book-description").innerHTML =
-//         book.BookDescription || "";
-
-//       isEditing = true;
-//       formTitle.textContent = "کتاب ایڈٹ کریں";
-//       window.location.hash = "add-book";
-//     } catch (err) {
-//       console.error("❌ Error loading book:", err);
-//       alert("کتاب لوڈ کرنے میں مسئلہ ہے");
-//     } finally {
-//       hideLoader();
-//     }
-//   };
-
-//   // 🚀 Initial load
-//   loadBooks();
-// });
-
-
-
+// Books section
 
 document.addEventListener("DOMContentLoaded", () => {
-  const API_BASE = "https://masailworld.onrender.com/api/book";
+  const API_BASE = "https://masailworld.com/api/book";
+  const TAGS_API = "https://masailworld.com/api/tags?limit=200";
 
   // Form + fields
   const bookForm = document.getElementById("ms-book-form");
   const bookIdField = document.getElementById("ms-book-id");
   const formTitle = document.getElementById("ms-book-form-title");
+
+  // New: Tags UI refs
+  const tagsInput = document.getElementById("ms-book-tags-input");
+  const tagsOptions = document.getElementById("ms-book-tags-options");
+  const tagsSelected = document.getElementById("ms-book-tags-selected");
+  const tagsHidden = document.getElementById("ms-book-tags-hidden");
+
+  // Author dropdown shell exists in HTML, but this file doesn't auto-fill authors.
+  // (You can wire it similar to tags if you add an authors API.)
+  const authorInput = document.getElementById("ms-book-author");
 
   // List + controls
   const booksTableBody = document.getElementById("ms-books-table-body");
@@ -2174,81 +1684,80 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("ms-books-search-btn");
   const suggestions = document.getElementById("ms-books-suggestions");
 
-  // 🔄 Loader
+  // Loader
   const loader = document.createElement("div");
   loader.id = "global-loader";
-  loader.className = "fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden";
+  loader.className =
+    "fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden";
   loader.innerHTML = `<div class="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>`;
   document.body.appendChild(loader);
   const showLoader = () => loader.classList.remove("hidden");
   const hideLoader = () => loader.classList.add("hidden");
 
   // State
-  const PAGE_SIZE = 10; // page size
+  const PAGE_SIZE = 10;
   let currentPage = 1;
-  let totalItems = null; // unknown initially (we’ll try /count)
+  let totalItems = null; // we will NOT call /count; infer by probing
   let totalPages = 1;
   let isEditing = false;
   const selectedIds = new Set();
   let currentQuery = "";
 
-  // ===== Helpers =====
-  const escapeHtml = (s) =>
-    String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  // New: tags state
+  /** @type {{id:number|string, TagID?:number|string, Name?:string, TagName?:string}[]} */
+  let allTags = [];
+  /** @type {(number|string)[]} */
+  let selectedTagIds = [];
 
-  // Try to fetch count if your API supports /book/count returning {count} or raw number
-  async function tryFetchCount() {
-    try {
-      const res = await fetch(`${API_BASE}/count`);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const count = typeof data === "number" ? data : data?.count;
-      return Number.isFinite(count) ? count : null;
-    } catch {
-      return null;
-    }
-  }
+  // Helpers
+  const escapeHtml = (s) =>
+    String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
 
   function renderPagination() {
     if (!paginationEl) return;
     paginationEl.innerHTML = "";
 
-    const makeBtn = (label, page, disabled = false, active = false) => {
-      const btn = document.createElement("button");
-      btn.textContent = label;
-      btn.className =
+    const btn = (label, page, disabled = false, active = false) => {
+      const el = document.createElement("button");
+      el.textContent = label;
+      el.className =
         "min-w-[2.5rem] px-3 py-2 rounded-md border text-sm " +
         (active
           ? "bg-midnight_green text-white border-midnight_green"
           : "bg-white border-gray-300 hover:bg-gray-50") +
         (disabled ? " opacity-50 cursor-not-allowed" : "");
-      btn.disabled = disabled;
+      el.disabled = disabled;
       if (!disabled) {
-        btn.addEventListener("click", () => {
+        el.addEventListener("click", () => {
           if (page !== currentPage) {
             currentPage = page;
             refreshTable();
           }
         });
       }
-      return btn;
+      return el;
     };
 
-    const haveTotals = Number.isFinite(totalItems) && Number.isFinite(totalPages);
+    const haveTotals =
+      Number.isFinite(totalItems) && Number.isFinite(totalPages);
 
-    const first = makeBtn("اول", 1, currentPage === 1);
-    const prev = makeBtn("پچھلا", Math.max(1, currentPage - 1), currentPage === 1);
-    paginationEl.appendChild(first);
-    paginationEl.appendChild(prev);
+    paginationEl.appendChild(btn("اول", 1, currentPage === 1));
+    paginationEl.appendChild(
+      btn("پچھلا", Math.max(1, currentPage - 1), currentPage === 1)
+    );
 
     if (haveTotals) {
       const MAX_SHOWN = 7;
       let start = Math.max(1, currentPage - 3);
       let end = Math.min(totalPages, start + MAX_SHOWN - 1);
-      if (end - start < MAX_SHOWN - 1) start = Math.max(1, end - (MAX_SHOWN - 1));
+      if (end - start < MAX_SHOWN - 1)
+        start = Math.max(1, end - (MAX_SHOWN - 1));
 
       if (start > 1) {
-        paginationEl.appendChild(makeBtn("1", 1, false, currentPage === 1));
+        paginationEl.appendChild(btn("1", 1, false, currentPage === 1));
         if (start > 2) {
           const ell = document.createElement("span");
           ell.textContent = "…";
@@ -2258,7 +1767,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       for (let p = start; p <= end; p++) {
-        paginationEl.appendChild(makeBtn(String(p), p, false, p === currentPage));
+        paginationEl.appendChild(btn(String(p), p, false, p === currentPage));
       }
 
       if (end < totalPages) {
@@ -2268,7 +1777,9 @@ document.addEventListener("DOMContentLoaded", () => {
           ell.className = "px-2 text-gray-500";
           paginationEl.appendChild(ell);
         }
-        paginationEl.appendChild(makeBtn(String(totalPages), totalPages, false, currentPage === totalPages));
+        paginationEl.appendChild(
+          btn(String(totalPages), totalPages, false, currentPage === totalPages)
+        );
       }
     } else {
       const hint = document.createElement("span");
@@ -2277,28 +1788,43 @@ document.addEventListener("DOMContentLoaded", () => {
       paginationEl.appendChild(hint);
     }
 
-    const next = makeBtn("اگلا", currentPage + 1, haveTotals ? currentPage >= totalPages : false);
-    const last = makeBtn("آخری", haveTotals ? totalPages : currentPage, haveTotals ? currentPage >= totalPages : true);
-    paginationEl.appendChild(next);
-    paginationEl.appendChild(last);
+    paginationEl.appendChild(
+      btn(
+        "اگلا",
+        currentPage + 1,
+        haveTotals ? currentPage >= totalPages : false
+      )
+    );
+    paginationEl.appendChild(
+      btn(
+        "آخری",
+        haveTotals ? totalPages : currentPage,
+        haveTotals ? currentPage >= totalPages : true
+      )
+    );
   }
 
   function renderRows(books) {
+    if (!booksTableBody) return;
     booksTableBody.innerHTML = "";
     selectedIds.clear();
-    selectAllCheckbox.checked = false;
-    bulkDeleteBtn.disabled = true;
+    if (selectAllCheckbox) selectAllCheckbox.checked = false;
+    if (bulkDeleteBtn) bulkDeleteBtn.disabled = true;
 
     books.forEach((book) => {
-      const id = book.id ?? book.ID ?? book.Id;
+      const id = book.id ?? book.ID ?? book.Id ?? book.bookId ?? book.BookID;
       const tr = document.createElement("tr");
       tr.className = "border-b border-gray-200";
       tr.innerHTML = `
         <td class="py-3 px-4 align-middle">
           <input type="checkbox" class="ms-book-row-check w-5 h-5 accent-midnight_green" data-id="${id}" />
         </td>
-        <td class="py-3 px-4 align-middle">${escapeHtml(book.BookName)}</td>
-        <td class="py-3 px-4 align-middle">${escapeHtml(book.BookWriter || "-")}</td>
+        <td class="py-3 px-4 align-middle">${escapeHtml(
+          book.BookName || book.title || "-"
+        )}</td>
+        <td class="py-3 px-4 align-middle">${escapeHtml(
+          book.BookWriter || book.author || "-"
+        )}</td>
         <td class="py-3 px-4 align-middle">
           <div class="flex gap-3 justify-end">
             <button class="text-blue-600 hover:text-blue-800" data-action="edit" data-id="${id}" title="ترمیم">✏️</button>
@@ -2310,44 +1836,50 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  async function fetchJsonOrThrow(res) {
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`HTTP ${res.status} — ${text.slice(0, 200)}`);
+    }
+    const ct = res.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+      const text = await res.text().catch(() => "");
+      throw new Error(
+        `Unexpected response (not JSON). HTTP ${res.status} — ${text.slice(
+          0,
+          200
+        )}`
+      );
+    }
+    return res.json();
+  }
+
   async function fetchPage(page) {
     const offset = (page - 1) * PAGE_SIZE;
     const url = new URL(API_BASE);
     url.searchParams.set("limit", PAGE_SIZE);
     url.searchParams.set("offset", offset);
     if (currentQuery.trim()) url.searchParams.set("q", currentQuery.trim());
-    const res = await fetch(url.toString());
-    const data = await res.json();
-    if (!res.ok) throw new Error(data?.error || "Failed to load books");
-    if (!Array.isArray(data)) throw new Error("Unexpected response format");
+
+    const res = await fetch(url.toString(), { credentials: "include" });
+    const data = await fetchJsonOrThrow(res);
+    if (!Array.isArray(data))
+      throw new Error("Unexpected response format (expected array)");
     return data;
   }
 
-  async function refreshTotalsIfNeeded(firstPageLength) {
+  async function refreshTotalsHeuristically(firstPageLength) {
     if (Number.isFinite(totalItems)) return;
-
-    const count = await tryFetchCount();
-    if (Number.isFinite(count)) {
-      totalItems = count;
-      totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-      return;
-    }
-
     if (firstPageLength < PAGE_SIZE) {
       totalItems = firstPageLength;
       totalPages = 1;
     } else {
       try {
         const probe = await fetchPage(2);
-        if (probe.length === 0) {
-          totalItems = PAGE_SIZE;
-          totalPages = 1;
-        } else {
-          totalItems = null;
-          totalPages = NaN; // unknown but >= 2 pages
-        }
+        totalItems = probe.length === 0 ? PAGE_SIZE : NaN;
+        totalPages = probe.length === 0 ? 1 : NaN; // unknown but >= 2
       } catch {
-        totalItems = null;
+        totalItems = NaN;
         totalPages = NaN;
       }
     }
@@ -2355,19 +1887,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function refreshTable() {
     try {
-      booksTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6">Loading…</td></tr>`;
+      if (booksTableBody) {
+        booksTableBody.innerHTML = `<tr><td colspan="4" class="text-center py-6">Loading…</td></tr>`;
+      }
       const books = await fetchPage(currentPage);
 
       if (Array.isArray(books) && books.length === 0 && currentPage > 1) {
-        currentPage = currentPage - 1; // went too far
+        currentPage = currentPage - 1; // step back
         const previous = await fetchPage(currentPage);
-        await refreshTotalsIfNeeded(previous.length);
+        await refreshTotalsHeuristically(previous.length);
         renderRows(previous);
         renderPagination();
         return;
       }
 
-      await refreshTotalsIfNeeded(books.length);
+      await refreshTotalsHeuristically(books.length);
 
       if (Number.isFinite(totalItems)) {
         totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
@@ -2378,25 +1912,198 @@ document.addEventListener("DOMContentLoaded", () => {
       renderPagination();
     } catch (err) {
       console.error("❌ Error loading books:", err);
-      booksTableBody.innerHTML = `<tr><td colspan="4" class="text-center text-red-600 py-6">Failed to load</td></tr>`;
+      if (booksTableBody) {
+        booksTableBody.innerHTML = `<tr><td colspan="4" class="text-center text-red-600 py-6">Failed to load: ${escapeHtml(
+          err.message
+        )}</td></tr>`;
+      }
     }
   }
 
-  // ===== Table actions (delegation) =====
-  booksTableBody.addEventListener("click", async (e) => {
+  // ---------- TAGS: fetch + UI ----------
+
+  function tagId(t) {
+    return t.TagID ?? t.id ?? t.ID ?? t.Id;
+  }
+  function tagName(t) {
+    return t.TagName ?? t.Name ?? t.name ?? t.title ?? "";
+  }
+
+  function renderSelectedTags() {
+    tagsSelected.innerHTML = "";
+    selectedTagIds.forEach((id) => {
+      const t = allTags.find((x) => String(tagId(x)) === String(id));
+      const name = t ? tagName(t) : id;
+      const pill = document.createElement("span");
+      pill.className = "pill text-sm";
+      pill.innerHTML = `
+        <span>${escapeHtml(name)}</span>
+        <button type="button" class="text-xs text-red-600" data-remove-id="${escapeHtml(
+          id
+        )}" title="حذف">✕</button>
+      `;
+      tagsSelected.appendChild(pill);
+    });
+
+    // keep hidden input in sync (comma-separated)
+    tagsHidden.value = selectedTagIds.join(",");
+  }
+
+  function openTagsDropdown() {
+    if (!tagsOptions.classList.contains("hidden")) return;
+    tagsOptions.classList.remove("hidden");
+  }
+  function closeTagsDropdown() {
+    if (tagsOptions.classList.contains("hidden")) return;
+    tagsOptions.classList.add("hidden");
+  }
+
+  function renderTagsOptions(filter = "") {
+    const q = filter.trim().toLowerCase();
+    const filtered = allTags
+      .filter((t) => !selectedTagIds.includes(String(tagId(t))))
+      .filter((t) => (q ? tagName(t).toLowerCase().includes(q) : true))
+      .slice(0, 100); // safety cap
+
+    tagsOptions.innerHTML = "";
+    if (filtered.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "qalam-dropdown-option text-gray-500";
+      empty.textContent = q ? "کوئی نتیجہ نہیں" : "ٹیگز لوڈ ہو رہے ہیں…";
+      tagsOptions.appendChild(empty);
+      return;
+    }
+
+    filtered.forEach((t) => {
+      const id = tagId(t);
+      const name = tagName(t);
+      const opt = document.createElement("div");
+      opt.className = "qalam-dropdown-option";
+      opt.setAttribute("data-id", id);
+      opt.textContent = name;
+      tagsOptions.appendChild(opt);
+    });
+  }
+
+ async function loadTags() {
+  try {
+    const res = await fetch(TAGS_API, { credentials: "include" });
+
+    // Reuse your existing JSON guard if you like; this is inline-safe:
+    if (!res.ok) {
+      const t = await res.text().catch(() => "");
+      throw new Error(`HTTP ${res.status} — ${t.slice(0, 200)}`);
+    }
+    const ct = res.headers.get("content-type") || "";
+    if (!ct.includes("application/json")) {
+      const t = await res.text().catch(() => "");
+      throw new Error(`Unexpected response (not JSON). HTTP ${res.status} — ${t.slice(0, 200)}`);
+    }
+    const payload = await res.json();
+
+    // ---- normalize to an array ----
+    // common shapes: [ ... ] | { data:[...] } | { tags:[...] } | { rows:[...] } | { results:[...] }
+    // some APIs nest: { data: { rows:[...] } }
+    let arr = null;
+
+    const pickArray = (obj) => {
+      if (!obj || typeof obj !== "object") return null;
+      if (Array.isArray(obj)) return obj;
+      if (Array.isArray(obj.data)) return obj.data;
+      if (Array.isArray(obj.tags)) return obj.tags;
+      if (Array.isArray(obj.items)) return obj.items;
+      if (Array.isArray(obj.rows)) return obj.rows;
+      if (Array.isArray(obj.results)) return obj.results;
+      if (obj.data && typeof obj.data === "object") {
+        if (Array.isArray(obj.data.rows)) return obj.data.rows;
+        if (Array.isArray(obj.data.items)) return obj.data.items;
+        if (Array.isArray(obj.data.results)) return obj.data.results;
+      }
+      return null;
+    };
+
+    arr = pickArray(payload);
+    if (!arr) {
+      // last resort: if it's a plain object of id->tag, turn into values
+      if (payload && typeof payload === "object" && !Array.isArray(payload)) {
+        const vals = Object.values(payload);
+        if (vals.length && vals.every(v => typeof v === "object")) {
+          arr = vals;
+        }
+      }
+    }
+
+    if (!arr || !Array.isArray(arr)) {
+      console.error("Tags payload (unrecognized shape):", payload);
+      throw new Error("Tags API did not include a recognizable list");
+    }
+
+    // optional: filter out junky entries
+    allTags = arr.filter(t => {
+      const id = t.TagID ?? t.id ?? t.ID ?? t.Id;
+      const nm = t.TagName ?? t.Name ?? t.name ?? t.title;
+      return id != null && (nm ?? "").toString().trim().length > 0;
+    });
+
+    renderTagsOptions("");
+  } catch (e) {
+    console.error("❌ Failed to load tags:", e);
+    allTags = [];
+    renderTagsOptions(""); // shows “کوئی نتیجہ نہیں” in your UI
+  }
+}
+
+
+  // Tags events
+  tagsInput?.addEventListener("focus", () => {
+    renderTagsOptions(tagsInput.value || "");
+    openTagsDropdown();
+  });
+  tagsInput?.addEventListener("input", () => {
+    renderTagsOptions(tagsInput.value || "");
+    openTagsDropdown();
+  });
+  document.addEventListener("click", (e) => {
+    // close dropdown if click outside
+    if (!tagsOptions.contains(e.target) && e.target !== tagsInput) {
+      closeTagsDropdown();
+    }
+  });
+  tagsOptions?.addEventListener("click", (e) => {
+    const opt = e.target.closest(".qalam-dropdown-option");
+    if (!opt) return;
+    const id = String(opt.getAttribute("data-id"));
+    if (!selectedTagIds.includes(id)) {
+      selectedTagIds.push(id);
+      renderSelectedTags();
+    }
+    tagsInput.value = "";
+    renderTagsOptions("");
+    openTagsDropdown(); // keep open for multi-pick
+  });
+  tagsSelected?.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-remove-id]");
+    if (!btn) return;
+    const id = String(btn.getAttribute("data-remove-id"));
+    selectedTagIds = selectedTagIds.filter((x) => String(x) !== id);
+    renderSelectedTags();
+    renderTagsOptions(tagsInput.value || "");
+  });
+
+  // ---------- Table actions ----------
+  booksTableBody?.addEventListener("click", async (e) => {
     const checkbox = e.target.closest(".ms-book-row-check");
     const btn = e.target.closest("button");
 
-    // Row checkbox
     if (checkbox) {
       const id = checkbox.dataset.id;
       if (checkbox.checked) selectedIds.add(id);
       else selectedIds.delete(id);
-      bulkDeleteBtn.disabled = selectedIds.size === 0;
+      if (bulkDeleteBtn) bulkDeleteBtn.disabled = selectedIds.size === 0;
 
       const checks = booksTableBody.querySelectorAll(".ms-book-row-check");
       const allChecked = Array.from(checks).every((c) => c.checked);
-      selectAllCheckbox.checked = allChecked;
+      if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
       return;
     }
 
@@ -2411,29 +2118,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Header Select All
-  selectAllCheckbox.addEventListener("change", () => {
-    const checks = booksTableBody.querySelectorAll(".ms-book-row-check");
-    const check = selectAllCheckbox.checked;
+  // Header select all
+  selectAllCheckbox?.addEventListener("change", () => {
+    const checks = booksTableBody?.querySelectorAll(".ms-book-row-check") || [];
+    const check = !!selectAllCheckbox.checked;
     checks.forEach((c) => {
       c.checked = check;
       const id = c.dataset.id;
       if (check) selectedIds.add(id);
       else selectedIds.delete(id);
     });
-    bulkDeleteBtn.disabled = selectedIds.size === 0;
+    if (bulkDeleteBtn) bulkDeleteBtn.disabled = selectedIds.size === 0;
   });
 
-  // Bulk Delete
-  bulkDeleteBtn.addEventListener("click", async () => {
+  // Bulk delete
+  bulkDeleteBtn?.addEventListener("click", async () => {
     if (selectedIds.size === 0) return;
-    if (!confirm(`کیا آپ واقعی ${selectedIds.size} کتابیں حذف کرنا چاہتے ہیں؟`)) return;
+    if (!confirm(`کیا آپ واقعی ${selectedIds.size} کتابیں حذف کرنا چاہتے ہیں؟`))
+      return;
 
     try {
       showLoader();
       const ids = Array.from(selectedIds);
       const results = await Promise.allSettled(
-        ids.map((id) => fetch(`${API_BASE}/${id}`, { method: "DELETE" }))
+        ids.map((id) =>
+          fetch(`${API_BASE}/${id}`, {
+            method: "DELETE",
+            credentials: "include",
+          })
+        )
       );
 
       const failed = [];
@@ -2461,99 +2174,148 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // ===== CRUD: Add / Update book =====
-  if (bookForm) {
-    bookForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      showLoader();
+  // ---------- Create/Update ----------
+  bookForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader();
 
-      try {
-        const formData = new FormData();
-        formData.append("BookName", document.getElementById("ms-book-name").value.trim());
-        formData.append("BookWriter", document.getElementById("ms-book-author").value.trim());
-        formData.append("BookDescription", document.getElementById("ms-book-description").innerHTML.trim());
+    try {
+      const formData = new FormData();
+      formData.append(
+        "BookName",
+        (document.getElementById("ms-book-name")?.value || "").trim()
+      );
+      formData.append("BookWriter", (authorInput?.value || "").trim());
+      // If you’re using a Quill div, you might be storing HTML inside a contenteditable:
+      const descNode = document.getElementById("ms-book-description");
+      const descHtml = descNode?.innerHTML?.trim() || "";
+      formData.append("BookDescription", descHtml);
 
-        const coverFile = document.getElementById("ms-book-cover").files[0];
-        if (coverFile) formData.append("BookCoverImg", coverFile);
+      // Tags (comma-separated IDs)
+      formData.append("TagIDs", selectedTagIds.join(","));
 
-        const pdfFile = document.getElementById("ms-book-file").files[0];
-        if (pdfFile) formData.append("BookPDF", pdfFile);
+      const coverFile = document.getElementById("ms-book-cover")?.files?.[0];
+      if (coverFile) formData.append("BookCoverImg", coverFile);
+      const pdfFile = document.getElementById("ms-book-file")?.files?.[0];
+      if (pdfFile) formData.append("BookPDF", pdfFile);
 
-        let url = API_BASE;
-        let method = "POST";
+      let url = API_BASE;
+      let method = "POST";
 
-        if (isEditing) {
-          const id = bookIdField.value;
-          url = `${API_BASE}/${id}`;
-          method = "PUT";
-        }
-
-        const res = await fetch(url, { method, body: formData });
-        const data = await res.json();
-
-        if (res.ok) {
-          alert(isEditing ? "✅ کتاب کامیابی سے اپڈیٹ ہو گئی!" : "✅ کتاب کامیابی سے شامل کر دی گئی!");
-          // Reset form
-          bookForm.reset();
-          document.getElementById("ms-book-description").innerHTML = "";
-          bookIdField.value = "";
-          formTitle.textContent = "نئی کتاب شامل کریں";
-          isEditing = false;
-
-          // Reload current page
-          await refreshTable();
-
-          // Redirect back
-          window.location.hash = "manage-books";
-        } else {
-          alert("❌ Error: " + (data.error || "کتاب محفوظ کرنے میں مسئلہ ہے"));
-        }
-      } catch (err) {
-        console.error("❌ Network error:", err);
-        alert("❌ نیٹ ورک مسئلہ۔ دوبارہ کوشش کریں");
-      } finally {
-        hideLoader();
+      if (isEditing) {
+        const id = bookIdField?.value;
+        url = `${API_BASE}/${encodeURIComponent(id)}`;
+        method = "PUT";
       }
-    });
-  }
 
-  // ===== Edit book (prefill form) =====
+      const res = await fetch(url, {
+        method,
+        body: formData,
+        credentials: "include",
+      });
+      const data = await (async () => {
+        try {
+          return await res.json();
+        } catch {
+          const t = await res.text().catch(() => "");
+          return { error: t || "Non-JSON response" };
+        }
+      })();
+
+      if (res.ok) {
+        alert(
+          isEditing
+            ? "✅ کتاب کامیابی سے اپڈیٹ ہو گئی!"
+            : "✅ کتاب کامیابی سے شامل کر دی گئی!"
+        );
+        bookForm.reset?.();
+        if (descNode) descNode.innerHTML = "";
+        if (bookIdField) bookIdField.value = "";
+        if (formTitle) formTitle.textContent = "نئی کتاب شامل کریں";
+        isEditing = false;
+
+        // Clear tags state
+        selectedTagIds = [];
+        renderSelectedTags();
+        tagsInput.value = "";
+
+        await refreshTable();
+        window.location.hash = "manage-books";
+      } else {
+        alert("❌ Error: " + (data?.error || `HTTP ${res.status}`));
+      }
+    } catch (err) {
+      console.error("❌ Network error:", err);
+      alert("❌ نیٹ ورک مسئلہ۔ دوبارہ کوشش کریں");
+    } finally {
+      hideLoader();
+    }
+  });
+
+  // ---------- Edit single ----------
   async function editBook(id) {
     try {
       showLoader();
-      const res = await fetch(`${API_BASE}/${id}`);
-      if (!res.ok) throw new Error("Failed to fetch book");
-      const book = await res.json();
+      const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
+        credentials: "include",
+      });
+      const book = await fetchJsonOrThrow(res);
 
-      bookIdField.value = book.id;
-      document.getElementById("ms-book-name").value = book.BookName || "";
-      document.getElementById("ms-book-author").value = book.BookWriter || "";
-      document.getElementById("ms-book-description").innerHTML = book.BookDescription || "";
+      if (bookIdField) bookIdField.value = book.id ?? book.ID ?? book.Id ?? "";
+      const nameNode = document.getElementById("ms-book-name");
+      if (nameNode) nameNode.value = book.BookName || book.title || "";
+      if (authorInput) authorInput.value = book.BookWriter || book.author || "";
+      const descNode = document.getElementById("ms-book-description");
+      if (descNode)
+        descNode.innerHTML = book.BookDescription || book.description || "";
+
+      // Try populate tags if API returns them
+      // Expect either: book.Tags = [{TagID, TagName}] OR book.tags = [{id, name}] OR book.TagIDs = "1,2,3"
+      selectedTagIds = [];
+      const fromArray = book.Tags || book.tags || book.BookTags || [];
+      if (Array.isArray(fromArray) && fromArray.length) {
+        selectedTagIds = fromArray
+          .map((t) => String(t.TagID ?? t.id ?? t.ID ?? t.Id))
+          .filter(Boolean);
+      } else if (typeof book.TagIDs === "string" && book.TagIDs.trim()) {
+        selectedTagIds = book.TagIDs.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+      renderSelectedTags();
 
       isEditing = true;
-      formTitle.textContent = "کتاب ایڈٹ کریں";
+      if (formTitle) formTitle.textContent = "کتاب ایڈٹ کریں";
       window.location.hash = "add-book";
     } catch (err) {
       console.error("❌ Error loading book:", err);
-      alert("کتاب لوڈ کرنے میں مسئلہ ہے");
+      alert("کتاب لوڈ کرنے میں مسئلہ ہے: " + err.message);
     } finally {
       hideLoader();
     }
   }
-  window.editBook = editBook; // keep global if other code calls it
+  window.editBook = editBook;
 
-  // ===== Delete single book =====
+  // ---------- Delete single ----------
   async function deleteBook(id) {
     if (!confirm("کیا آپ واقعی اس کتاب کو حذف کرنا چاہتے ہیں؟")) return;
     try {
       showLoader();
-      const res = await fetch(`${API_BASE}/${id}`, { method: "DELETE" });
-      const data = await res.json();
+      const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      let data = null;
+      try {
+        data = await res.json();
+      } catch {
+        /* ignore */
+      }
       if (res.ok) {
         alert("📕 کتاب حذف کر دی گئی");
         await refreshTable();
       } else {
-        alert("❌ Error: " + (data.error || "کتاب حذف کرنے میں مسئلہ"));
+        alert("❌ Error: " + (data?.error || `HTTP ${res.status}`));
       }
     } catch (err) {
       console.error(err);
@@ -2562,12 +2324,14 @@ document.addEventListener("DOMContentLoaded", () => {
       hideLoader();
     }
   }
-  window.deleteBook = deleteBook; // keep global if something else uses it
+  window.deleteBook = deleteBook;
 
-  // ===== Search wiring =====
+  // ---------- Search ----------
   async function triggerSearch() {
     currentQuery = (searchInput?.value || "").trim();
     currentPage = 1;
+    totalItems = null; // reset inference
+    totalPages = 1;
     await refreshTable();
   }
   searchBtn?.addEventListener("click", triggerSearch);
@@ -2578,11 +2342,10 @@ document.addEventListener("DOMContentLoaded", () => {
     suggestions?.classList.add("hidden");
   });
 
-  // 🚀 Initial load
+  // ---------- Init ----------
   refreshTable();
+  loadTags(); // fetch and prepare tag list
 });
-
-
 
 // ---------------------------------------Ulma
 
@@ -2592,7 +2355,7 @@ document.addEventListener("DOMContentLoaded", () => {
    ================================ */
 
 (() => {
-  const API_URL = "https://masailworld.onrender.com/api/aleem";
+  const API_URL = "https://masailworld.com/api/aleem";
 
   document.addEventListener("DOMContentLoaded", () => {
     cacheDom();
@@ -2618,56 +2381,65 @@ document.addEventListener("DOMContentLoaded", () => {
   function cacheDom() {
     // Pages
     DOM.managePage = document.getElementById("ms-page-manage-ulema");
-    DOM.addPage    = document.getElementById("ms-page-add-ulema");
+    DOM.addPage = document.getElementById("ms-page-add-ulema");
 
     // Table & controls
-    DOM.tbody      = document.getElementById("ms-ulema-table-body");
-    DOM.pager      = document.getElementById("ms-ulema-pagination");
-    DOM.selectAll  = document.getElementById("ms-ulema-select-all");
-    DOM.bulkDel    = document.getElementById("ms-ulema-bulk-delete-btn");
+    DOM.tbody = document.getElementById("ms-ulema-table-body");
+    DOM.pager = document.getElementById("ms-ulema-pagination");
+    DOM.selectAll = document.getElementById("ms-ulema-select-all");
+    DOM.bulkDel = document.getElementById("ms-ulema-bulk-delete-btn");
 
     // Search
     DOM.searchInput = document.getElementById("ms-ulema-search");
-    DOM.searchBtn   = document.getElementById("ms-ulema-search-btn");
+    DOM.searchBtn = document.getElementById("ms-ulema-search-btn");
     DOM.suggestions = document.getElementById("ms-ulema-suggestions");
 
     // Form
-    DOM.form      = document.getElementById("ms-ulema-form");
+    DOM.form = document.getElementById("ms-ulema-form");
     DOM.formTitle = document.getElementById("ms-ulema-form-title");
-    DOM.id        = document.getElementById("ms-ulema-id");
-    DOM.name      = document.getElementById("ms-ulema-name");
-    DOM.position  = document.getElementById("ms-ulema-designation");
-    DOM.bio       = document.getElementById("ms-ulema-bio");
-    DOM.photo     = document.getElementById("ms-ulema-photo");
+    DOM.id = document.getElementById("ms-ulema-id");
+    DOM.name = document.getElementById("ms-ulema-name");
+    DOM.position = document.getElementById("ms-ulema-designation");
+    DOM.bio = document.getElementById("ms-ulema-bio");
+    DOM.photo = document.getElementById("ms-ulema-photo");
     DOM.photoPrev = document.getElementById("ms-ulema-photo-preview");
     DOM.submitBtn = DOM.form ? DOM.form.querySelector('[type="submit"]') : null;
 
     // Modal
-    DOM.modal       = document.getElementById("ms-ulema-modal");
-    DOM.modalClose  = document.getElementById("ms-ulema-modal-close");
-    DOM.modalOk     = document.getElementById("ms-ulema-modal-ok");
-    DOM.mName       = document.getElementById("ms-ulema-modal-name");
-    DOM.mPosition   = document.getElementById("ms-ulema-modal-position");
-    DOM.mAbout      = document.getElementById("ms-ulema-modal-about");
-    DOM.mPhoto      = document.getElementById("ms-ulema-modal-photo");
+    DOM.modal = document.getElementById("ms-ulema-modal");
+    DOM.modalClose = document.getElementById("ms-ulema-modal-close");
+    DOM.modalOk = document.getElementById("ms-ulema-modal-ok");
+    DOM.mName = document.getElementById("ms-ulema-modal-name");
+    DOM.mPosition = document.getElementById("ms-ulema-modal-position");
+    DOM.mAbout = document.getElementById("ms-ulema-modal-about");
+    DOM.mPhoto = document.getElementById("ms-ulema-modal-photo");
 
     // Overlays
-    DOM.overlay       = document.getElementById("ulema-global-loader");
+    DOM.overlay = document.getElementById("ulema-global-loader");
     DOM.uploadOverlay = document.getElementById("ulema-upload-overlay");
-    DOM.uploadBar     = document.getElementById("ulema-upload-bar");
-    DOM.uploadText    = document.getElementById("ulema-upload-text");
+    DOM.uploadBar = document.getElementById("ulema-upload-bar");
+    DOM.uploadText = document.getElementById("ulema-upload-text");
   }
 
   /* ---------- Utils ---------- */
-  function showOverlay()  { DOM.overlay?.classList.remove("hidden"); }
-  function hideOverlay()  { DOM.overlay?.classList.add("hidden"); }
-  function showUpload(p=0){ DOM.uploadOverlay?.classList.remove("hidden"); updateUpload(p); }
-  function updateUpload(p){
+  function showOverlay() {
+    DOM.overlay?.classList.remove("hidden");
+  }
+  function hideOverlay() {
+    DOM.overlay?.classList.add("hidden");
+  }
+  function showUpload(p = 0) {
+    DOM.uploadOverlay?.classList.remove("hidden");
+    updateUpload(p);
+  }
+  function updateUpload(p) {
     const pct = Math.max(0, Math.min(100, Math.round(p)));
-    if (DOM.uploadBar)  DOM.uploadBar.style.width = `${pct}%`;
+    if (DOM.uploadBar) DOM.uploadBar.style.width = `${pct}%`;
     if (DOM.uploadText) DOM.uploadText.textContent = `${pct}%`;
   }
-  function hideUpload()   { DOM.uploadOverlay?.classList.add("hidden"); }
+  function hideUpload() {
+    DOM.uploadOverlay?.classList.add("hidden");
+  }
 
   function btnSpin(btn, label = "Processing...") {
     if (!btn) return;
@@ -2688,8 +2460,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const uidOf = (obj) => getField(obj, "id", "Id", "ID");
   const escapeHtml = (s) =>
     String(s ?? "")
-      .replace(/&/g, "&amp;").replace("/<//g", "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      .replace(/&/g, "&amp;")
+      .replace("/<//g", "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
   /* ---------- FileReader progress (on choose file) ---------- */
   DOM.photo?.addEventListener("change", () => {
@@ -2702,7 +2477,8 @@ document.addEventListener("DOMContentLoaded", () => {
       DOM.photo.value = "";
       return;
     }
-    if (file.size > 10 * 1024 * 1024) { // 10MB cap (adjust if you like)
+    if (file.size > 10 * 1024 * 1024) {
+      // 10MB cap (adjust if you like)
       alert("تصویر 10MB سے کم ہونی چاہیے");
       DOM.photo.value = "";
       return;
@@ -2735,8 +2511,14 @@ document.addEventListener("DOMContentLoaded", () => {
       xhr.open(method, url, true);
       xhr.onload = () => {
         let json = null;
-        try { json = JSON.parse(xhr.responseText || "{}"); } catch (_) {}
-        resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status, body: json });
+        try {
+          json = JSON.parse(xhr.responseText || "{}");
+        } catch (_) {}
+        resolve({
+          ok: xhr.status >= 200 && xhr.status < 300,
+          status: xhr.status,
+          body: json,
+        });
       };
       xhr.onerror = () => {
         resolve({ ok: false, status: 0, body: { error: "Network error" } });
@@ -2759,18 +2541,20 @@ document.addEventListener("DOMContentLoaded", () => {
       })
     );
 
-    document.querySelectorAll("[data-target='manage-ulema'], .as-back-link").forEach((el) =>
-      el.addEventListener("click", (e) => {
-        e.preventDefault?.();
-        showManage();
-      })
-    );
+    document
+      .querySelectorAll("[data-target='manage-ulema'], .as-back-link")
+      .forEach((el) =>
+        el.addEventListener("click", (e) => {
+          e.preventDefault?.();
+          showManage();
+        })
+      );
 
     DOM.tbody?.addEventListener("click", (e) => {
       const rowCheck = e.target.closest(".ms-ulema-row-check");
-      const viewBtn  = e.target.closest(".ms-view-btn");
-      const editBtn  = e.target.closest(".ms-edit-btn");
-      const delBtn   = e.target.closest(".ms-delete-btn");
+      const viewBtn = e.target.closest(".ms-view-btn");
+      const editBtn = e.target.closest(".ms-edit-btn");
+      const delBtn = e.target.closest(".ms-delete-btn");
 
       if (rowCheck) {
         const id = rowCheck.dataset.id;
@@ -2811,7 +2595,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     DOM.bulkDel?.addEventListener("click", async () => {
       if (STATE.selected.size === 0) return;
-      if (!confirm(`کیا آپ واقعی ${STATE.selected.size} انٹریاں حذف کرنا چاہتے ہیں؟`)) return;
+      if (
+        !confirm(
+          `کیا آپ واقعی ${STATE.selected.size} انٹریاں حذف کرنا چاہتے ہیں؟`
+        )
+      )
+        return;
       try {
         showOverlay();
         const ids = Array.from(STATE.selected);
@@ -2926,16 +2715,25 @@ document.addEventListener("DOMContentLoaded", () => {
             formData: fdNoPhoto,
           });
           if (!second.ok) {
-            const msg = second.body?.error || second.body?.message || `HTTP ${second.status}`;
+            const msg =
+              second.body?.error ||
+              second.body?.message ||
+              `HTTP ${second.status}`;
             throw new Error(msg);
           }
 
           // if create, get new id then upload photo
-          let finalId = isEdit ? id : (uidOf(second.body) || second.body?.id || second.body?.Id || second.body?.ID);
+          let finalId = isEdit
+            ? id
+            : uidOf(second.body) ||
+              second.body?.id ||
+              second.body?.Id ||
+              second.body?.ID;
           if (!finalId) throw new Error("No ID returned from server.");
           const pic = await uploadProfileOnly(finalId);
           if (!pic.ok) {
-            const m = pic.body?.error || pic.body?.message || `HTTP ${pic.status}`;
+            const m =
+              pic.body?.error || pic.body?.message || `HTTP ${pic.status}`;
             throw new Error(m);
           }
         }
@@ -2947,8 +2745,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (err) {
         console.error(err);
         const message =
-          err?.message ||
-          "❌ نیٹ ورک مسئلہ یا انٹری محفوظ نہیں ہو سکی";
+          err?.message || "❌ نیٹ ورک مسئلہ یا انٹری محفوظ نہیں ہو سکی";
         alert(message);
       } finally {
         btnUnspin(DOM.submitBtn);
@@ -2987,15 +2784,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to fetch entry");
 
-      const name  = getField(data, "Name", "name") || "—";
-      const pos   = getField(data, "Position", "position") || "—";
-      const about = getField(data, "About", "about", "Description", "description") || "—";
+      const name = getField(data, "Name", "name") || "—";
+      const pos = getField(data, "Position", "position") || "—";
+      const about =
+        getField(data, "About", "about", "Description", "description") || "—";
 
       const profileUrl = `${API_URL}/${id}/profile?ts=${Date.now()}`;
 
-      if (DOM.mName)     DOM.mName.textContent = name;
+      if (DOM.mName) DOM.mName.textContent = name;
       if (DOM.mPosition) DOM.mPosition.textContent = pos;
-      if (DOM.mAbout)    DOM.mAbout.innerHTML = about;
+      if (DOM.mAbout) DOM.mAbout.innerHTML = about;
       if (DOM.mPhoto) {
         DOM.mPhoto.src = profileUrl;
         DOM.mPhoto.classList.remove("bg-gray-100");
@@ -3027,17 +2825,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const json = await res.json();
     if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
-    let rows = Array.isArray(json) ? json
-             : Array.isArray(json.rows) ? json.rows
-             : Array.isArray(json.data) ? json.data
-             : Array.isArray(json.items) ? json.items
-             : [];
+    let rows = Array.isArray(json)
+      ? json
+      : Array.isArray(json.rows)
+      ? json.rows
+      : Array.isArray(json.data)
+      ? json.data
+      : Array.isArray(json.items)
+      ? json.items
+      : [];
 
     const headerCount = Number(res.headers.get("X-Total-Count"));
-    const bodyCount   = Number(json?.count ?? json?.total ?? json?.pagination?.total);
-    const countVal = Number.isFinite(headerCount) ? headerCount
-                   : Number.isFinite(bodyCount)   ? bodyCount
-                   : null;
+    const bodyCount = Number(
+      json?.count ?? json?.total ?? json?.pagination?.total
+    );
+    const countVal = Number.isFinite(headerCount)
+      ? headerCount
+      : Number.isFinite(bodyCount)
+      ? bodyCount
+      : null;
 
     return { rows, count: countVal };
   }
@@ -3047,7 +2853,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (Number.isFinite(discoveredTotal)) {
       STATE.totalItems = discoveredTotal;
-      STATE.totalPages = Math.max(1, Math.ceil(STATE.totalItems / STATE.pageSize));
+      STATE.totalPages = Math.max(
+        1,
+        Math.ceil(STATE.totalItems / STATE.pageSize)
+      );
       return;
     }
 
@@ -3097,15 +2906,22 @@ document.addEventListener("DOMContentLoaded", () => {
       return b;
     };
 
-    const haveTotals = Number.isFinite(STATE.totalItems) && Number.isFinite(STATE.totalPages);
+    const haveTotals =
+      Number.isFinite(STATE.totalItems) && Number.isFinite(STATE.totalPages);
 
     DOM.pager.appendChild(makeBtn("اول", 1, STATE.currentPage === 1));
-    DOM.pager.appendChild(makeBtn("پچھلا", Math.max(1, STATE.currentPage - 1), STATE.currentPage === 1));
+    DOM.pager.appendChild(
+      makeBtn(
+        "پچھلا",
+        Math.max(1, STATE.currentPage - 1),
+        STATE.currentPage === 1
+      )
+    );
 
     if (haveTotals) {
       const MAX = 7;
       let start = Math.max(1, STATE.currentPage - 3);
-      let end   = Math.min(STATE.totalPages, start + MAX - 1);
+      let end = Math.min(STATE.totalPages, start + MAX - 1);
       if (end - start < MAX - 1) start = Math.max(1, end - (MAX - 1));
 
       if (start > 1) {
@@ -3118,7 +2934,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       for (let p = start; p <= end; p++) {
-        DOM.pager.appendChild(makeBtn(String(p), p, false, p === STATE.currentPage));
+        DOM.pager.appendChild(
+          makeBtn(String(p), p, false, p === STATE.currentPage)
+        );
       }
       if (end < STATE.totalPages) {
         if (end < STATE.totalPages - 1) {
@@ -3127,7 +2945,14 @@ document.addEventListener("DOMContentLoaded", () => {
           ell.className = "px-2 text-gray-500";
           DOM.pager.appendChild(ell);
         }
-        DOM.pager.appendChild(makeBtn(String(STATE.totalPages), STATE.totalPages, false, STATE.currentPage === STATE.totalPages));
+        DOM.pager.appendChild(
+          makeBtn(
+            String(STATE.totalPages),
+            STATE.totalPages,
+            false,
+            STATE.currentPage === STATE.totalPages
+          )
+        );
       }
     } else {
       const hint = document.createElement("span");
@@ -3136,8 +2961,20 @@ document.addEventListener("DOMContentLoaded", () => {
       DOM.pager.appendChild(hint);
     }
 
-    DOM.pager.appendChild(makeBtn("اگلا", STATE.currentPage + 1, haveTotals ? STATE.currentPage >= STATE.totalPages : false));
-    DOM.pager.appendChild(makeBtn("آخری", haveTotals ? STATE.totalPages : STATE.currentPage, haveTotals ? STATE.currentPage >= STATE.totalPages : true));
+    DOM.pager.appendChild(
+      makeBtn(
+        "اگلا",
+        STATE.currentPage + 1,
+        haveTotals ? STATE.currentPage >= STATE.totalPages : false
+      )
+    );
+    DOM.pager.appendChild(
+      makeBtn(
+        "آخری",
+        haveTotals ? STATE.totalPages : STATE.currentPage,
+        haveTotals ? STATE.currentPage >= STATE.totalPages : true
+      )
+    );
   }
 
   function renderRows(rows) {
@@ -3154,7 +2991,7 @@ document.addEventListener("DOMContentLoaded", () => {
     rows.forEach((u) => {
       const id = uidOf(u);
       const name = getField(u, "Name", "name") || "-";
-      const pos  = getField(u, "Position", "position") || "-";
+      const pos = getField(u, "Position", "position") || "-";
 
       const tr = document.createElement("tr");
       tr.className = "border-b border-gray-200";
@@ -3193,8 +3030,12 @@ document.addEventListener("DOMContentLoaded", () => {
       await discoverTotalsIfNeeded(rows.length, count);
 
       if (Number.isFinite(STATE.totalItems)) {
-        STATE.totalPages = Math.max(1, Math.ceil(STATE.totalItems / STATE.pageSize));
-        if (STATE.currentPage > STATE.totalPages) STATE.currentPage = STATE.totalPages;
+        STATE.totalPages = Math.max(
+          1,
+          Math.ceil(STATE.totalItems / STATE.pageSize)
+        );
+        if (STATE.currentPage > STATE.totalPages)
+          STATE.currentPage = STATE.totalPages;
       }
 
       renderRows(rows);
@@ -3212,7 +3053,8 @@ document.addEventListener("DOMContentLoaded", () => {
       showOverlay();
       const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.message || body?.error || `HTTP ${res.status}`);
+      if (!res.ok)
+        throw new Error(body?.message || body?.error || `HTTP ${res.status}`);
       alert("✅ انٹری حذف ہوگئی");
       await refreshTable();
     } catch (e) {
@@ -3225,20 +3067,13 @@ document.addEventListener("DOMContentLoaded", () => {
   window.deleteUlema = deleteOne;
 })();
 
-
-
-
-
-
-
 // -----------------------------------------Users
 
 // API base URL
 
-
 // User Creation
 
-const USER_API = "https://masailworld.onrender.com/api/user";
+const USER_API = "https://masailworld.com/api/users";
 
 /* ========= Loader (re-used) ========= */
 function showLoader() {
@@ -3264,7 +3099,7 @@ function hideLoader() {
 const STATE = {
   pageSize: 10,
   currentPage: 1,
-  hasNext: false,        // computed via one-extra fetch
+  hasNext: false, // computed via one-extra fetch
   selected: new Set(),
   query: "",
 };
@@ -3272,21 +3107,21 @@ const STATE = {
 /* ========= DOM cache ========= */
 const DOM = {};
 function cacheDom() {
-  DOM.tbody     = document.getElementById("ms-users-table-body");
-  DOM.pager     = document.getElementById("ms-users-pagination");
+  DOM.tbody = document.getElementById("ms-users-table-body");
+  DOM.pager = document.getElementById("ms-users-pagination");
   DOM.selectAll = document.getElementById("ms-users-select-all");
-  DOM.bulkDel   = document.getElementById("ms-users-bulk-delete-btn");
+  DOM.bulkDel = document.getElementById("ms-users-bulk-delete-btn");
 
   DOM.searchInput = document.getElementById("ms-users-search");
-  DOM.searchBtn   = document.getElementById("ms-users-search-btn");
+  DOM.searchBtn = document.getElementById("ms-users-search-btn");
   DOM.suggestions = document.getElementById("ms-users-suggestions");
 
   // Form (may exist on add/edit page)
-  DOM.form   = document.getElementById("ms-user-form");
-  DOM.fId    = document.getElementById("ms-user-id");
-  DOM.fName  = document.getElementById("ms-user-name");
+  DOM.form = document.getElementById("ms-user-form");
+  DOM.fId = document.getElementById("ms-user-id");
+  DOM.fName = document.getElementById("ms-user-name");
   DOM.fEmail = document.getElementById("ms-user-email");
-  DOM.fPass  = document.getElementById("ms-user-password");
+  DOM.fPass = document.getElementById("ms-user-password");
   DOM.fCPass = document.getElementById("ms-user-confirm-password");
   DOM.formTitle = document.getElementById("ms-user-form-title");
   DOM.passwordHelp = document.getElementById("ms-password-help-text");
@@ -3295,8 +3130,11 @@ function cacheDom() {
 /* ========= Utils ========= */
 const escapeHtml = (s) =>
   String(s ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 
 /* ========= Fetch helpers (one-extra technique) ========= */
 async function fetchPage(page) {
@@ -3310,11 +3148,15 @@ async function fetchPage(page) {
   const json = await res.json();
   if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
-  let rows = Array.isArray(json) ? json
-           : Array.isArray(json.rows) ? json.rows
-           : Array.isArray(json.data) ? json.data
-           : Array.isArray(json.items) ? json.items
-           : [];
+  let rows = Array.isArray(json)
+    ? json
+    : Array.isArray(json.rows)
+    ? json.rows
+    : Array.isArray(json.data)
+    ? json.data
+    : Array.isArray(json.items)
+    ? json.items
+    : [];
 
   let hasNext = false;
   if (rows.length > STATE.pageSize) {
@@ -3353,15 +3195,21 @@ function renderPagination() {
   // First & Prev
   DOM.pager.appendChild(makeBtn("اول", 1, STATE.currentPage === 1));
   DOM.pager.appendChild(
-    makeBtn("پچھلا", Math.max(1, STATE.currentPage - 1), STATE.currentPage === 1)
+    makeBtn(
+      "پچھلا",
+      Math.max(1, STATE.currentPage - 1),
+      STATE.currentPage === 1
+    )
   );
 
   // Small numeric window (no totals)
   const start = Math.max(1, STATE.currentPage - 2);
-  const end   = STATE.hasNext ? STATE.currentPage + 2 : STATE.currentPage;
+  const end = STATE.hasNext ? STATE.currentPage + 2 : STATE.currentPage;
   for (let p = start; p <= end; p++) {
     if (p <= 0) continue;
-    DOM.pager.appendChild(makeBtn(String(p), p, false, p === STATE.currentPage));
+    DOM.pager.appendChild(
+      makeBtn(String(p), p, false, p === STATE.currentPage)
+    );
   }
 
   // Next & Last (Last behaves like Next when totals are unknown)
@@ -3375,7 +3223,7 @@ function renderRows(list) {
   DOM.tbody.innerHTML = "";
   STATE.selected.clear();
   if (DOM.selectAll) DOM.selectAll.checked = false;
-  if (DOM.bulkDel)   DOM.bulkDel.disabled = true;
+  if (DOM.bulkDel) DOM.bulkDel.disabled = true;
 
   if (!list.length) {
     DOM.tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-gray-500">کوئی ریکارڈ نہیں ملا</td></tr>`;
@@ -3486,8 +3334,8 @@ function initUI() {
   // Table delegation (edit + delete + row check)
   DOM.tbody?.addEventListener("click", (e) => {
     const rowCheck = e.target.closest(".ms-user-row-check");
-    const editBtn  = e.target.closest(".edit-btn");
-    const delBtn   = e.target.closest(".delete-btn");
+    const editBtn = e.target.closest(".edit-btn");
+    const delBtn = e.target.closest(".delete-btn");
 
     // select row
     if (rowCheck) {
@@ -3586,16 +3434,18 @@ async function handleFormSubmit(e) {
       return;
     }
 
-    alert(id ? "✏️ صارف کامیابی سے اپڈیٹ ہوگیا!" : "✅ صارف کامیابی سے شامل ہوگیا!");
+    alert(
+      id ? "✏️ صارف کامیابی سے اپڈیٹ ہوگیا!" : "✅ صارف کامیابی سے شامل ہوگیا!"
+    );
     e.target.reset();
 
     // If we're on the manage page, refresh the table. If not, redirect back.
     if (DOM.tbody) {
       await refreshTable();
       // back to list anchor (adjust path to your project)
-      window.location.href = "../index.html#manage-users";
+      window.location.href = "index.html#manage-users";
     } else {
-      window.location.href = "../index.html#manage-users";
+      window.location.href = "index.html#manage-users";
     }
   } catch (error) {
     console.error("Error saving user:", error);
@@ -3622,7 +3472,8 @@ async function prefillIfEditing() {
 
       if (DOM.formTitle) DOM.formTitle.innerText = "✏️ صارف میں ترمیم کریں";
       if (DOM.passwordHelp) {
-        DOM.passwordHelp.innerText = "پاس ورڈ تبدیل کرنے کے لیے نیا پاس ورڈ درج کریں، ورنہ خالی چھوڑ دیں۔";
+        DOM.passwordHelp.innerText =
+          "پاس ورڈ تبدیل کرنے کے لیے نیا پاس ورڈ درج کریں، ورنہ خالی چھوڑ دیں۔";
       }
     } else {
       alert("❌ صارف نہیں ملا");
@@ -3652,137 +3503,214 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-
-
-
 // -------------------------------------------------------- Categories
 
+const BOOTSTRAP_ICONS = [
+  "bi bi-book",
+  "bi bi-bookmark",
+  "bi bi-book-half",
+  "bi bi-journal",
+  "bi bi-journals",
+  "bi bi-collection",
+  "bi bi-grid",
+  "bi bi-tags",
+  "bi bi-tag",
+  "bi bi-hash",
+  "bi bi-star",
+  "bi bi-star-fill",
+  "bi bi-heart",
+  "bi bi-heart-fill",
+  "bi bi-gem",
+  "bi bi-lightning",
+  "bi bi-lightning-charge",
+  "bi bi-award",
+  "bi bi-badge-ad",
+  "bi bi-people",
+  "bi bi-person",
+  "bi bi-person-badge",
+  "bi bi-person-lines-fill",
+  "bi bi-chat",
+  "bi bi-chat-dots",
+  "bi bi-chat-left-text",
+  "bi bi-envelope",
+  "bi bi-bell",
+  "bi bi-calendar",
+  "bi bi-clock",
+  "bi bi-pin-map",
+  "bi bi-geo",
+  "bi bi-archive",
+  "bi bi-box",
+  "bi bi-folder",
+  "bi bi-folder2",
+  "bi bi-folder-plus",
+  "bi bi-upload",
+  "bi bi-download",
+  "bi bi-cloud-upload",
+  "bi bi-cloud",
+  "bi bi-pencil",
+  "bi bi-pen",
+  "bi bi-brush",
+  "bi bi-eye",
+  "bi bi-eye-fill",
+  "bi bi-search",
+  "bi bi-filter",
+  "bi bi-funnel",
+  "bi bi-list",
+  "bi bi-list-ul",
+  "bi bi-grid-3x3-gap",
+  "bi bi-columns-gap",
+  "bi bi-layout-text-sidebar",
+  "bi bi-link-45deg",
+  "bi bi-share",
+  "bi bi-share-fill",
+  "bi bi-box-arrow-up-right",
+  "bi bi-gear",
+  "bi bi-sliders",
+  "bi bi-shield",
+  "bi bi-lock",
+  "bi bi-unlock",
+  "bi bi-check-circle",
+  "bi bi-x-circle",
+  "bi bi-info-circle",
+  "bi bi-question-circle",
+  "bi bi-exclamation-triangle",
+  "bi bi-flag",
+  "bi bi-trophy",
+  "bi bi-mortarboard",
+  "bi bi-globe",
+  "bi bi-translate",
+  "bi bi-type",
+  "bi bi-fonts",
+  "bi bi-image",
+  "bi bi-images",
+  "bi bi-camera",
+  "bi bi-collection-play",
+  "bi bi-music-note",
+  "bi bi-bookmark-star",
+  "bi bi-clipboard",
+  "bi bi-clipboard-check",
+  "bi bi-diagram-3",
+  "bi bi-diagram-3-fill",
+  "bi bi-card-list",
+  "bi bi-credit-card",
+  "bi bi-cpu",
+  "bi bi-database",
+  "bi bi-server",
+  "bi bi-wrench",
+  "bi bi-tools",
+  "bi bi-rocket",
+];
 
- const BOOTSTRAP_ICONS = [
-    "bi bi-book","bi bi-bookmark","bi bi-book-half","bi bi-journal","bi bi-journals",
-    "bi bi-collection","bi bi-grid","bi bi-tags","bi bi-tag","bi bi-hash",
-    "bi bi-star","bi bi-star-fill","bi bi-heart","bi bi-heart-fill","bi bi-gem",
-    "bi bi-lightning","bi bi-lightning-charge","bi bi-award","bi bi-badge-ad",
-    "bi bi-people","bi bi-person","bi bi-person-badge","bi bi-person-lines-fill",
-    "bi bi-chat","bi bi-chat-dots","bi bi-chat-left-text","bi bi-envelope",
-    "bi bi-bell","bi bi-calendar","bi bi-clock","bi bi-pin-map","bi bi-geo",
-    "bi bi-archive","bi bi-box","bi bi-folder","bi bi-folder2","bi bi-folder-plus",
-    "bi bi-upload","bi bi-download","bi bi-cloud-upload","bi bi-cloud",
-    "bi bi-pencil","bi bi-pen","bi bi-brush","bi bi-eye","bi bi-eye-fill",
-    "bi bi-search","bi bi-filter","bi bi-funnel","bi bi-list","bi bi-list-ul",
-    "bi bi-grid-3x3-gap","bi bi-columns-gap","bi bi-layout-text-sidebar",
-    "bi bi-link-45deg","bi bi-share","bi bi-share-fill","bi bi-box-arrow-up-right",
-    "bi bi-gear","bi bi-sliders","bi bi-shield","bi bi-lock","bi bi-unlock",
-    "bi bi-check-circle","bi bi-x-circle","bi bi-info-circle","bi bi-question-circle",
-    "bi bi-exclamation-triangle","bi bi-flag","bi bi-trophy","bi bi-mortarboard",
-    "bi bi-globe","bi bi-translate","bi bi-type","bi bi-fonts","bi bi-image",
-    "bi bi-images","bi bi-camera","bi bi-collection-play","bi bi-music-note",
-    "bi bi-bookmark-star","bi bi-clipboard","bi bi-clipboard-check","bi bi-diagram-3",
-    "bi bi-diagram-3-fill","bi bi-card-list","bi bi-credit-card","bi bi-cpu",
-    "bi bi-database","bi bi-server","bi bi-wrench","bi bi-tools","bi bi-rocket",
-  ];
+(function iconPicker() {
+  const hidden = document.getElementById("ms-category-icon"); // hidden real value
+  const trigger = document.getElementById("ms-icon-trigger");
+  const panel = document.querySelector("#ms-icon-panel > div");
+  const listEl = document.getElementById("ms-icon-list");
+  const filterEl = document.getElementById("ms-icon-filter");
+  const curIcon = document.getElementById("ms-icon-current");
+  const curLabel = document.getElementById("ms-icon-current-label");
+  const bigPreview = document.getElementById("ms-icon-preview");
 
-  (function iconPicker(){
-    const hidden = document.getElementById("ms-category-icon"); // hidden real value
-    const trigger = document.getElementById("ms-icon-trigger");
-    const panel = document.querySelector("#ms-icon-panel > div");
-    const listEl = document.getElementById("ms-icon-list");
-    const filterEl = document.getElementById("ms-icon-filter");
-    const curIcon = document.getElementById("ms-icon-current");
-    const curLabel = document.getElementById("ms-icon-current-label");
-    const bigPreview = document.getElementById("ms-icon-preview");
+  let open = false;
+  let options = BOOTSTRAP_ICONS.slice();
+  let selected = options[0] || "";
 
-    let open = false;
-    let options = BOOTSTRAP_ICONS.slice();
-    let selected = options[0] || "";
+  function setSelected(value) {
+    selected = value;
+    hidden.value = value; // submit this
+    curIcon.className = `text-2xl ${value}`;
+    curLabel.textContent = value || "—";
+    bigPreview.className = `text-3xl ${value}`;
+  }
 
-    function setSelected(value){
-      selected = value;
-      hidden.value = value;              // submit this
-      curIcon.className = `text-2xl ${value}`;
-      curLabel.textContent = value || "—";
-      bigPreview.className = `text-3xl ${value}`;
-    }
+  function renderList(items) {
+    listEl.innerHTML = "";
+    items.forEach((cls) => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className =
+        "w-full flex items-center justify-between py-2.5 px-3 hover:bg-ash_gray/20 rounded-lg text-right";
+      row.setAttribute("role", "option");
+      row.setAttribute("aria-selected", String(cls === selected));
 
-    function renderList(items){
-      listEl.innerHTML = "";
-      items.forEach(cls => {
-        const row = document.createElement("button");
-        row.type = "button";
-        row.className = "w-full flex items-center justify-between py-2.5 px-3 hover:bg-ash_gray/20 rounded-lg text-right";
-        row.setAttribute("role","option");
-        row.setAttribute("aria-selected", String(cls === selected));
+      const left = document.createElement("span");
+      left.className = "flex items-center gap-3";
+      const ico = document.createElement("i");
+      ico.className = `text-xl ${cls}`;
+      const txt = document.createElement("span");
+      txt.className = "text-base text-rich_black";
+      txt.textContent = cls;
 
-        const left = document.createElement("span");
-        left.className = "flex items-center gap-3";
-        const ico = document.createElement("i");
-        ico.className = `text-xl ${cls}`;
-        const txt = document.createElement("span");
-        txt.className = "text-base text-rich_black";
-        txt.textContent = cls;
+      left.appendChild(ico);
+      left.appendChild(txt);
 
-        left.appendChild(ico);
-        left.appendChild(txt);
+      const check = document.createElement("i");
+      check.className =
+        cls === selected
+          ? "bi bi-check-lg text-xl"
+          : "bi bi-dot text-xl opacity-0";
 
-        const check = document.createElement("i");
-        check.className = cls === selected ? "bi bi-check-lg text-xl" : "bi bi-dot text-xl opacity-0";
+      row.appendChild(left);
+      row.appendChild(check);
 
-        row.appendChild(left);
-        row.appendChild(check);
-
-        row.addEventListener("click", () => {
-          setSelected(cls);
-          renderList(options);
-          closePanel();
-        });
-
-        listEl.appendChild(row);
+      row.addEventListener("click", () => {
+        setSelected(cls);
+        renderList(options);
+        closePanel();
       });
+
+      listEl.appendChild(row);
+    });
+  }
+
+  function openPanel() {
+    open = true;
+    panel.classList.remove("hidden");
+    filterEl.focus();
+  }
+  function closePanel() {
+    open = false;
+    panel.classList.add("hidden");
+    trigger.focus();
+  }
+
+  trigger.addEventListener("click", () => {
+    open ? closePanel() : openPanel();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (
+      !panel.contains(e.target) &&
+      e.target !== trigger &&
+      !trigger.contains(e.target)
+    ) {
+      if (open) closePanel();
     }
+  });
 
-    function openPanel(){
-      open = true;
-      panel.classList.remove("hidden");
-      filterEl.focus();
-    }
-    function closePanel(){
-      open = false;
-      panel.classList.add("hidden");
-      trigger.focus();
-    }
-
-    trigger.addEventListener("click", () => {
-      open ? closePanel() : openPanel();
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!panel.contains(e.target) && e.target !== trigger && !trigger.contains(e.target)) {
-        if (open) closePanel();
-      }
-    });
-
-    filterEl.addEventListener("input", () => {
-      const q = (filterEl.value || "").toLowerCase().trim();
-      options = q ? BOOTSTRAP_ICONS.filter(c => c.toLowerCase().includes(q)) : BOOTSTRAP_ICONS.slice();
-      renderList(options);
-    });
-
-    // Keyboard basics for trigger
-    trigger.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        open ? closePanel() : openPanel();
-      }
-    });
-
-    // init
-    setSelected(selected);
+  filterEl.addEventListener("input", () => {
+    const q = (filterEl.value || "").toLowerCase().trim();
+    options = q
+      ? BOOTSTRAP_ICONS.filter((c) => c.toLowerCase().includes(q))
+      : BOOTSTRAP_ICONS.slice();
     renderList(options);
-  })();
+  });
+
+  // Keyboard basics for trigger
+  trigger.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      open ? closePanel() : openPanel();
+    }
+  });
+
+  // init
+  setSelected(selected);
+  renderList(options);
+})();
 
 (() => {
-  const TAGS_API = "https://dynamicmasailworld.onrender.com/api/tags";
+  const TAGS_API = "https://masailworld.com/api/tags";
 
   /* ---------- Tunables ---------- */
   const SUGGESTION_LIMIT = 10;
@@ -3807,22 +3735,22 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- DOM ---------- */
   const DOM = {};
   function cacheDom() {
-    DOM.tbody     = document.getElementById("ms-categories-table-body");
-    DOM.pager     = document.getElementById("ms-categories-pagination");
+    DOM.tbody = document.getElementById("ms-categories-table-body");
+    DOM.pager = document.getElementById("ms-categories-pagination");
     DOM.selectAll = document.getElementById("ms-categories-select-all");
-    DOM.bulkDel   = document.getElementById("ms-categories-bulk-delete-btn");
+    DOM.bulkDel = document.getElementById("ms-categories-bulk-delete-btn");
 
     DOM.searchInput = document.getElementById("ms-categories-search");
-    DOM.searchBtn   = document.getElementById("ms-categories-search-btn");
+    DOM.searchBtn = document.getElementById("ms-categories-search-btn");
     DOM.suggestions = document.getElementById("ms-categories-suggestions");
 
-    DOM.form       = document.getElementById("ms-category-form");
-    DOM.fId        = document.getElementById("ms-category-id");
-    DOM.fName      = document.getElementById("ms-category-name");
-    DOM.fSlug      = document.getElementById("ms-category-slug");
-    DOM.fIcon      = document.getElementById("ms-category-icon");
-    DOM.fDesc      = document.getElementById("ms-category-description");
-    DOM.fThumb     = document.getElementById("ms-category-thumbnail");
+    DOM.form = document.getElementById("ms-category-form");
+    DOM.fId = document.getElementById("ms-category-id");
+    DOM.fName = document.getElementById("ms-category-name");
+    DOM.fSlug = document.getElementById("ms-category-slug");
+    DOM.fIcon = document.getElementById("ms-category-icon");
+    DOM.fDesc = document.getElementById("ms-category-description");
+    DOM.fThumb = document.getElementById("ms-category-thumbnail");
 
     DOM.overlay = document.getElementById("categories-global-loader");
   }
@@ -3830,25 +3758,30 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- Utils ---------- */
   const escapeHtml = (s) =>
     String(s ?? "")
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
   const showOverlay = () => DOM.overlay?.classList.remove("hidden");
   const hideOverlay = () => DOM.overlay?.classList.add("hidden");
 
   // Normalize the tag object (no roman fields)
   function normalizeTag(tag) {
-    const id =
-      tag.id ?? tag.Id ?? tag.ID ?? tag._id ?? tag.tagId ?? null;
+    const id = tag.id ?? tag.Id ?? tag.ID ?? tag._id ?? tag.tagId ?? null;
 
-    const name =
-      tag.Name ?? tag.name ?? tag.title ?? tag.label ?? "";
+    const name = tag.Name ?? tag.name ?? tag.title ?? tag.label ?? "";
 
-    const iconClass =
-      tag.iconClass ?? tag.IconClass ?? tag.icon ?? "";
+    const iconClass = tag.iconClass ?? tag.IconClass ?? tag.icon ?? "";
 
     const createdRaw =
-      tag.createdAt ?? tag.CreatedAt ?? tag.created ?? tag.dateAdded ?? tag.insertedAt ?? null;
+      tag.createdAt ??
+      tag.CreatedAt ??
+      tag.created ??
+      tag.dateAdded ??
+      tag.insertedAt ??
+      null;
 
     let createdTs = null;
     if (createdRaw) {
@@ -3871,7 +3804,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const A = normalizeTag(a);
       const B = normalizeTag(b);
 
-      if (A.createdTs !== null && B.createdTs !== null) return B.createdTs - A.createdTs;
+      if (A.createdTs !== null && B.createdTs !== null)
+        return B.createdTs - A.createdTs;
       if (A.createdTs !== null) return -1;
       if (B.createdTs !== null) return 1;
 
@@ -3885,13 +3819,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function debounce(fn, ms) {
     let t = null;
-    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
+    };
   }
 
   /* ---------- Fetch helpers ---------- */
   async function fetchRaw({ limit, offset, q }) {
     const url = new URL(TAGS_API);
-    if (limit != null)  url.searchParams.set("limit", limit);
+    if (limit != null) url.searchParams.set("limit", limit);
     if (offset != null) url.searchParams.set("offset", offset);
 
     // Ask the server for newest-first, but we still sort on the client.
@@ -3907,17 +3844,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const json = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
-    const rows = Array.isArray(json) ? json
-              : Array.isArray(json.rows) ? json.rows
-              : Array.isArray(json.data) ? json.data
-              : Array.isArray(json.items) ? json.items
-              : [];
+    const rows = Array.isArray(json)
+      ? json
+      : Array.isArray(json.rows)
+      ? json.rows
+      : Array.isArray(json.data)
+      ? json.data
+      : Array.isArray(json.items)
+      ? json.items
+      : [];
     return rows;
   }
 
   async function fetchPage(page) {
     const offset = (page - 1) * STATE.pageSize;
-    let rows = await fetchRaw({ limit: STATE.pageSize + 1, offset, q: STATE.query || "" });
+    let rows = await fetchRaw({
+      limit: STATE.pageSize + 1,
+      offset,
+      q: STATE.query || "",
+    });
 
     // Always sort client-side to guarantee DESC
     rows = sortTagsDesc(rows);
@@ -3933,7 +3878,11 @@ document.addEventListener("DOMContentLoaded", () => {
   async function fetchSuggestions(q) {
     if (!q) return [];
     try {
-      let rows = await fetchRaw({ limit: Math.max(SUGGESTION_LIMIT * 2, 20), offset: 0, q });
+      let rows = await fetchRaw({
+        limit: Math.max(SUGGESTION_LIMIT * 2, 20),
+        offset: 0,
+        q,
+      });
       rows = sortTagsDesc(rows);
       return rows.slice(0, SUGGESTION_LIMIT);
     } catch {
@@ -3951,29 +3900,46 @@ document.addEventListener("DOMContentLoaded", () => {
       b.textContent = label;
       b.className =
         "min-w-[2.5rem] px-3 py-2 rounded-md border text-sm " +
-        (active ? "bg-midnight_green text-white border-midnight_green"
-                : "bg-white border-gray-300 hover:bg-gray-50") +
+        (active
+          ? "bg-midnight_green text-white border-midnight_green"
+          : "bg-white border-gray-300 hover:bg-gray-50") +
         (disabled ? " opacity-50 cursor-not-allowed" : "");
       b.disabled = disabled;
-      if (!disabled) b.addEventListener("click", () => {
-        if (page !== STATE.currentPage) { STATE.currentPage = page; refreshTable(); }
-      });
+      if (!disabled)
+        b.addEventListener("click", () => {
+          if (page !== STATE.currentPage) {
+            STATE.currentPage = page;
+            refreshTable();
+          }
+        });
       return b;
     };
 
     DOM.pager.appendChild(makeBtn("اول", 1, STATE.currentPage === 1));
-    DOM.pager.appendChild(makeBtn("پچھلا", Math.max(1, STATE.currentPage - 1), STATE.currentPage === 1));
+    DOM.pager.appendChild(
+      makeBtn(
+        "پچھلا",
+        Math.max(1, STATE.currentPage - 1),
+        STATE.currentPage === 1
+      )
+    );
 
     const windowSize = 5;
     let start = Math.max(1, STATE.currentPage - 2);
     for (let p = start; p < start + windowSize; p++) {
       if (p <= 0) continue;
-      DOM.pager.appendChild(makeBtn(String(p), p, false, p === STATE.currentPage));
+      DOM.pager.appendChild(
+        makeBtn(String(p), p, false, p === STATE.currentPage)
+      );
       if (!STATE.hasNext && p > STATE.currentPage) break;
     }
 
-    DOM.pager.appendChild(makeBtn("اگلا", STATE.currentPage + 1, !STATE.hasNext));
-    DOM.pager.appendChild(makeBtn("آخری", STATE.currentPage + 1, !STATE.hasNext));
+    DOM.pager.appendChild(
+      makeBtn("اگلا", STATE.currentPage + 1, !STATE.hasNext)
+    );
+    DOM.pager.appendChild(
+      makeBtn("آخری", STATE.currentPage + 1, !STATE.hasNext)
+    );
   }
 
   function renderRows(list) {
@@ -3981,7 +3947,7 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.tbody.innerHTML = "";
     STATE.selected.clear();
     if (DOM.selectAll) DOM.selectAll.checked = false;
-    if (DOM.bulkDel)   DOM.bulkDel.disabled = true;
+    if (DOM.bulkDel) DOM.bulkDel.disabled = true;
 
     if (!list.length) {
       DOM.tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500">کوئی ریکارڈ نہیں ملا</td></tr>`;
@@ -3995,19 +3961,29 @@ document.addEventListener("DOMContentLoaded", () => {
       tr.className = "border-b border-gray-200 hover:bg-gray-50";
       tr.innerHTML = `
         <td class="py-3 px-4 align-middle">
-          <input type="checkbox" class="ms-category-row-check w-5 h-5 accent-midnight_green" data-id="${escapeHtml(String(id))}" />
+          <input type="checkbox" class="ms-category-row-check w-5 h-5 accent-midnight_green" data-id="${escapeHtml(
+            String(id)
+          )}" />
         </td>
         <td class="py-3 px-4 align-middle">${escapeHtml(String(id))}</td>
         <td class="py-3 px-4 align-middle">
-          <img src="${TAGS_API}/${encodeURIComponent(id)}/cover?ts=${Date.now()}" alt="thumbnail" class="w-12 h-12 rounded object-cover"
+          <img src="${TAGS_API}/${encodeURIComponent(
+        id
+      )}/cover?ts=${Date.now()}" alt="thumbnail" class="w-12 h-12 rounded object-cover"
                onerror="this.src=''; this.classList.add('bg-gray-100')" />
         </td>
         <td class="py-3 px-4 align-middle">${escapeHtml(n.name || "-")}</td>
-        <td class="py-3 px-4 align-middle"><i class="${escapeHtml(n.iconClass || "")}"></i></td>
+        <td class="py-3 px-4 align-middle"><i class="${escapeHtml(
+          n.iconClass || ""
+        )}"></i></td>
         <td class="py-3 px-4 align-middle">
           <div class="flex gap-3 justify-end">
-            <button class="ms-edit-btn text-blue-600 hover:underline" data-id="${escapeHtml(String(id))}">ترمیم</button>
-            <button class="ms-delete-btn text-red-600 hover:underline" data-id="${escapeHtml(String(id))}">حذف کریں</button>
+            <button class="ms-edit-btn text-blue-600 hover:underline" data-id="${escapeHtml(
+              String(id)
+            )}">ترمیم</button>
+            <button class="ms-delete-btn text-red-600 hover:underline" data-id="${escapeHtml(
+              String(id)
+            )}">حذف کریں</button>
           </div>
         </td>
       `;
@@ -4047,12 +4023,13 @@ document.addEventListener("DOMContentLoaded", () => {
   function initUI() {
     DOM.tbody?.addEventListener("click", (e) => {
       const rowCheck = e.target.closest(".ms-category-row-check");
-      const editBtn  = e.target.closest(".ms-edit-btn");
-      const delBtn   = e.target.closest(".ms-delete-btn");
+      const editBtn = e.target.closest(".ms-edit-btn");
+      const delBtn = e.target.closest(".ms-delete-btn");
 
-    if (rowCheck) {
+      if (rowCheck) {
         const id = rowCheck.dataset.id;
-        if (rowCheck.checked) STATE.selected.add(id); else STATE.selected.delete(id);
+        if (rowCheck.checked) STATE.selected.add(id);
+        else STATE.selected.delete(id);
         if (DOM.bulkDel) DOM.bulkDel.disabled = STATE.selected.size === 0;
 
         const checks = DOM.tbody.querySelectorAll(".ms-category-row-check");
@@ -4063,7 +4040,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (editBtn) {
         const id = editBtn.dataset.id;
-        if (id) window.location.href = `./Editcategory.html?id=${encodeURIComponent(id)}`;
+        if (id)
+          window.location.href = `./Editcategory.html?id=${encodeURIComponent(
+            id
+          )}`;
         return;
       }
 
@@ -4075,25 +4055,38 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     DOM.selectAll?.addEventListener("change", () => {
-      const checks = DOM.tbody?.querySelectorAll(".ms-category-row-check") ?? [];
+      const checks =
+        DOM.tbody?.querySelectorAll(".ms-category-row-check") ?? [];
       const on = DOM.selectAll.checked;
       STATE.selected.clear();
-      checks.forEach((c) => { c.checked = on; if (on) STATE.selected.add(c.dataset.id); });
+      checks.forEach((c) => {
+        c.checked = on;
+        if (on) STATE.selected.add(c.dataset.id);
+      });
       if (DOM.bulkDel) DOM.bulkDel.disabled = STATE.selected.size === 0;
     });
 
     DOM.bulkDel?.addEventListener("click", async () => {
       if (STATE.selected.size === 0) return;
-      if (!confirm(`کیا آپ واقعی ${STATE.selected.size} موضوعات حذف کرنا چاہتے ہیں؟`)) return;
+      if (
+        !confirm(
+          `کیا آپ واقعی ${STATE.selected.size} موضوعات حذف کرنا چاہتے ہیں؟`
+        )
+      )
+        return;
 
       try {
         showOverlay();
         const ids = Array.from(STATE.selected);
         const results = await Promise.allSettled(
-          ids.map((id) => fetch(`${TAGS_API}/${encodeURIComponent(id)}`, { method: "DELETE" }))
+          ids.map((id) =>
+            fetch(`${TAGS_API}/${encodeURIComponent(id)}`, { method: "DELETE" })
+          )
         );
         const failed = [];
-        results.forEach((r, i) => { if (r.status !== "fulfilled" || !r.value.ok) failed.push(ids[i]); });
+        results.forEach((r, i) => {
+          if (r.status !== "fulfilled" || !r.value.ok) failed.push(ids[i]);
+        });
 
         if (failed.length) alert(`⚠️ کچھ حذف نہ ہو سکیں: ${failed.join(", ")}`);
         else alert("✅ منتخب موضوعات حذف کر دیے گئے!");
@@ -4128,10 +4121,13 @@ document.addEventListener("DOMContentLoaded", () => {
         items.forEach((item) => {
           const n = normalizeTag(item);
           const li = document.createElement("li");
-          li.className = "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between gap-2";
+          li.className =
+            "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between gap-2";
           li.innerHTML = `
             <span class="truncate">${escapeHtml(n.name || "-")}</span>
-            <span class="text-sm text-gray-400">${escapeHtml(String(n.id ?? ""))}</span>
+            <span class="text-sm text-gray-400">${escapeHtml(
+              String(n.id ?? "")
+            )}</span>
           `;
           li.addEventListener("click", () => {
             DOM.searchInput.value = n.name || "";
@@ -4155,7 +4151,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.addEventListener("click", (e) => {
-      if (!DOM.suggestions?.contains(e.target) && e.target !== DOM.searchInput) hideSuggestions();
+      if (!DOM.suggestions?.contains(e.target) && e.target !== DOM.searchInput)
+        hideSuggestions();
     });
 
     function hideSuggestions() {
@@ -4172,9 +4169,9 @@ document.addEventListener("DOMContentLoaded", () => {
     DOM.form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const id        = (DOM.fId?.value || "").trim();
-      const Name      = (DOM.fName?.value || "").trim();
-      const slugRaw   = (DOM.fSlug?.value || "").trim();
+      const id = (DOM.fId?.value || "").trim();
+      const Name = (DOM.fName?.value || "").trim();
+      const slugRaw = (DOM.fSlug?.value || "").trim();
       const iconClass = (DOM.fIcon?.value || "").trim();
       const AboutTags = (DOM.fDesc?.innerHTML || "").trim();
       const thumbnail = DOM.fThumb?.files?.[0];
@@ -4186,17 +4183,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const formData = new FormData();
       formData.append("Name", Name);
-      formData.append("slug", slugRaw || Name.toLowerCase().replace(/\s+/g, "-"));
+      formData.append(
+        "slug",
+        slugRaw || Name.toLowerCase().replace(/\s+/g, "-")
+      );
       formData.append("iconClass", iconClass);
       formData.append("AboutTags", AboutTags);
       if (thumbnail) formData.append("tagsCover", thumbnail);
 
       try {
         showOverlay();
-        const res = await fetch(id ? `${TAGS_API}/${encodeURIComponent(id)}` : TAGS_API, {
-          method: id ? "PUT" : "POST",
-          body: formData,
-        });
+        const res = await fetch(
+          id ? `${TAGS_API}/${encodeURIComponent(id)}` : TAGS_API,
+          {
+            method: id ? "PUT" : "POST",
+            body: formData,
+          }
+        );
         const data = await res.json().catch(() => ({}));
 
         if (!res.ok) {
@@ -4204,13 +4207,17 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        alert(id ? "✅ موضوع اپ ڈیٹ ہوگیا!" : "✅ موضوع کامیابی سے شامل ہوگیا!");
+        alert(
+          id ? "✅ موضوع اپ ڈیٹ ہوگیا!" : "✅ موضوع کامیابی سے شامل ہوگیا!"
+        );
         DOM.form.reset();
         if (DOM.fId) DOM.fId.value = "";
         STATE.currentPage = 1; // jump to newest
         await refreshTable();
 
-        const backBtn = document.querySelector('[data-target="manage-categories"]');
+        const backBtn = document.querySelector(
+          '[data-target="manage-categories"]'
+        );
         if (backBtn) backBtn.click();
       } catch (error) {
         console.error("Error saving tag:", error);
@@ -4227,7 +4234,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       showOverlay();
-      const res = await fetch(`${TAGS_API}/${encodeURIComponent(id)}`, { method: "DELETE" });
+      const res = await fetch(`${TAGS_API}/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -4246,15 +4255,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 })();
 
-
-
-
-
-
-
 // ----------status --------------------
 
-const STATS_API = "https://masailworld.onrender.com/api/stats/totals";
+const STATS_API = "https://masailworld.com/api/stats/totals";
 
 // Load stats and update dashboard
 async function loadStats() {
@@ -4287,11 +4290,9 @@ async function loadStats() {
 // Run when page loads
 document.addEventListener("DOMContentLoaded", loadStats);
 
-
-
 // Pending Questions
 (() => {
-  const FATWA_API = "https://masailworld.onrender.com/api/fatwa";
+  const FATWA_API = "https://masailworld.com/api/fatwa";
 
   document.addEventListener("DOMContentLoaded", () => {
     cacheDom();
@@ -4304,7 +4305,7 @@ document.addEventListener("DOMContentLoaded", loadStats);
   const STATE = {
     pageSize: 10,
     currentPage: 1,
-    hasNext: false,     // computed with "one extra" fetch
+    hasNext: false, // computed with "one extra" fetch
     selected: new Set(),
     query: "",
   };
@@ -4312,26 +4313,33 @@ document.addEventListener("DOMContentLoaded", loadStats);
   /* ---------- DOM ---------- */
   const DOM = {};
   function cacheDom() {
-    DOM.tbody     = document.getElementById("ms-questions-table-body");
-    DOM.pager     = document.getElementById("ms-questions-pagination");
+    DOM.tbody = document.getElementById("ms-questions-table-body");
+    DOM.pager = document.getElementById("ms-questions-pagination");
     DOM.selectAll = document.getElementById("ms-questions-select-all");
-    DOM.bulkDel   = document.getElementById("ms-questions-bulk-delete-btn");
+    DOM.bulkDel = document.getElementById("ms-questions-bulk-delete-btn");
 
     DOM.searchInput = document.getElementById("ms-questions-search");
-    DOM.searchBtn   = document.getElementById("ms-questions-search-btn");
+    DOM.searchBtn = document.getElementById("ms-questions-search-btn");
     DOM.suggestions = document.getElementById("ms-questions-suggestions");
 
-    DOM.overlay   = document.getElementById("questions-global-loader");
+    DOM.overlay = document.getElementById("questions-global-loader");
   }
 
   /* ---------- Utils ---------- */
   const escapeHtml = (s) =>
     String(s ?? "")
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
-  function showOverlay() { DOM.overlay?.classList.remove("hidden"); }
-  function hideOverlay() { DOM.overlay?.classList.add("hidden"); }
+  function showOverlay() {
+    DOM.overlay?.classList.remove("hidden");
+  }
+  function hideOverlay() {
+    DOM.overlay?.classList.add("hidden");
+  }
 
   function statusBadge(status) {
     const s = (status || "").toLowerCase();
@@ -4341,7 +4349,9 @@ document.addEventListener("DOMContentLoaded", loadStats);
       rejected: "text-red-700 bg-red-100",
     };
     const cls = map[s] || "text-gray-700 bg-gray-100";
-    return `<span class="px-2 py-1 rounded-md text-sm font-semibold ${cls}">${escapeHtml(status || "-")}</span>`;
+    return `<span class="px-2 py-1 rounded-md text-sm font-semibold ${cls}">${escapeHtml(
+      status || "-"
+    )}</span>`;
   }
 
   /* ---------- Fetch helpers ---------- */
@@ -4359,11 +4369,15 @@ document.addEventListener("DOMContentLoaded", loadStats);
     const json = await res.json();
     if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
 
-    let rows = Array.isArray(json) ? json
-             : Array.isArray(json.rows) ? json.rows
-             : Array.isArray(json.data) ? json.data
-             : Array.isArray(json.items) ? json.items
-             : [];
+    let rows = Array.isArray(json)
+      ? json
+      : Array.isArray(json.rows)
+      ? json.rows
+      : Array.isArray(json.data)
+      ? json.data
+      : Array.isArray(json.items)
+      ? json.items
+      : [];
 
     // hasNext detection
     let hasNext = false;
@@ -4403,15 +4417,21 @@ document.addEventListener("DOMContentLoaded", loadStats);
     // First & Prev
     DOM.pager.appendChild(makeBtn("اول", 1, STATE.currentPage === 1));
     DOM.pager.appendChild(
-      makeBtn("پچھلا", Math.max(1, STATE.currentPage - 1), STATE.currentPage === 1)
+      makeBtn(
+        "پچھلا",
+        Math.max(1, STATE.currentPage - 1),
+        STATE.currentPage === 1
+      )
     );
 
     // Small numeric window (no totals)
     const start = Math.max(1, STATE.currentPage - 2);
-    const end   = STATE.hasNext ? STATE.currentPage + 2 : STATE.currentPage;
+    const end = STATE.hasNext ? STATE.currentPage + 2 : STATE.currentPage;
     for (let p = start; p <= end; p++) {
       if (p <= 0) continue;
-      DOM.pager.appendChild(makeBtn(String(p), p, false, p === STATE.currentPage));
+      DOM.pager.appendChild(
+        makeBtn(String(p), p, false, p === STATE.currentPage)
+      );
     }
 
     // Next & Last (Last behaves like Next when totals are unknown)
@@ -4429,7 +4449,7 @@ document.addEventListener("DOMContentLoaded", loadStats);
     DOM.tbody.innerHTML = "";
     STATE.selected.clear();
     if (DOM.selectAll) DOM.selectAll.checked = false;
-    if (DOM.bulkDel)   DOM.bulkDel.disabled = true;
+    if (DOM.bulkDel) DOM.bulkDel.disabled = true;
 
     if (!list.length) {
       DOM.tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500">کوئی ریکارڈ نہیں ملا</td></tr>`;
@@ -4504,7 +4524,7 @@ document.addEventListener("DOMContentLoaded", loadStats);
     // row delegation
     DOM.tbody?.addEventListener("click", (e) => {
       const rowCheck = e.target.closest(".ms-question-row-check");
-      const delBtn   = e.target.closest(".ms-delete-btn");
+      const delBtn = e.target.closest(".ms-delete-btn");
 
       // select row
       if (rowCheck) {
@@ -4530,7 +4550,8 @@ document.addEventListener("DOMContentLoaded", loadStats);
 
     // header select all
     DOM.selectAll?.addEventListener("change", () => {
-      const checks = DOM.tbody?.querySelectorAll(".ms-question-row-check") ?? [];
+      const checks =
+        DOM.tbody?.querySelectorAll(".ms-question-row-check") ?? [];
       const on = DOM.selectAll.checked;
       STATE.selected.clear();
       checks.forEach((c) => {
@@ -4543,7 +4564,12 @@ document.addEventListener("DOMContentLoaded", loadStats);
     // bulk delete
     DOM.bulkDel?.addEventListener("click", async () => {
       if (STATE.selected.size === 0) return;
-      if (!confirm(`کیا آپ واقعی ${STATE.selected.size} سوالات حذف کرنا چاہتے ہیں؟`)) return;
+      if (
+        !confirm(
+          `کیا آپ واقعی ${STATE.selected.size} سوالات حذف کرنا چاہتے ہیں؟`
+        )
+      )
+        return;
 
       try {
         showOverlay();
@@ -4609,10 +4635,6 @@ document.addEventListener("DOMContentLoaded", loadStats);
     }
   }
 })();
-
-
-
-
 
 // Listing Fatawa Search
 
@@ -6162,14 +6184,11 @@ document.addEventListener("DOMContentLoaded", loadStats);
   });
 })();
 
-
-
-
-
-// Latest Entry Display section 
+// Latest Entry Display section
 
 (() => {
-  const ACTIVITY_API = "https://masailworld.onrender.com/api/activity/recent?limit=1";
+  const ACTIVITY_API =
+    "https://masailworld.com/api/activity/recent?limit=1";
 
   const els = {
     loader: document.getElementById("ms-recent-activity-loader"),
@@ -6183,11 +6202,18 @@ document.addEventListener("DOMContentLoaded", loadStats);
 
   const escapeHtml = (s) =>
     String(s ?? "")
-      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
 
-  function showLoader(){ els.loader?.classList.remove("hidden"); }
-  function hideLoader(){ els.loader?.classList.add("hidden"); }
+  function showLoader() {
+    els.loader?.classList.remove("hidden");
+  }
+  function hideLoader() {
+    els.loader?.classList.add("hidden");
+  }
 
   /**
    * Render a simple list of {id,title} items.
@@ -6205,13 +6231,20 @@ document.addEventListener("DOMContentLoaded", loadStats);
     // Where should each type link?
     const toHref = (id) => {
       switch (type) {
-        case "books":   return `index.html#manage-books`;
-        case "articles":return `index.html#manage-articles`;
-        case "fatawa":  return `Answer.html?id=${id}`;               // quick jump to answer page
-        case "ulema":   return `EditUlema.html?id=${id}`;
-        case "tags":    return `Editcategory.html?id=${id}`;
-        case "users":   return `EditUser.html?id=${id}`;
-        default:        return `#`;
+        case "books":
+          return `index.html#manage-books`;
+        case "articles":
+          return `index.html#manage-articles`;
+        case "fatawa":
+          return `Answer.html?id=${id}`; // quick jump to answer page
+        case "ulema":
+          return `EditUlema.html?id=${id}`;
+        case "tags":
+          return `Editcategory.html?id=${id}`;
+        case "users":
+          return `EditUser.html?id=${id}`;
+        default:
+          return `#`;
       }
     };
 
@@ -6223,7 +6256,9 @@ document.addEventListener("DOMContentLoaded", loadStats);
           <span class="text-sm text-rich_black line-clamp-2 group-hover:text-midnight_green">
             ${escapeHtml(title ?? "—")}
           </span>
-          <span class="ml-3 text-xs text-gray-500 shrink-0">#${escapeHtml(id)}</span>
+          <span class="ml-3 text-xs text-gray-500 shrink-0">#${escapeHtml(
+            id
+          )}</span>
         </a>
       `;
       rootEl.appendChild(li);
@@ -6237,16 +6272,16 @@ document.addEventListener("DOMContentLoaded", loadStats);
       const data = await res.json();
 
       // Defensive defaults if API shape changes
-      renderList(els.books,    data?.books    ?? [], "books");
+      renderList(els.books, data?.books ?? [], "books");
       renderList(els.articles, data?.articles ?? [], "articles");
-      renderList(els.fatawa,   data?.fatawa   ?? [], "fatawa");
-      renderList(els.ulema,    data?.ulema    ?? [], "ulema");
-      renderList(els.tags,     data?.tags     ?? [], "tags");
-      renderList(els.users,    data?.users    ?? [], "users");
+      renderList(els.fatawa, data?.fatawa ?? [], "fatawa");
+      renderList(els.ulema, data?.ulema ?? [], "ulema");
+      renderList(els.tags, data?.tags ?? [], "tags");
+      renderList(els.users, data?.users ?? [], "users");
     } catch (err) {
       console.error("Recent activity load error:", err);
       const emptyMsg = `<li class="text-sm text-red-600">سرگرمیاں لوڈ نہیں ہو سکیں</li>`;
-      ["books","articles","fatawa","ulema","tags","users"].forEach(k => {
+      ["books", "articles", "fatawa", "ulema", "tags", "users"].forEach((k) => {
         if (els[k]) els[k].innerHTML = emptyMsg;
       });
     } finally {
