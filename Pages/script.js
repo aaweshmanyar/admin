@@ -981,676 +981,199 @@ document.addEventListener("DOMContentLoaded", async () => {
 //   loadArticles();
 // });
 
+
 document.addEventListener("DOMContentLoaded", () => {
-  const apiBase = "https://masailworld.com/api/article"; // API endpoint
+  const apiBase = "https://masailworld.com/api/article"; // your API
 
-  // DOM references
-  const tableBody = document.getElementById("ms-articles-table-body");
-  const paginationEl = document.getElementById("ms-articles-pagination");
-  const selectAllCheckbox = document.getElementById("ms-articles-select-all");
-  const bulkDeleteBtn = document.getElementById("ms-articles-bulk-delete-btn");
-
-  const articleForm = document.getElementById("ms-article-form");
+  // ====== Form refs ======
+  const form           = document.getElementById("ms-article-form");
   const articleIdInput = document.getElementById("ms-article-id");
-  const titleInput = document.getElementById("ms-article-title");
-  const slugInput = document.getElementById("ms-article-slug");
-  const tagsInput = document.getElementById("ms-article-keywords"); // single field for tags
-  const seoInput = document.getElementById("ms-article-meta-description");
-  const authorInput = document.getElementById("ms-article-author");
-  const imageInput = document.getElementById("ms-article-image");
-  const imagePreview = document.getElementById("ms-article-image-preview");
-  const contentContainer = document.getElementById("ms-article-content");
-  const formTitle = document.getElementById("ms-article-form-title");
-  const submitButton = document.getElementById("ms-article-submit");
+  const titleInput     = document.getElementById("ms-article-title");
+  const slugInput      = document.getElementById("ms-article-slug");
+  const seoInput       = document.getElementById("ms-article-meta-description");
+  const authorInput    = document.getElementById("ms-article-author");
+  const imageInput     = document.getElementById("ms-article-image");
+  const imagePreview   = document.getElementById("ms-article-image-preview");
+  const submitBtn      = document.getElementById("ms-article-submit");
 
-  const searchInput = document.getElementById("ms-articles-search");
-  const searchBtn = document.getElementById("ms-articles-search-btn");
-  const suggestions = document.getElementById("ms-articles-suggestions");
+  // HTML sources (pick the first that exists)
+  const textareaHtml   = document.getElementById("ms-article-html");         // optional: <textarea id="ms-article-html">
+  const contentEl      = (form && form.querySelector("#ms-article-content")) // editor container inside form
+                         || document.getElementById("ms-article-content");
 
-  // ===== Loader helpers =====
+  // Tags UI
+  const tagsHidden     = document.getElementById("ms-article-keywords");
+  const tagInputField  = document.getElementById("ms-article-keywords-input");
+  const tagContainer   = document.getElementById("ms-article-keywords-container");
+
+  // ====== Helpers ======
   function showLoader(btn) {
     if (!btn) return;
     btn.dataset.oldText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = `<span class="animate-spin mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 inline-block"></span> Processing...`;
+    btn.innerHTML = `<span class="animate-spin mr-2 border-2 border-white border-t-transparent rounded-full w-5 h-5 inline-block"></span> Saving...`;
   }
   function hideLoader(btn) {
     if (!btn) return;
     btn.disabled = false;
     btn.innerHTML = btn.dataset.oldText || "Submit";
   }
-
-  // ===== Quill =====
-  let quillInstance = null;
-  if (window.Quill) {
-    try {
-      quillInstance = new Quill("#ms-article-content", {
-        theme: "snow",
-        modules: {
-          toolbar: [
-            [{ header: [1, 2, 3, 4, 5, 6, false] }],
-            ["bold", "italic", "underline", "strike"],
-            [{ list: "ordered" }, { list: "bullet" }],
-            [{ script: "sub" }, { script: "super" }],
-            [{ indent: "-1" }, { indent: "+1" }],
-            [{ direction: "rtl" }],
-            [{ color: [] }, { background: [] }],
-            [{ font: [] }],
-            [{ align: [] }],
-            ["link", "image", "video"],
-            ["clean"],
-          ],
-        },
-      });
-      window.quillInstances = window.quillInstances || {};
-      window.quillInstances["ms-article-content"] = quillInstance;
-    } catch (e) {
-      console.warn("Quill init failed:", e);
-      if (contentContainer) contentContainer.contentEditable = true;
-    }
-  } else {
-    if (contentContainer) contentContainer.contentEditable = true;
+  function slugify(s) {
+    return (s || "")
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
   }
-
-  // ===== Image preview =====
-  if (imageInput && imagePreview) {
-    imageInput.addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          imagePreview.src = e.target.result;
-          imagePreview.classList.remove("hidden");
-        };
-        reader.readAsDataURL(file);
-      } else {
-        imagePreview.src = "";
-        imagePreview.classList.add("hidden");
-      }
-    });
-  }
-
-  // ===== Tag UI (same input for pills + storage) =====
-  function addTagPill(text) {
-    if (!tagsInput || !text) return;
-    const pill = document.createElement("div");
-    pill.className =
-      "qalam-tag-pill inline-flex items-center gap-2 px-2 py-1 rounded bg-gray-100";
-    pill.innerHTML = `<span class="tag-text">${escapeHtml(
-      text
-    )}</span><button type="button" class="qalam-tag-remove-btn ml-2 text-red-500">&times;</button>`;
-    tagsInput.parentNode.insertBefore(pill, tagsInput);
-    updateTagsField();
-  }
-
-  function updateTagsField() {
-    if (!tagsInput) return;
-    const tags = Array.from(
-      document.querySelectorAll(".qalam-tag-pill .tag-text")
-    )
-      .map((el) => el.textContent.trim())
+  function updateTagsHidden() {
+    const tags = Array.from(document.querySelectorAll(".qalam-tag-pill .tag-text"))
+      .map(el => (el.textContent || "").trim())
       .filter(Boolean);
-    tagsInput.value = tags.join(",");
+    if (tagsHidden) tagsHidden.value = tags.join(",");
+  }
+  function escapeHtml(s) {
+    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   }
 
-  if (tagsInput) {
-    tagsInput.addEventListener("keydown", (e) => {
+  // ====== Tag pills ======
+  if (tagInputField && tagContainer) {
+    tagInputField.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === ",") {
         e.preventDefault();
-        const text = tagsInput.value.trim();
-        if (text) addTagPill(text);
-        tagsInput.value = "";
-      } else if (e.key === "Backspace" && tagsInput.value === "") {
-        const last = document.querySelector(".qalam-tag-pill:last-of-type");
-        if (last) {
-          last.remove();
-          updateTagsField();
-        }
+        const t = tagInputField.value.trim();
+        if (!t) return;
+        const pill = document.createElement("div");
+        pill.className = "qalam-tag-pill inline-flex items-center gap-2 px-2 py-1 rounded bg-gray-100";
+        pill.innerHTML = `<span class="tag-text">${escapeHtml(t)}</span>
+                          <button type="button" class="qalam-tag-remove-btn ml-2 text-red-500" aria-label="Remove tag">&times;</button>`;
+        tagContainer.insertBefore(pill, tagInputField);
+        tagInputField.value = "";
+        updateTagsHidden();
+      } else if (e.key === "Backspace" && tagInputField.value === "") {
+        const last = tagContainer.querySelector(".qalam-tag-pill:last-of-type");
+        if (last) { last.remove(); updateTagsHidden(); }
       }
     });
-
-    tagsInput.parentNode.addEventListener("click", (e) => {
-      if (e.target.classList.contains("qalam-tag-remove-btn")) {
-        e.target.closest(".qalam-tag-pill").remove();
-        updateTagsField();
-      } else {
-        tagsInput.focus();
-      }
-    });
-  }
-
-  function escapeHtml(s) {
-    return String(s || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
-
-  // ===== Pagination state =====
-  const PAGE_SIZE = 10; // tweak if needed
-  let currentPage = 1;
-  let totalItems = null; // try to discover; stays null if API has no count
-  let totalPages = 1;
-  const selectedIds = new Set();
-  let currentQuery = "";
-
-  function formatDate(value) {
-    const d = value ? new Date(value) : new Date();
-    return d.toLocaleDateString("ur-PK", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+    tagContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest(".qalam-tag-remove-btn");
+      if (btn) { btn.closest(".qalam-tag-pill")?.remove(); updateTagsHidden(); }
+      else tagInputField.focus();
     });
   }
 
-  // ===== helpers to unwrap API shapes =====
-  function unwrapArray(payload) {
-    // Accept: [ ... ] OR { data: [ ... ] } OR { success: true, data: [ ... ] }
-    if (Array.isArray(payload)) return payload;
-    if (payload && Array.isArray(payload.data)) return payload.data;
-    return null;
-  }
-  function unwrapObject(payload) {
-    // Accept: { ... } OR { data: { ... } }
-    if (payload && payload.data && typeof payload.data === "object")
-      return payload.data;
-    if (payload && typeof payload === "object") return payload;
-    return null;
-  }
-  function extractTotal(payload) {
-    // Try a few common spots
-    if (payload == null) return null;
-    if (Number.isFinite(payload.total)) return payload.total;
-    if (Number.isFinite(payload.count)) return payload.count;
-    if (payload.meta && Number.isFinite(payload.meta.total))
-      return payload.meta.total;
-    if (payload.data && Number.isFinite(payload.data.total))
-      return payload.data.total;
-    return null;
-  }
-
-  // ===== Try count endpoint if available =====
-
-  function renderPagination() {
-    if (!paginationEl) return;
-    paginationEl.innerHTML = "";
-
-    const makeBtn = (label, page, disabled = false, active = false) => {
-      const btn = document.createElement("button");
-      btn.textContent = label;
-      btn.className =
-        "min-w-[2.5rem] px-3 py-2 rounded-md border text-sm " +
-        (active
-          ? "bg-midnight_green text-white border-midnight_green"
-          : "bg-white border-gray-300 hover:bg-gray-50") +
-        (disabled ? " opacity-50 cursor-not-allowed" : "");
-      btn.disabled = disabled;
-      if (!disabled) {
-        btn.addEventListener("click", () => {
-          if (page !== currentPage) {
-            currentPage = page;
-            refreshTable();
-          }
-        });
-      }
-      return btn;
-    };
-
-    const haveTotals =
-      Number.isFinite(totalItems) && Number.isFinite(totalPages);
-
-    const first = makeBtn("اول", 1, currentPage === 1);
-    const prev = makeBtn(
-      "پچھلا",
-      Math.max(1, currentPage - 1),
-      currentPage === 1
-    );
-    paginationEl.appendChild(first);
-    paginationEl.appendChild(prev);
-
-    if (haveTotals) {
-      const MAX_SHOWN = 7;
-      let start = Math.max(1, currentPage - 3);
-      let end = Math.min(totalPages, start + MAX_SHOWN - 1);
-      if (end - start < MAX_SHOWN - 1)
-        start = Math.max(1, end - (MAX_SHOWN - 1));
-
-      if (start > 1) {
-        paginationEl.appendChild(makeBtn("1", 1, false, currentPage === 1));
-        if (start > 2) {
-          const ell = document.createElement("span");
-          ell.textContent = "…";
-          ell.className = "px-2 text-gray-500";
-          paginationEl.appendChild(ell);
-        }
-      }
-
-      for (let p = start; p <= end; p++) {
-        paginationEl.appendChild(
-          makeBtn(String(p), p, false, p === currentPage)
-        );
-      }
-
-      if (end < totalPages) {
-        if (end < totalPages - 1) {
-          const ell = document.createElement("span");
-          ell.textContent = "…";
-          ell.className = "px-2 text-gray-500";
-          paginationEl.appendChild(ell);
-        }
-        paginationEl.appendChild(
-          makeBtn(
-            String(totalPages),
-            totalPages,
-            false,
-            currentPage === totalPages
-          )
-        );
-      }
-    } else {
-      const hint = document.createElement("span");
-      hint.textContent = "مزید صفحات معلوم کیے جا رہے ہیں…";
-      hint.className = "px-2 text-gray-500";
-      paginationEl.appendChild(hint);
-    }
-
-    const next = makeBtn(
-      "اگلا",
-      currentPage + 1,
-      haveTotals ? currentPage >= totalPages : false
-    );
-    const last = makeBtn(
-      "آخری",
-      haveTotals ? totalPages : currentPage,
-      haveTotals ? currentPage >= totalPages : true
-    );
-    paginationEl.appendChild(next);
-    paginationEl.appendChild(last);
-  }
-
-  function renderRows(articles) {
-    if (!tableBody) return;
-    tableBody.innerHTML = "";
-    selectedIds.clear();
-    if (selectAllCheckbox) selectAllCheckbox.checked = false;
-    if (bulkDeleteBtn) bulkDeleteBtn.disabled = true;
-
-    articles.forEach((article) => {
-      const id = article.id ?? article.ID ?? article.Id;
-      const title = article.Title ?? article.title ?? "";
-      const writer = article.writer ?? article.author ?? "-";
-      const created = article.created_at ?? article.createdAt ?? Date.now();
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="py-3 px-4 align-middle">
-          <input type="checkbox" class="ms-article-row-check w-5 h-5 accent-midnight_green" data-id="${id}" />
-        </td>
-        <td class="py-3 px-4 align-middle">${escapeHtml(title)}</td>
-        <td class="py-3 px-4 align-middle">${escapeHtml(writer)}</td>
-        <td class="py-3 px-4 align-middle">${formatDate(created)}</td>
-        <td class="py-3 px-4 align-middle">
-          <div class="flex gap-3 justify-end">
-            <button class="text-blue-600 hover:text-blue-800" data-action="edit" data-id="${id}" title="ترمیم">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button class="text-red-600 hover:text-red-800" data-action="delete" data-id="${id}" title="حذف">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
-        </td>
-      `;
-      tableBody.appendChild(tr);
+  // ====== Image preview ======
+  if (imageInput && imagePreview) {
+    imageInput.addEventListener("change", function(){
+      const file = this.files?.[0];
+      if (!file) { imagePreview.src=""; imagePreview.classList.add("hidden"); return; }
+      const reader = new FileReader();
+      reader.onload = e => { imagePreview.src = e.target.result; imagePreview.classList.remove("hidden"); };
+      reader.readAsDataURL(file);
     });
   }
 
-  // ===== Fetch a page (robust to {success,data:[...]} etc.) =====
-  async function fetchPage(page) {
-    const offset = (page - 1) * PAGE_SIZE;
-    const url = new URL(apiBase);
-    url.searchParams.set("limit", PAGE_SIZE);
-    url.searchParams.set("offset", offset);
-    if (currentQuery.trim()) url.searchParams.set("q", currentQuery.trim());
+  // ====== Grab HTML exactly as-is ======
+  function getRawHtml() {
+    // 1) Explicit textarea (preferred if you provide it)
+    if (textareaHtml) return textareaHtml.value;
 
-    const res = await fetch(url.toString());
-    const raw = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      const msg = raw?.error || `HTTP ${res.status}`;
-      throw new Error(msg);
+    // 2) Quill instance mounted on contentEl (if present)
+    if (window.Quill && contentEl && contentEl.__quill) {
+      return contentEl.__quill.root.innerHTML; // exact HTML produced by Quill
     }
 
-    const items = unwrapArray(raw);
-    if (!Array.isArray(items)) {
-      throw new Error("Unexpected response format");
+    // 3) Global quillInstances map (if you used it)
+    if (window.quillInstances && window.quillInstances["ms-article-content"]) {
+      return window.quillInstances["ms-article-content"].root.innerHTML;
     }
 
-    // Try to set totals if provided by API (optional)
-    const maybeTotal = extractTotal(raw);
-    if (Number.isFinite(maybeTotal)) {
-      totalItems = maybeTotal;
-      totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-    }
+    // 4) Fallback: any element's innerHTML
+    if (contentEl) return contentEl.innerHTML;
 
-    return items;
+    // Last resort
+    return "";
   }
 
-  async function refreshTotalsIfNeeded(firstPageLength) {
-    if (Number.isFinite(totalItems)) return;
-
-    if (firstPageLength < PAGE_SIZE) {
-      totalItems = firstPageLength;
-      totalPages = 1;
-    } else {
-      try {
-        const probe = await fetchPage(2);
-        if (probe.length === 0) {
-          totalItems = PAGE_SIZE;
-          totalPages = 1;
-        } else {
-          totalItems = null;
-          totalPages = NaN; // unknown but >= 2 pages
-        }
-      } catch {
-        totalItems = null;
-        totalPages = NaN;
-      }
-    }
-  }
-
-  async function refreshTable() {
-    try {
-      // Optional: show a light inline loader in table
-      if (tableBody) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-6">Loading…</td></tr>`;
-      }
-
-      const articles = await fetchPage(currentPage);
-
-      if (Array.isArray(articles) && articles.length === 0 && currentPage > 1) {
-        // went too far -> step back
-        currentPage = currentPage - 1;
-        const previous = await fetchPage(currentPage);
-        await refreshTotalsIfNeeded(previous.length);
-        renderRows(previous);
-        renderPagination();
-        return;
-      }
-
-      await refreshTotalsIfNeeded(articles.length);
-
-      if (Number.isFinite(totalItems)) {
-        totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-        if (currentPage > totalPages) currentPage = totalPages;
-      }
-
-      renderRows(articles);
-      renderPagination();
-    } catch (err) {
-      console.error("loadArticles error:", err);
-      if (tableBody) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="text-center text-red-600 py-6">Failed to load</td></tr>`;
-      }
-    }
-  }
-  window.renderArticles = refreshTable; // keep your external hook working
-
-  // ===== Table actions (edit / delete / row check) =====
-  if (tableBody) {
-    tableBody.addEventListener("click", async (e) => {
-      const btn = e.target.closest("button");
-      const checkbox = e.target.closest(".ms-article-row-check");
-
-      // Row checkbox
-      if (checkbox) {
-        const id = checkbox.dataset.id;
-        if (checkbox.checked) selectedIds.add(id);
-        else selectedIds.delete(id);
-        if (bulkDeleteBtn) bulkDeleteBtn.disabled = selectedIds.size === 0;
-
-        const checks = tableBody.querySelectorAll(".ms-article-row-check");
-        const allChecked = Array.from(checks).every((c) => c.checked);
-        if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
-        return;
-      }
-
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const action = btn.dataset.action;
-
-      if (action === "edit") {
-        // keep your redirect behavior
-        window.location.href = `./Editarticle.html?id=${id}`;
-      } else if (action === "delete") {
-        if (confirm("⚠️ کیا آپ واقعی اس مضمون کو حذف کرنا چاہتے ہیں؟")) {
-          try {
-            const res = await fetch(`${apiBase}/${id}`, { method: "DELETE" });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            alert("🗑️ مضمون حذف کر دیا گیا!");
-            refreshTable();
-          } catch (err) {
-            console.error("delete error:", err);
-            alert("❌ Failed to delete article.");
-          }
-        }
-      }
-    });
-  }
-
-  // ===== Header Select All =====
-  selectAllCheckbox?.addEventListener("change", () => {
-    const checks = tableBody.querySelectorAll(".ms-article-row-check");
-    const check = selectAllCheckbox.checked;
-    checks.forEach((c) => {
-      c.checked = check;
-      const id = c.dataset.id;
-      if (check) selectedIds.add(id);
-      else selectedIds.delete(id);
-    });
-    if (bulkDeleteBtn) bulkDeleteBtn.disabled = selectedIds.size === 0;
-  });
-
-  // ===== Bulk Delete =====
-  bulkDeleteBtn?.addEventListener("click", async () => {
-    if (selectedIds.size === 0) return;
-    if (!confirm(`کیا آپ واقعی ${selectedIds.size} مضامین حذف کرنا چاہتے ہیں؟`))
-      return;
-
-    try {
-      const ids = Array.from(selectedIds);
-      const results = await Promise.allSettled(
-        ids.map((id) => fetch(`${apiBase}/${id}`, { method: "DELETE" }))
-      );
-
-      const failed = [];
-      for (let i = 0; i < results.length; i++) {
-        const r = results[i];
-        if (r.status === "fulfilled") {
-          if (!r.value.ok) failed.push(ids[i]);
-        } else {
-          failed.push(ids[i]);
-        }
-      }
-
-      if (failed.length) {
-        alert(`⚠️ کچھ حذف نہ ہو سکے: ${failed.join(", ")}`);
-      } else {
-        alert("✅ منتخب مضامین حذف کر دیے گئے!");
-      }
-
-      await refreshTable();
-    } catch (err) {
-      console.error(err);
-      alert("❌ نیٹ ورک خرابی۔ دوبارہ کوشش کریں۔");
-    }
-  });
-
-  // ===== Submit (create/update) =====
-  if (articleForm) {
-    articleForm.addEventListener("submit", async (e) => {
+  // ====== Submit ======
+  if (form) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      showLoader(submitButton);
+      showLoader(submitBtn);
 
       try {
-        updateTagsField();
+        updateTagsHidden();
 
         const fd = new FormData();
-        const titleVal = titleInput?.value.trim() || "";
-        const slugVal =
-          slugInput?.value.trim() ||
-          titleVal.toLowerCase().replace(/\s+/g, "-");
-        const tagsVal = tagsInput?.value || "";
-        const seoVal = seoInput?.value || "";
-        const writerVal = authorInput?.value || "";
+        const titleVal = (titleInput?.value || "").trim();
+        const slugVal  = (slugInput?.value || "").trim() || slugify(titleVal);
+        const seoVal   = seoInput?.value || "";
+        const writer   = authorInput?.value || "";
+        const tagsVal  = tagsHidden?.value || "";
 
-        let articleHtml = "";
-        if (quillInstance && quillInstance.root) {
-          articleHtml = quillInstance.root.innerHTML;
-        } else if (contentContainer) {
-          articleHtml = contentContainer.innerHTML;
-        }
+        // 👉 Use raw HTML exactly as provided (no normalization)
+        const articleHtml = getRawHtml(); // can be empty; we send "as-is" by your request
 
         fd.append("Title", titleVal);
         fd.append("slug", slugVal);
         fd.append("tags", tagsVal);
         fd.append("seo", seoVal);
-        fd.append("writer", writerVal);
+        fd.append("writer", writer);
         fd.append("ArticleText", articleHtml);
 
-        if (imageInput?.files[0]) {
+        if (imageInput?.files?.[0]) {
           fd.append("coverImage", imageInput.files[0]);
         }
 
-        const id = articleIdInput?.value || "";
-        const method = id ? "PUT" : "POST";
-        const url = id ? `${apiBase}/${id}` : apiBase;
+        const id = (articleIdInput?.value || "").trim();
+        let url = apiBase;
+        if (id) url = `${apiBase}/${encodeURIComponent(id)}?_method=PUT`;
 
-        const res = await fetch(url, { method, body: fd });
-        const body = await res.json().catch(() => ({}));
-        if (!res.ok || body?.success === false) {
-          const errMsg = body?.error || body?.message || `HTTP ${res.status}`;
+        const res = await fetch(url, {
+          method: "POST",            // POST for both; _method=PUT handles update
+          body: fd,
+          credentials: "include",
+        });
+
+        const text = await res.text();
+        let body;
+        try { body = JSON.parse(text); } catch { body = text; }
+
+        if (!res.ok || (body && typeof body === "object" && body.success === false)) {
+          const errMsg =
+            (body && typeof body === "object" && (body.error || body.message)) ||
+            (typeof body === "string" ? body : `HTTP ${res.status}`);
           throw new Error(errMsg);
         }
 
         alert(id ? "✅ Article updated!" : "✅ Article created!");
 
-        resetForm();
-        if (typeof refreshTable === "function") refreshTable();
+        // Quick reset
+        form.reset();
+        if (imagePreview) { imagePreview.src = ""; imagePreview.classList.add("hidden"); }
+        document.querySelectorAll(".qalam-tag-pill").forEach(n => n.remove());
+        if (textareaHtml) textareaHtml.value = "";
+        if (contentEl && !contentEl.__quill) contentEl.innerHTML = ""; // if it's not Quill, clear
 
-        const backBtn = document.querySelector(
-          '[data-target="manage-articles"]'
-        );
-        if (backBtn) backBtn.click();
       } catch (err) {
-        console.error("submit error:", err);
-        alert("❌ Error saving article. See console.");
+        console.error(err);
+        alert("❌ Error: " + err.message);
       } finally {
-        hideLoader(submitButton);
+        hideLoader(submitBtn);
       }
     });
   }
 
-  // ===== Slug auto-generate =====
+  // Optional: auto-slug from title on blur
   if (titleInput && slugInput) {
     titleInput.addEventListener("blur", () => {
-      if (!slugInput.value) {
-        const title = titleInput.value;
-        const generatedSlug = title
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^\w\-]+/g, "")
-          .replace(/\-\-+/g, "-")
-          .replace(/^-+/, "")
-          .replace(/-+$/, "");
-        slugInput.value = generatedSlug;
-      }
+      if (!slugInput.value) slugInput.value = slugify(titleInput.value || "");
     });
   }
-
-  // ===== Search wiring =====
-  async function triggerSearch() {
-    currentQuery = (searchInput?.value || "").trim();
-    currentPage = 1;
-    await refreshTable();
-  }
-  searchBtn?.addEventListener("click", triggerSearch);
-  searchInput?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") triggerSearch();
-  });
-  searchInput?.addEventListener("input", () => {
-    suggestions?.classList.add("hidden");
-  });
-
-  // ===== Reset & populate helpers =====
-  function resetForm() {
-    if (articleForm) articleForm.reset();
-    if (articleIdInput) articleIdInput.value = "";
-    document.querySelectorAll(".qalam-tag-pill").forEach((p) => p.remove());
-    updateTagsField();
-    if (quillInstance) quillInstance.root.innerHTML = "";
-    if (imagePreview) {
-      imagePreview.src = "";
-      imagePreview.classList.add("hidden");
-    }
-    if (formTitle) formTitle.textContent = "نیا مضمون شامل کریں";
-  }
-
-  async function populateForm(id) {
-    try {
-      const res = await fetch(`${apiBase}/${id}`);
-      const raw = await res.json().catch(() => ({}));
-      if (!res.ok || raw?.success === false) {
-        const msg =
-          raw?.error || raw?.message || `Server returned ${res.status}`;
-        throw new Error(msg);
-      }
-
-      const article = unwrapObject(raw);
-      if (!article) throw new Error("Unexpected response format for article");
-
-      resetForm();
-
-      articleIdInput.value = article.id || article.ID || article.Id || "";
-      titleInput.value = article.Title || "";
-      slugInput.value = article.slug || "";
-      seoInput.value = article.seo || "";
-      authorInput.value = article.writer || article.author || "";
-
-      if (article.tags) {
-        // tags can be "a,b" OR "[]"
-        const tagStr = Array.isArray(article.tags)
-          ? article.tags.join(",")
-          : String(article.tags);
-        tagStr
-          .split(",")
-          .map((t) => t.replace(/^\[|\]$/g, "").trim()) // clean "[]"
-          .filter(Boolean)
-          .forEach((tag) => addTagPill(tag));
-      }
-
-      if (quillInstance) {
-        quillInstance.root.innerHTML = article.ArticleText || "";
-      } else {
-        contentContainer.innerHTML = article.ArticleText || "";
-      }
-
-      if (article.coverImageUrl) {
-        imagePreview.src = article.coverImageUrl;
-        imagePreview.classList.remove("hidden");
-      }
-
-      if (formTitle) formTitle.textContent = "مضمون میں ترمیم کریں";
-      document.querySelector('[data-target="add-article"]').click();
-    } catch (err) {
-      console.error("populateForm error:", err);
-      alert("❌ Failed to load article for editing.");
-    }
-  }
-  // keep available if you need it elsewhere
-  window.populateArticleForm = populateForm;
-
-  // ===== Initial load =====
-  refreshTable();
 });
+
+
 
 // -----------------------------------------------------------------
 
